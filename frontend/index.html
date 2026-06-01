@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Social Work Licensing Assessment</title>
+<title>QuestionQuest Student Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@300;400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -299,7 +299,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <p id="results-candidate"></p>
       <div class="score-circle">
         <div class="score-num" id="results-score">—</div>
-        <div class="score-label">MCQ Score</div>
+        <div class="score-label">Auto Score</div>
       </div>
     </div>
     <div class="results-body">
@@ -313,7 +313,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 // ─── CONFIG ─────────────────────────────────────────────────────────
 const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:8000'
-  : 'https://YOUR_RENDER_BACKEND_URL';
+  : 'https://questionquest-prqz.onrender.com';
 let selectedAssessmentId = null; 
 
 // ─── STATE ──────────────────────────────────────────────────────────
@@ -333,9 +333,6 @@ function showScreen(id) {
 }
 
 // ─── REGISTRATION ───────────────────────────────────────────────────
-<!-- Replace the existing <script> startExam() function and add this listener -->
-
-
   async function startExam() {
     const first = document.getElementById('reg-first').value.trim();
     const last  = document.getElementById('reg-last').value.trim();
@@ -449,15 +446,6 @@ async function beginAssessment(id) {
 }
 
 
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
 // ─── LOAD ASSESSMENT FROM BACKEND ───────────────────────────────────
 async function loadAssessment() {
   const area = document.getElementById('question-area');
@@ -539,7 +527,7 @@ function renderQuestion(idx) {
       return `
         <div class="mcq-opt ${sel}" onclick="selectMCQ(${q.id}, '${letter}', this)">
           <div class="opt-letter">${letter}</div>
-          <span>${String(opt).replace(/^[A-D]\.\s*/, '')}</span>
+          <span>${escapeHtml(String(opt).replace(/^[A-D]\.\s*/, ''))}</span>
         </div>
       `;
     }).join('');
@@ -643,18 +631,29 @@ function renderQuestion(idx) {
   }
 
   else if (q.type === 'drag_order') {
-    const saved = answers[q.id] ? JSON.parse(answers[q.id]) : q.options;
+    let saved;
+
+    try {
+      saved = answers[q.id] ? JSON.parse(answers[q.id]) : [...q.options];
+    } catch {
+      saved = [...q.options];
+    }
 
     answerHtml = `
       <div class="q-instruction">Write the items in the correct order.</div>
       <div class="essay-wrap">
         ${saved.map((item, i) => `
-          <input
-            style="padding:12px;border:1.5px solid var(--border);border-radius:8px;margin-bottom:10px"
-            value="${escapeHtml(item)}"
-            oninput="saveOrderAnswer(${q.id})"
-            class="order-input-${q.id}"
-          />
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div style="width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0">
+              ${i + 1}
+            </div>
+            <input
+              style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:8px"
+              value="${escapeHtml(item)}"
+              oninput="saveOrderAnswer(${q.id})"
+              class="order-input-${q.id}"
+            />
+          </div>
         `).join('')}
       </div>
     `;
