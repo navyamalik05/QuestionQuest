@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin — Assessment Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+<!-- MathLive equation editor -->
+<script src="https://unpkg.com/mathlive/dist/mathlive.min.js"></script>
+<!-- KaTeX for rendering math in question previews -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css"/>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Open Sans',sans-serif;font-size:14px;color:#333;background:#f5f5f5;min-height:100vh}
+.navbar{background:#1f4172;min-height:50px;position:sticky;top:0;z-index:500}
+.navbar-inner{max-width:1200px;margin:0 auto;padding:0 15px;display:flex;align-items:stretch;min-height:50px}
+.navbar-brand{display:flex;align-items:center;padding:0 16px;color:#fff!important;font-size:17px;font-weight:700;text-decoration:none;border-right:1px solid rgba(255,255,255,.15)}
+.navbar-brand span{color:#7ec8e3}
+.nav-list{display:flex;list-style:none;margin:0;padding:0;flex:1}
+.nav-item{position:relative}
+.nav-link{display:flex;align-items:center;height:50px;padding:0 15px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;gap:5px;border-right:1px solid rgba(255,255,255,.07);transition:background .15s,color .15s;cursor:pointer;user-select:none;white-space:nowrap}
+.nav-link:hover,.nav-item.open .nav-link{background:rgba(255,255,255,.12);color:#fff}
+.caret{border-top:5px solid rgba(255,255,255,.7);border-left:4px solid transparent;border-right:4px solid transparent;display:inline-block;margin-left:3px}
+.dd-menu{display:none;position:absolute;top:50px;left:0;background:#fff;border:1px solid #ccc;border-radius:0 0 4px 4px;min-width:210px;z-index:1000;box-shadow:0 4px 14px rgba(0,0,0,.15);padding:5px 0}
+.nav-item.open .dd-menu{display:block}
+.dd-menu a{display:block;padding:8px 18px;color:#333;font-size:13px;text-decoration:none}
+.dd-menu a:hover{background:#f0f4f8;color:#1f4172}
+.nav-right{margin-left:auto}
+.main-wrap{max-width:1200px;margin:0 auto;padding:22px 15px 50px}
+.page-sec{display:none}.page-sec.active{display:block}
+.action-links{list-style:none;display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.action-links a{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;background:#fff;border:1px solid #ccc;border-radius:4px;color:#333;text-decoration:none;font-size:13px;transition:background .15s;cursor:pointer}
+.action-links a:hover{background:#e8e8e8}
+.panel{background:#fff;border:1px solid #ddd;border-radius:4px;margin-bottom:16px}
+.ph{background:#f5f5f5;border-bottom:1px solid #ddd;padding:9px 15px;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:space-between}
+.ph-title{font-size:14px;font-weight:600;color:#333}
+.pb{padding:14px}
+.form-control{width:100%;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;font-family:inherit;color:#333;outline:none;background:#fff}
+.form-control:focus{border-color:#66afe9;box-shadow:0 0 0 3px rgba(102,175,233,.18)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-group{margin-bottom:13px}
+.form-group label{display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:4px;text-transform:uppercase;letter-spacing:.03em}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:4px;border:1px solid transparent;font-size:13px;font-family:inherit;cursor:pointer;line-height:1.4;font-weight:400;transition:all .15s}
+.btn-primary{background:#337ab7;border-color:#2e6da4;color:#fff}.btn-primary:hover{background:#286090}
+.btn-info{background:#5bc0de;border-color:#46b8da;color:#fff}.btn-info:hover{background:#31b0d5}
+.btn-default{background:#fff;border-color:#ccc;color:#333}.btn-default:hover{background:#e6e6e6}
+.btn-danger{background:#d9534f;border-color:#d43f3a;color:#fff}.btn-danger:hover{background:#c9302c}
+.btn-success{background:#5cb85c;border-color:#4cae4c;color:#fff}.btn-success:hover{background:#449d44}
+.btn-warning{background:#f0ad4e;border-color:#eea236;color:#fff}.btn-warning:hover{background:#ec971f}
+.btn-sm{padding:4px 9px;font-size:12px}
+.btn-group{display:flex;gap:6px;flex-wrap:wrap}
+.tbl-wrap{background:#fff;border:1px solid #ddd;border-radius:4px;overflow:hidden;margin-bottom:4px}
+table{width:100%;border-collapse:collapse}
+thead th{background:#f5f5f5;border-bottom:2px solid #ddd;padding:9px 12px;font-size:12px;font-weight:700;color:#444;text-align:left;white-space:nowrap}
+tbody tr:nth-child(even){background:#f9f9f9}
+tbody tr:hover{background:#eef4ff}
+tbody td{padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+.inline-links{display:flex;gap:8px;list-style:none;padding:0;margin:0}
+.inline-links a{color:#337ab7;font-size:12px;text-decoration:none;cursor:pointer}.inline-links a:hover{text-decoration:underline}
+.inline-links a.del{color:#a94442}
+.bp{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+.bp-green{background:#dff0d8;color:#3c763d;border:1px solid #d6e9c6}
+.bp-blue{background:#d9edf7;color:#31708f;border:1px solid #bce8f1}
+.bp-gray{background:#eee;color:#555;border:1px solid #ddd}
+.bp-orange{background:#fcf8e3;color:#8a6d3b;border:1px solid #faebcc}
+.ib-layout{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
+.item-row{display:flex;gap:10px;padding:10px 12px;border:1px solid #e0e0e0;border-radius:3px;background:#fafafa;cursor:grab;transition:border-color .15s,box-shadow .15s;margin-bottom:7px;user-select:none}
+.item-row:hover{border-color:#66afe9;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.itag{display:inline-block;background:#d9edf7;color:#31708f;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;margin-bottom:3px}
+.iq{font-size:13px;color:#333;line-height:1.45}
+.imeta{font-size:11px;color:#aaa;margin-top:3px}
+.drop-zone{border:2px dashed #ccc;border-radius:4px;padding:12px;min-height:90px;background:#fafafa;transition:border-color .2s,background .2s}
+.drop-zone.over{border-color:#337ab7;background:#e8f2fb}
+.dz-hint{text-align:center;color:#bbb;font-size:13px;padding:18px 0}
+.built{display:flex;align-items:center;justify-content:space-between;padding:6px 9px;background:#d9edf7;border:1px solid #bce8f1;border-radius:3px;margin-bottom:5px;font-size:12px;color:#31708f}
+.btrm{background:none;border:none;color:#a94442;cursor:pointer;font-size:14px;font-weight:700;padding:0 2px}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.stat-box{background:#fff;border:1px solid #ddd;border-radius:4px;padding:18px 16px;text-align:center}
+.stat-num{font-size:30px;font-weight:700;color:#1f4172}
+.stat-lbl{font-size:12px;color:#999;margin-top:4px}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:2000;align-items:center;justify-content:center}
+.mo.open{display:flex}
+.mb{background:#fff;border-radius:5px;width:580px;max-width:95vw;box-shadow:0 8px 36px rgba(0,0,0,.28);overflow:hidden;max-height:92vh;display:flex;flex-direction:column}
+.mh{background:#f5f5f5;border-bottom:1px solid #ddd;padding:13px 17px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.mh h4{font-size:15px;font-weight:600;color:#333;margin:0}
+.mc-btn{background:none;border:none;font-size:20px;color:#999;cursor:pointer;line-height:1}.mc-btn:hover{color:#333}
+.mbd{padding:17px;overflow-y:auto;flex:1}
+.mft{background:#f5f5f5;border-top:1px solid #ddd;padding:11px 17px;display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
+.opt-row{display:flex;align-items:center;gap:6px;margin-bottom:7px}
+.opt-letter-badge{width:24px;height:24px;background:#337ab7;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.opt-correct{width:16px;height:16px;cursor:pointer}
+.toast-el{position:fixed;bottom:18px;right:18px;padding:10px 16px;border-radius:4px;font-size:13px;color:#fff;box-shadow:0 3px 12px rgba(0,0,0,.2);z-index:9999;display:none;align-items:center;gap:8px}
+.toast-el.show{display:flex}
+.toast-el.success{background:#3c763d}
+.toast-el.danger{background:#a94442}
+.loading-row td{text-align:center;color:#aaa;padding:20px!important;font-size:13px}
+.opts-container{border:1px solid #e0e0e0;border-radius:4px;padding:10px;background:#fafafa;margin-top:4px}
+
+/* Math field styling in admin */
+math-field {
+  width: 100%;
+  display: block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 16px;
+  min-height: 44px;
+  background: #fff;
+}
+math-field:focus-within {
+  border-color: #66afe9;
+  box-shadow: 0 0 0 3px rgba(102,175,233,.18);
+  outline: none;
+}
+.math-preview{background:#f9f9f9;border:1px solid #e0e0e0;border-radius:4px;padding:8px 12px;min-height:36px;font-size:15px;margin-top:6px;text-align:center}
+
+/* True/False admin builder */
+.tf-radio-group{display:flex;gap:20px;margin-top:8px}
+.tf-radio-group label{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:14px;font-weight:600;padding:8px 16px;border:1.5px solid #ddd;border-radius:6px;transition:all .15s}
+.tf-radio-group label:hover{border-color:#337ab7;background:#e8f0fb}
+.tf-radio-group input[type=radio]{width:15px;height:15px;cursor:pointer}
+.tf-radio-group label.checked{border-color:#337ab7;background:#d9edf7;color:#31708f}
+
+/* Match builder */
+.match-pair-row{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;margin-bottom:7px;align-items:center}
+.match-arrow{text-align:center;color:#aaa;font-size:16px;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="navbar-brand" href="#" onclick="showPage('home')"><i class="fa fa-home"></i>&nbsp;Assessment<span>Admin</span></a>
+    <ul class="nav-list">
+      <li class="nav-item"><div class="nav-link" onclick="showPage('home')"><i class="fa fa-home fa-fw"></i> Home</div></li>
+      <li class="nav-item" id="ni-auth">
+        <div class="nav-link" onclick="toggleDD('ni-auth',event)">Authoring <span class="caret"></span></div>
+        <div class="dd-menu">
+          <a onclick="showPage('itembank');closeDD()">Item Bank (Questions)</a>
+          <a onclick="showPage('assessments');closeDD()">Assessments</a>
+        </div>
+      </li>
+      <li class="nav-item"><div class="nav-link" onclick="showPage('results')"><i class="fa fa-bar-chart fa-fw"></i> Results</div></li>
+    </ul>
+    <ul class="nav-list nav-right">
+      <li class="nav-item" id="ni-user">
+        <div class="nav-link" onclick="toggleDD('ni-user',event)"><i class="fa fa-user fa-fw"></i> Admin <span class="caret"></span></div>
+        <div class="dd-menu" style="right:0;left:auto">
+          <a href="#">Edit Profile</a>
+          <a onclick="logout()">Log Out</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="main-wrap">
+
+<!-- HOME -->
+<div class="page-sec active" id="page-home">
+  <div style="font-size:18px;font-weight:700;color:#1f4172;border-bottom:2px solid #1f4172;padding-bottom:8px;margin-bottom:18px">Welcome, Admin</div>
+  <div class="stat-grid">
+    <div class="stat-box"><i class="fa fa-list" style="color:#f0ad4e;font-size:22px;margin-bottom:8px"></i><div class="stat-num" id="s-items">—</div><div class="stat-lbl">Questions in Bank</div></div>
+    <div class="stat-box"><i class="fa fa-file-text" style="color:#5cb85c;font-size:22px;margin-bottom:8px"></i><div class="stat-num" id="s-assess">—</div><div class="stat-lbl">Assessments</div></div>
+    <div class="stat-box"><i class="fa fa-check-circle" style="color:#337ab7;font-size:22px;margin-bottom:8px"></i><div class="stat-num" id="s-results">—</div><div class="stat-lbl">Submissions</div></div>
+  </div>
+  <div class="panel">
+    <div class="ph" style="cursor:default"><span class="ph-title">Quick Actions</span></div>
+    <div class="pb">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        <button class="btn btn-default" onclick="openMo('mo-add-item')"><i class="fa fa-plus"></i> Add Question</button>
+        <button class="btn btn-default" onclick="showPage('itembank')"><i class="fa fa-database"></i> Item Bank</button>
+        <button class="btn btn-default" onclick="openMo('mo-add-assess')"><i class="fa fa-file-text-o"></i> New Assessment</button>
+        <button class="btn btn-default" onclick="showPage('assessments')"><i class="fa fa-list-ul"></i> View Assessments</button>
+        <button class="btn btn-default" onclick="showPage('results')"><i class="fa fa-bar-chart"></i> View Results</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ITEM BANK -->
+<div class="page-sec" id="page-itembank">
+  <ul class="action-links">
+    <li><a onclick="openMo('mo-add-item')"><i class="fa fa-plus"></i> New Question</a></li>
+    <li><a onclick="buildFromSel()"><i class="fa fa-file-text-o"></i> Build Assessment from Selected</a></li>
+  </ul>
+  <div class="ib-layout">
+    <div>
+      <div class="panel">
+        <div class="ph" style="cursor:default">
+          <span class="ph-title"><i class="fa fa-database"></i> Question Bank</span>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-default" onclick="selAllItems()">Select All</button>
+            <button class="btn btn-sm btn-default" onclick="selNoneItems()">Clear</button>
+          </div>
+        </div>
+        <div class="pb" id="item-list"><div style="color:#aaa;font-size:13px;padding:10px">Loading questions...</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="panel">
+        <div class="ph" style="cursor:default"><span class="ph-title"><i class="fa fa-pencil-square-o"></i> Test Builder</span></div>
+        <div class="pb">
+          <div class="drop-zone" id="dz" ondrop="dropItem(event)" ondragover="allowDrop(event)" ondragleave="leaveDrop()">
+            <div class="dz-hint" id="dz-hint">Drag questions here, or double-click to add</div>
+            <div id="dz-items"></div>
+          </div>
+          <div style="display:flex;gap:7px;margin-top:10px;flex-wrap:wrap">
+            <button class="btn btn-success" style="flex:1" onclick="openSaveAssmt()"><i class="fa fa-save"></i> Save as Assessment</button>
+            <button class="btn btn-default btn-sm" onclick="clearBuilder()">Clear</button>
+          </div>
+        </div>
+      </div>
+      <div style="background:#d9edf7;border:1px solid #bce8f1;border-radius:3px;padding:9px 12px;font-size:12px;color:#31708f;line-height:1.6">
+        <i class="fa fa-info-circle"></i> <strong>Tip:</strong> Double-click a question to instantly add it to the builder.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ASSESSMENTS -->
+<div class="page-sec" id="page-assessments">
+  <ul class="action-links">
+    <li><a onclick="openMo('mo-add-assess')"><i class="fa fa-plus"></i> New Assessment</a></li>
+  </ul>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Title</th><th>Description</th><th>Questions</th><th>Group</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody id="atbody"><tr class="loading-row"><td colspan="6"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="page-sec" id="page-results">
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Candidate</th>
+          <th>Email</th>
+          <th>Assessment</th>
+          <th>Score</th>
+          <th>Percentage</th>
+          <th>Submitted</th>
+        </tr>
+      </thead>
+      <tbody id="rtbody"><tr class="loading-row"><td colspan="7"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+
+<!-- ══════════════ ADD QUESTION MODAL ══════════════ -->
+<div class="mo" id="mo-add-item">
+  <div class="mb">
+    <div class="mh">
+      <h4><i class="fa fa-plus"></i> New Question</h4>
+      <button class="mc-btn" onclick="closeMo('mo-add-item')">&times;</button>
+    </div>
+    <div class="mbd">
+
+      <!-- Type selector -->
+      <div class="form-group">
+        <label>Question Type</label>
+        <select class="form-control" id="ni-type" onchange="toggleQuestionType()">
+          <option value="mcq">Multiple Choice (MCQ)</option>
+          <option value="true_false">True / False</option>
+          <option value="fill_blank">Fill in the Blank</option>
+          <option value="math">Math Input (Equation Editor)</option>
+          <option value="match">Match the Following</option>
+          <option value="drag_order">Drag and Order</option>
+          <option value="essay">Essay / Long Answer</option>
+        </select>
+      </div>
+
+      <!-- Question text -->
+      <div class="form-group">
+        <label>Question Text * <span style="font-weight:400;text-transform:none;color:#888">— wrap LaTeX in $…$ e.g. $x^2+1$</span></label>
+        <textarea class="form-control" id="ni-t" rows="3" placeholder="Write the question here..."></textarea>
+      </div>
+
+      <!-- Category / Difficulty -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Category</label>
+          <select class="form-control" id="ni-c">
+            <option>Grade 5 Math</option>
+            <option>Grade 6 Math</option>
+            <option>Grade 7 Math</option>
+            <option>Grade 8 Math</option>
+            <option>Grade 9 Math</option>
+            <option>Grade 10 Math</option>
+            <option>Grade 11 Math</option>
+            <option>Grade 12 Math</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Difficulty</label>
+          <select class="form-control" id="ni-d">
+            <option>Basic</option>
+            <option>Intermediate</option>
+            <option>Advanced</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ── MCQ BUILDER ── -->
+      <div id="mcq-builder">
+        <div class="form-group">
+          <label>Answer Options <span style="font-weight:400;text-transform:none;color:#888">(mark the correct one)</span></label>
+          <div class="opts-container" id="opts-list"></div>
+          <button class="btn btn-default btn-sm" style="margin-top:7px" onclick="addOptRow()">
+            <i class="fa fa-plus"></i> Add Option
+          </button>
+        </div>
+      </div>
+
+      <!-- ── TRUE / FALSE BUILDER ── -->
+      <div id="tf-builder" style="display:none">
+        <div class="form-group">
+          <label>Correct Answer</label>
+          <div class="tf-radio-group">
+            <label id="tf-label-true">
+              <input type="radio" name="tf-correct" value="true" onchange="highlightTF()"> True
+            </label>
+            <label id="tf-label-false">
+              <input type="radio" name="tf-correct" value="false" onchange="highlightTF()"> False
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── FILL IN THE BLANK BUILDER ── -->
+      <div id="fill-builder" style="display:none">
+        <div class="form-group">
+          <label>Correct Answer <span style="font-weight:400;text-transform:none;color:#888">(plain text or LaTeX)</span></label>
+          <input class="form-control" id="fill-answer" placeholder="e.g. 42  or  \frac{1}{2}"/>
+          <div style="font-size:11px;color:#888;margin-top:4px">
+            Use <code>___</code> in the question text above to show where the blank is.
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MATH INPUT BUILDER ── -->
+      <div id="math-builder" style="display:none">
+        <div class="form-group">
+          <label>Correct Answer <span style="font-weight:400;text-transform:none;color:#888">(use equation editor)</span></label>
+          <div id="math-correct-wrap">
+            <!-- math-field inserted dynamically -->
+          </div>
+          <div style="font-size:11px;color:#888;margin-top:5px">
+            <i class="fa fa-info-circle"></i> Type the correct mathematical answer. Students will use the same editor.
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MATCH THE FOLLOWING BUILDER ── -->
+      <div id="match-builder" style="display:none">
+        <div class="form-group">
+          <label>Pairs <span style="font-weight:400;text-transform:none;color:#888">(left → right)</span></label>
+          <div id="match-list"></div>
+          <button class="btn btn-default btn-sm" style="margin-top:6px" onclick="addMatchRow()">
+            <i class="fa fa-plus"></i> Add Pair
+          </button>
+        </div>
+      </div>
+
+      <!-- ── DRAG AND ORDER BUILDER ── -->
+      <div id="order-builder" style="display:none">
+        <div class="form-group">
+          <label>Items in Correct Order <span style="font-weight:400;text-transform:none;color:#888">(top = first)</span></label>
+          <div id="order-list"></div>
+          <button class="btn btn-default btn-sm" style="margin-top:6px" onclick="addOrderRow()">
+            <i class="fa fa-plus"></i> Add Item
+          </button>
+        </div>
+      </div>
+
+      <!-- ── ESSAY BUILDER ── -->
+      <div id="essay-builder" style="display:none">
+        <div class="form-group">
+          <label>Marking Rubric / Instructions <span style="font-weight:400;text-transform:none;color:#888">(for grader reference)</span></label>
+          <textarea class="form-control" id="essay-rubric" rows="3" placeholder="What should a full-mark answer include?"></textarea>
+        </div>
+      </div>
+
+    </div><!-- /mbd -->
+    <div class="mft">
+      <button class="btn btn-default" onclick="closeMo('mo-add-item')">Cancel</button>
+      <button class="btn btn-primary" onclick="addItem()"><i class="fa fa-check"></i> Add to Bank</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── New Assessment ── -->
+<div class="mo" id="mo-add-assess">
+  <div class="mb">
+    <div class="mh"><h4><i class="fa fa-file-text-o"></i> New Assessment</h4><button class="mc-btn" onclick="closeMo('mo-add-assess')">&times;</button></div>
+    <div class="mbd">
+      <div class="form-group"><label>Title *</label><input class="form-control" id="na-t" placeholder="e.g. Grade 7 Algebra Exam"/></div>
+      <div class="form-group"><label>Description</label><textarea class="form-control" id="na-d" rows="2" placeholder="Brief description..."></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>Group</label><select class="form-control" id="na-g">
+          <option value="">Select group...</option>
+          <option value="Grade 5">Grade 5</option>
+          <option value="Grade 6">Grade 6</option>
+          <option value="Grade 7">Grade 7</option>
+          <option value="Grade 8">Grade 8</option>
+        </select>
+      </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select class="form-control" id="na-s"><option value="Draft">Draft</option><option value="Active">Active</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-default" onclick="closeMo('mo-add-assess')">Cancel</button>
+      <button class="btn btn-primary" onclick="addAssmt()"><i class="fa fa-check"></i> Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Save Assessment from Builder ── -->
+<div class="mo" id="mo-save-assmt">
+  <div class="mb">
+    <div class="mh"><h4><i class="fa fa-save"></i> Save Assessment</h4><button class="mc-btn" onclick="closeMo('mo-save-assmt')">&times;</button></div>
+    <div class="mbd">
+      <div style="background:#d9edf7;border:1px solid #bce8f1;border-radius:3px;padding:8px 12px;font-size:12px;color:#31708f;margin-bottom:13px">
+        <i class="fa fa-info-circle"></i> <span id="builder-count">0</span> question(s) in builder will be saved.
+      </div>
+      <div class="form-group"><label>Title *</label><input class="form-control" id="sa-t" placeholder="e.g. Grade 7 Final Exam"/></div>
+      <div class="form-group"><label>Description</label><textarea class="form-control" id="sa-d" rows="2"></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>Group / Cohort</label><select class="form-control" id="sa-g">
+          <option value="">Select group...</option>
+          <option value="Grade 5">Grade 5</option>
+          <option value="Grade 6">Grade 6</option>
+          <option value="Grade 7">Grade 7</option>
+          <option value="Grade 8">Grade 8</option>
+        </select>
+      </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select class="form-control" id="sa-s"><option value="Draft">Draft</option><option value="Active">Active</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-default" onclick="closeMo('mo-save-assmt')">Cancel</button>
+      <button class="btn btn-success" onclick="saveAssmt()"><i class="fa fa-save"></i> Save Assessment</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Edit Assessment ── -->
+<div class="mo" id="mo-edit-assess">
+  <div class="mb">
+    <div class="mh"><h4><i class="fa fa-edit"></i> Edit Assessment</h4><button class="mc-btn" onclick="closeMo('mo-edit-assess')">&times;</button></div>
+    <div class="mbd">
+      <div class="form-group"><label>Title *</label><input class="form-control" id="ea-t"/></div>
+      <div class="form-group"><label>Description</label><textarea class="form-control" id="ea-d" rows="2"></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>Group</label><select class="form-control" id="ea-g">
+          <option value="">Select group...</option>
+          <option value="Grade 5">Grade 5</option>
+          <option value="Grade 6">Grade 6</option>
+          <option value="Grade 7">Grade 7</option>
+          <option value="Grade 8">Grade 8</option>
+        </select>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select class="form-control" id="ea-s"><option value="Draft">Draft</option><option value="Active">Active</option></select>
+        </div>
+      </div>
+      <input type="hidden" id="ea-id"/>
+    </div>
+    <div class="mft">
+      <button class="btn btn-default" onclick="closeMo('mo-edit-assess')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditAssmt()"><i class="fa fa-save"></i> Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-el success" id="toast-el"><i class="fa fa-check-circle"></i><span id="toast-msg"></span></div>
+
+<script>
+const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8000'
+  : 'https://YOUR_RENDER_BACKEND_URL';
+
+// ── State ──
+let items = [];
+let assessments = [];
+let builder = [];
+let dragId = null;
+let optCount = 0;
+
+// ── Nav ──
+function showPage(id) {
+  document.querySelectorAll('.page-sec').forEach(s => s.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  closeDD();
+  if (id === 'home')        loadStats();
+  if (id === 'itembank')    loadItems();
+  if (id === 'assessments') loadAssessments();
+  if (id === 'results')     loadResults();
+}
+function toggleDD(id, e) {
+  e.preventDefault(); e.stopPropagation();
+  const el = document.getElementById(id);
+  const open = el.classList.contains('open');
+  closeDD();
+  if (!open) el.classList.add('open');
+}
+function closeDD() { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('open')); }
+document.addEventListener('click', closeDD);
+
+function logout() { window.location.href = '../frontend/index.html'; }
+
+// ── Stats ──
+async function loadStats() {
+  try {
+    const [qs, as, rs] = await Promise.all([
+      fetch(`${API}/questions`).then(r => r.json()),
+      fetch(`${API}/assessments`).then(r => r.json()),
+      fetch(`${API}/results`).then(r => r.json()),
+    ]);
+    document.getElementById('s-items').textContent   = qs.length;
+    document.getElementById('s-assess').textContent  = as.length;
+    document.getElementById('s-results').textContent = rs.length;
+  } catch { /* backend may not be running yet */ }
+}
+
+// ── Item Bank ──
+async function loadItems() {
+  const list = document.getElementById('item-list');
+  list.innerHTML = '<div style="color:#aaa;font-size:13px;padding:10px"><i class="fa fa-spinner fa-spin"></i> Loading...</div>';
+  try {
+    const data = await fetch(`${API}/questions`).then(r => r.json());
+    items = data;
+    renderItems();
+  } catch {
+    list.innerHTML = '<div style="color:#a94442;padding:10px;font-size:13px"><i class="fa fa-exclamation-circle"></i> Could not connect to backend.</div>';
+  }
+}
+
+const TYPE_LABELS = {
+  mcq:'MCQ', true_false:'T/F', fill_blank:'FILL',
+  math:'MATH', match:'MATCH', drag_order:'ORDER', essay:'ESSAY'
+};
+const TYPE_COLORS = {
+  mcq:'bp-blue', true_false:'bp-green', fill_blank:'bp-orange',
+  math:'bp-blue', match:'bp-orange', drag_order:'bp-orange', essay:'bp-gray'
+};
+
+function renderItems() {
+  const list = document.getElementById('item-list');
+  list.innerHTML = '';
+  if (!items.length) {
+    list.innerHTML = '<div style="color:#aaa;font-size:13px;padding:10px">No questions yet. Add your first question above.</div>';
+    return;
+  }
+  items.forEach(item => {
+    const d = document.createElement('div');
+    d.className = 'item-row';
+    d.draggable = true;
+    d.dataset.id = item.id;
+    const lbl   = TYPE_LABELS[item.type]  || item.type.toUpperCase();
+    const color = TYPE_COLORS[item.type]  || 'bp-gray';
+    d.innerHTML = `
+      <input type="checkbox" class="icb" id="ic${item.id}" onclick="event.stopPropagation()"/>
+      <div style="flex:1">
+        <div class="itag">${item.category || 'General'}</div>
+        <span class="bp ${color}" style="font-size:9px;margin-left:4px">${lbl}</span>
+        <div class="iq" style="margin-top:4px">${item.text}</div>
+        <div class="imeta">${item.difficulty} &middot; ID #${item.id}</div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="deleteItem(${item.id},event)" title="Delete"><i class="fa fa-trash"></i></button>`;
+    d.addEventListener('dragstart', () => { dragId = item.id; d.classList.add('dragging'); });
+    d.addEventListener('dragend',   () => d.classList.remove('dragging'));
+    d.addEventListener('dblclick',  () => addToBuilder(item.id));
+    list.appendChild(d);
+  });
+}
+
+async function deleteItem(id, e) {
+  e.stopPropagation();
+  if (!confirm('Delete this question?')) return;
+  try {
+    await fetch(`${API}/questions/${id}`, { method: 'DELETE' });
+    items   = items.filter(i => i.id !== id);
+    builder = builder.filter(i => i !== id);
+    renderItems();
+    renderBuilder();
+    loadStats();
+    toast('Question deleted.');
+  } catch { toast('Failed to delete.', 'danger'); }
+}
+
+function selAllItems()  { document.querySelectorAll('.icb').forEach(c => c.checked = true); }
+function selNoneItems() { document.querySelectorAll('.icb').forEach(c => c.checked = false); }
+
+function buildFromSel() {
+  const sel = [...document.querySelectorAll('.icb:checked')].map(c => parseInt(c.id.replace('ic', '')));
+  if (!sel.length) { toast('Select at least one question.', 'danger'); return; }
+  sel.forEach(id => addToBuilder(id));
+  toast(sel.length + ' question(s) added to builder.');
+}
+
+// ── Builder ──
+function addToBuilder(id) {
+  if (builder.includes(id)) return;
+  builder.push(id);
+  renderBuilder();
+}
+function removeFromBuilder(id) { builder = builder.filter(i => i !== id); renderBuilder(); }
+function clearBuilder()        { builder = []; renderBuilder(); }
+function renderBuilder() {
+  document.getElementById('dz-hint').style.display = builder.length ? 'none' : '';
+  const c = document.getElementById('dz-items');
+  c.innerHTML = '';
+  builder.forEach(id => {
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    const d = document.createElement('div');
+    d.className = 'built';
+    d.innerHTML = `<span>${item.text.substring(0,55)}… <span style="opacity:.65;font-size:10px">[${item.category}]</span></span>
+      <button class="btrm" onclick="removeFromBuilder(${id})">✕</button>`;
+    c.appendChild(d);
+  });
+}
+function allowDrop(e) { e.preventDefault(); document.getElementById('dz').classList.add('over'); }
+function leaveDrop()  { document.getElementById('dz').classList.remove('over'); }
+function dropItem(e) {
+  e.preventDefault();
+  document.getElementById('dz').classList.remove('over');
+  if (dragId) { addToBuilder(dragId); dragId = null; }
+}
+
+function openSaveAssmt() {
+  if (!builder.length) { toast('Add some questions first.', 'danger'); return; }
+  document.getElementById('builder-count').textContent = builder.length;
+  openMo('mo-save-assmt');
+}
+
+async function saveAssmt() {
+  const title = document.getElementById('sa-t').value.trim();
+  if (!title) { toast('Title required.', 'danger'); return; }
+  try {
+    const res = await fetch(`${API}/assessments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title,
+        description: document.getElementById('sa-d').value.trim(),
+        question_ids: [...builder],
+        group:  document.getElementById('sa-g').value.trim(),
+        status: document.getElementById('sa-s').value,
+      })
+    });
+    const data = await res.json();
+    closeMo('mo-save-assmt');
+    clearBuilder();
+    loadStats();
+    toast('Assessment "' + title + '" saved! (ID ' + data.id + ')');
+  } catch { toast('Failed to save assessment.', 'danger'); }
+}
+
+// ── Question Type Toggle ──
+const ALL_BUILDERS = ['mcq-builder','tf-builder','fill-builder','math-builder','match-builder','order-builder','essay-builder'];
+
+function toggleQuestionType() {
+  const type = document.getElementById('ni-type').value;
+  ALL_BUILDERS.forEach(b => document.getElementById(b).style.display = 'none');
+
+  const map = {
+    mcq:        'mcq-builder',
+    true_false: 'tf-builder',
+    fill_blank: 'fill-builder',
+    math:       'math-builder',
+    match:      'match-builder',
+    drag_order: 'order-builder',
+    essay:      'essay-builder',
+  };
+  if (map[type]) document.getElementById(map[type]).style.display = '';
+
+  // Inject math-field for math type if not already present
+  if (type === 'math') {
+    const wrap = document.getElementById('math-correct-wrap');
+    if (!document.getElementById('math-correct-field')) {
+      const mf = document.createElement('math-field');
+      mf.id = 'math-correct-field';
+      wrap.appendChild(mf);
+    }
+  }
+}
+
+// True/False radio highlight
+function highlightTF() {
+  document.getElementById('tf-label-true').classList.remove('checked');
+  document.getElementById('tf-label-false').classList.remove('checked');
+  const checked = document.querySelector('input[name="tf-correct"]:checked');
+  if (checked) {
+    document.getElementById('tf-label-' + checked.value).classList.add('checked');
+  }
+}
+
+// ── MCQ Option Rows ──
+function addOptRow() {
+  optCount++;
+  const letter = String.fromCharCode(64 + optCount);
+  const div = document.createElement('div');
+  div.className = 'opt-row';
+  div.id = 'opt-row-' + optCount;
+  div.innerHTML = `
+    <div class="opt-letter-badge">${letter}</div>
+    <input class="form-control" placeholder="Option ${letter}..." id="opt-text-${optCount}" style="flex:1"/>
+    <input type="radio" name="correct-opt" value="${letter}" class="opt-correct" title="Mark as correct"/>
+    <button class="btn btn-danger btn-sm" onclick="removeOpt(${optCount})" style="flex-shrink:0"><i class="fa fa-times"></i></button>`;
+  document.getElementById('opts-list').appendChild(div);
+}
+function removeOpt(n) {
+  const el = document.getElementById('opt-row-' + n);
+  if (el) el.remove();
+}
+
+// ── Match Pair Rows ──
+function addMatchRow() {
+  const div = document.createElement('div');
+  div.className = 'match-pair-row';
+  div.innerHTML = `
+    <input class="form-control" placeholder="Left item…" style="flex:1"/>
+    <div class="match-arrow">→</div>
+    <input class="form-control" placeholder="Right match…" style="flex:1"/>
+    <button class="btn btn-danger btn-sm" onclick="this.closest('.match-pair-row').remove()"><i class="fa fa-times"></i></button>`;
+  document.getElementById('match-list').appendChild(div);
+}
+
+// ── Order Rows ──
+function addOrderRow() {
+  const idx = document.getElementById('order-list').children.length + 1;
+  const div = document.createElement('div');
+  div.className = 'opt-row';
+  div.innerHTML = `
+    <div class="opt-letter-badge" style="background:#888">${idx}</div>
+    <input class="form-control" placeholder="Item ${idx}…" style="flex:1"/>
+    <button class="btn btn-danger btn-sm" onclick="this.closest('.opt-row').remove()"><i class="fa fa-times"></i></button>`;
+  document.getElementById('order-list').appendChild(div);
+}
+
+// ── Add Item to Bank ──
+async function addItem() {
+  const text       = document.getElementById('ni-t').value.trim();
+  const type       = document.getElementById('ni-type').value;
+  const category   = document.getElementById('ni-c').value;
+  const difficulty = document.getElementById('ni-d').value;
+  if (!text) { toast('Question text required.', 'danger'); return; }
+
+  let options = [];
+  let correct = '';
+
+  if (type === 'mcq') {
+    document.querySelectorAll('#opts-list .opt-row').forEach((row, idx) => {
+      const letter = String.fromCharCode(65 + idx);
+      const inp    = row.querySelector('input[id^="opt-text"]');
+      if (inp && inp.value.trim()) options.push(letter + '. ' + inp.value.trim());
+    });
+    const radio = document.querySelector('input[name="correct-opt"]:checked');
+    correct = radio ? radio.value : '';
+    if (!correct) { toast('Please mark the correct option.', 'danger'); return; }
+
+  } else if (type === 'true_false') {
+    const radio = document.querySelector('input[name="tf-correct"]:checked');
+    if (!radio) { toast('Please select True or False.', 'danger'); return; }
+    correct = radio.value; // "true" or "false"
+
+  } else if (type === 'fill_blank') {
+    correct = document.getElementById('fill-answer').value.trim();
+    if (!correct) { toast('Please enter the correct answer.', 'danger'); return; }
+
+  } else if (type === 'math') {
+    const mf = document.getElementById('math-correct-field');
+    correct = mf ? mf.getValue() : '';
+    if (!correct) { toast('Please enter the correct answer in the equation editor.', 'danger'); return; }
+
+  } else if (type === 'match') {
+    document.querySelectorAll('#match-list .match-pair-row').forEach(row => {
+      const inputs = row.querySelectorAll('input');
+      if (inputs[0].value.trim() && inputs[1].value.trim()) {
+        options.push({ left: inputs[0].value.trim(), right: inputs[1].value.trim() });
+      }
+    });
+    if (options.length < 2) { toast('Add at least 2 pairs.', 'danger'); return; }
+
+  } else if (type === 'drag_order') {
+    document.querySelectorAll('#order-list .opt-row input').forEach(inp => {
+      if (inp.value.trim()) options.push(inp.value.trim());
+    });
+    if (options.length < 2) { toast('Add at least 2 items.', 'danger'); return; }
+
+  } else if (type === 'essay') {
+    correct = document.getElementById('essay-rubric').value.trim();
+  }
+
+  try {
+    const res = await fetch(`${API}/questions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, type, options, correct, category, difficulty })
+    });
+    const data = await res.json();
+    closeMo('mo-add-item');
+    toast('Question added! (ID ' + data.id + ')');
+    loadStats();
+    if (document.getElementById('page-itembank').classList.contains('active')) loadItems();
+  } catch (err) { toast('Failed to add question: ' + err.message, 'danger'); }
+}
+
+// ── Assessments ──
+async function loadAssessments() {
+  const tb = document.getElementById('atbody');
+  tb.innerHTML = '<tr class="loading-row"><td colspan="6"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>';
+  try {
+    assessments = await fetch(`${API}/assessments`).then(r => r.json());
+    renderAssessments();
+  } catch {
+    tb.innerHTML = '<tr class="loading-row"><td colspan="6" style="color:#a94442"><i class="fa fa-exclamation-circle"></i> Backend not reachable.</td></tr>';
+  }
+}
+
+function renderAssessments() {
+  const tb = document.getElementById('atbody');
+  tb.innerHTML = '';
+  if (!assessments.length) {
+    tb.innerHTML = '<tr class="loading-row"><td colspan="6">No assessments yet.</td></tr>';
+    return;
+  }
+  assessments.forEach(a => {
+    const sc = a.status === 'Active' ? 'bp-green' : 'bp-gray';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${a.title}</strong></td>
+      <td style="color:#888;font-size:12px">${a.description || '—'}</td>
+      <td style="text-align:center"><span class="bp bp-blue">${(a.question_ids || []).length}</span></td>
+      <td>${a.group || '<span style="color:#ccc">Unassigned</span>'}</td>
+      <td><span class="bp ${sc}">${a.status}</span></td>
+      <td><ul class="inline-links">
+        <li><a onclick="editAssmt(${a.id})">edit</a></li>
+        <li><a onclick="toggleStatus(${a.id},'${a.status}')">${a.status === 'Active' ? 'set draft' : 'activate'}</a></li>
+        <li><a class="del" onclick="deleteAssmt(${a.id})">delete</a></li>
+      </ul></td>`;
+    tb.appendChild(tr);
+  });
+}
+
+async function addAssmt() {
+  const title = document.getElementById('na-t').value.trim();
+  if (!title) { toast('Title required.', 'danger'); return; }
+  try {
+    await fetch(`${API}/assessments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title,
+        description: document.getElementById('na-d').value.trim(),
+        group:  document.getElementById('na-g').value.trim(),
+        status: document.getElementById('na-s').value,
+        question_ids: [],
+      })
+    });
+    closeMo('mo-add-assess');
+    toast('Assessment created.');
+    loadAssessments();
+    loadStats();
+  } catch { toast('Failed to create.', 'danger'); }
+}
+
+function editAssmt(id) {
+  const a = assessments.find(x => x.id === id);
+  if (!a) return;
+  document.getElementById('ea-id').value = id;
+  document.getElementById('ea-t').value  = a.title;
+  document.getElementById('ea-d').value  = a.description || '';
+  document.getElementById('ea-g').value  = a.group || '';
+  document.getElementById('ea-s').value  = a.status || 'Draft';
+  openMo('mo-edit-assess');
+}
+
+async function saveEditAssmt() {
+  const id    = parseInt(document.getElementById('ea-id').value);
+  const title = document.getElementById('ea-t').value.trim();
+  if (!title) { toast('Title required.', 'danger'); return; }
+  try {
+    await fetch(`${API}/assessments/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title,
+        description: document.getElementById('ea-d').value.trim(),
+        group:  document.getElementById('ea-g').value.trim(),
+        status: document.getElementById('ea-s').value,
+      })
+    });
+    closeMo('mo-edit-assess');
+    toast('Assessment updated.');
+    loadAssessments();
+  } catch { toast('Failed to update.', 'danger'); }
+}
+
+async function toggleStatus(id, current) {
+  const newStatus = current === 'Active' ? 'Draft' : 'Active';
+  try {
+    await fetch(`${API}/assessments/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    });
+    toast('Status changed to ' + newStatus + '.');
+    loadAssessments();
+  } catch { toast('Failed.', 'danger'); }
+}
+
+async function deleteAssmt(id) {
+  if (!confirm('Delete this assessment?')) return;
+  try {
+    await fetch(`${API}/assessments/${id}`, { method: 'DELETE' });
+    toast('Assessment deleted.');
+    loadAssessments();
+    loadStats();
+  } catch { toast('Failed.', 'danger'); }
+}
+
+// ── Results ──
+async function loadResults() {
+  const tb = document.getElementById('rtbody');
+  tb.innerHTML = '<tr class="loading-row"><td colspan="7"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>';
+
+  try {
+    const data = await fetch(`${API}/results`).then(r => r.json());
+
+    tb.innerHTML = '';
+
+    if (!data.length) {
+      tb.innerHTML = '<tr class="loading-row"><td colspan="7">No submissions yet.</td></tr>';
+      return;
+    }
+
+    data.forEach(s => {
+      const score = `${s.total_score ?? 0} / ${s.total_possible ?? 0}`;
+      const percentage = s.percentage !== undefined && s.percentage !== null
+        ? `${s.percentage}%`
+        : '—';
+
+      const tr = document.createElement('tr');
+
+      tr.innerHTML = `
+        <td style="font-size:12px;color:#aaa">#${s.id}</td>
+
+        <td>
+          <strong>${escapeHtml(s.candidate || 'Unknown')}</strong>
+        </td>
+
+        <td style="font-size:12px;color:#888">
+          ${escapeHtml(s.email || '—')}
+        </td>
+
+        <td>
+          <div style="font-weight:600;color:#333">
+            ${escapeHtml(s.assessment_title || 'Unknown Assessment')}
+          </div>
+          <div style="font-size:11px;color:#aaa">
+            ID #${s.assessment_id}
+          </div>
+        </td>
+
+        <td>
+          <span class="bp bp-blue">${score}</span>
+        </td>
+
+        <td>
+          <span class="bp ${Number(s.percentage) >= 70 ? 'bp-green' : 'bp-orange'}">
+            ${percentage}
+          </span>
+        </td>
+
+        <td style="font-size:12px;color:#aaa">
+          ${new Date(s.submitted_at).toLocaleString()}
+        </td>
+      `;
+
+      tb.appendChild(tr);
+    });
+
+  } catch {
+    tb.innerHTML = '<tr class="loading-row"><td colspan="7" style="color:#a94442">Backend not reachable.</td></tr>';
+  }
+}
+
+
+// ── Modals ──
+function openMo(id) {
+  if (id === 'mo-add-item') {
+    // Reset all fields
+    document.getElementById('ni-t').value = '';
+    document.getElementById('ni-type').value = 'mcq';
+    document.getElementById('opts-list').innerHTML = '';
+    document.getElementById('match-list').innerHTML = '';
+    document.getElementById('order-list').innerHTML = '';
+    document.getElementById('essay-rubric').value = '';
+    document.getElementById('fill-answer').value = '';
+    optCount = 0;
+    // Reset true/false
+    document.querySelectorAll('input[name="tf-correct"]').forEach(r => r.checked = false);
+    document.getElementById('tf-label-true').classList.remove('checked');
+    document.getElementById('tf-label-false').classList.remove('checked');
+    // Reset math field
+    const mf = document.getElementById('math-correct-field');
+    if (mf) mf.setValue('');
+    // Show correct builder & add default MCQ options
+    toggleQuestionType();
+    for (let i = 0; i < 4; i++) addOptRow();
+  }
+  document.getElementById(id).classList.add('open');
+}
+function closeMo(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.mo').forEach(o => o.addEventListener('click', e => {
+  if (e.target === o) o.classList.remove('open');
+}));
+
+// ── Toast ──
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast-el');
+  el.className = 'toast-el ' + type;
+  document.getElementById('toast-msg').textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+// ── Init ──
+loadStats();
+</script>
+</body>
+</html>

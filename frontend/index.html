@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Social Work Licensing Assessment</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@300;400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --navy:    #0a2540;
+  --blue:    #1a6bb5;
+  --blue-lt: #e8f2fb;
+  --teal:    #00897b;
+  --white:   #ffffff;
+  --bg:      #f7f8fa;
+  --border:  #dde3eb;
+  --text:    #1a2d42;
+  --muted:   #6b7f96;
+  --correct: #2e7d32;
+  --wrong:   #c62828;
+  --sidebar: 240px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── PAGES ── */
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex;flex-direction:column}
+
+/* ══════════════════════════════════════
+   REGISTRATION SCREEN
+══════════════════════════════════════ */
+#screen-register{align-items:center;justify-content:center;background:linear-gradient(135deg,#0a2540 0%,#1a4a7a 60%,#1a6bb5 100%)}
+.reg-card{background:#fff;border-radius:16px;padding:48px 44px;width:480px;max-width:94vw;box-shadow:0 24px 64px rgba(0,0,0,.25)}
+.reg-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.reg-logo .mark{width:36px;height:36px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;font-family:'Source Serif 4',serif}
+.reg-logo span{font-family:'Source Serif 4',serif;font-size:1.2rem;color:var(--navy);font-weight:600}
+.reg-card h1{font-family:'Source Serif 4',serif;font-size:1.7rem;color:var(--navy);margin-bottom:8px}
+.reg-card p{color:var(--muted);font-size:.88rem;margin-bottom:28px;line-height:1.6}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:.78rem;font-weight:600;color:var(--navy);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,107,181,.12)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-start{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;margin-top:6px;transition:background .2s,transform .15s}
+.btn-start:hover{background:#1558a0;transform:translateY(-1px)}
+.info-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.pill{display:inline-flex;align-items:center;gap:5px;background:var(--blue-lt);color:var(--blue);font-size:.75rem;font-weight:600;padding:4px 10px;border-radius:20px}
+
+/* ══════════════════════════════════════
+   EXAM SCREEN
+══════════════════════════════════════ */
+#screen-exam{flex-direction:column;background:var(--bg)}
+
+/* Top bar */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;padding:0 20px;gap:16px;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.topbar-logo{font-family:'Source Serif 4',serif;color:var(--navy);font-size:1rem;font-weight:600;display:flex;align-items:center;gap:8px}
+.topbar-logo .dot{width:8px;height:8px;background:var(--blue);border-radius:50%}
+.topbar-title{color:var(--muted);font-size:.83rem;margin-left:4px}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:16px}
+.counter{font-size:.82rem;color:var(--muted);font-weight:500}
+.timer{display:flex;align-items:center;gap:6px;font-size:.88rem;font-weight:600;color:var(--navy)}
+.timer svg{width:15px;height:15px;stroke:var(--muted);fill:none;stroke-width:2}
+.btn-pause{width:32px;height:32px;border:1.5px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn-pause svg{width:14px;height:14px;fill:var(--muted)}
+
+/* Progress bar */
+.progress-wrap{height:4px;background:var(--border);position:sticky;top:52px;z-index:99}
+.progress-bar{height:100%;background:var(--blue);transition:width .4s ease}
+
+/* Exam body */
+.exam-body{display:flex;flex:1;min-height:calc(100vh - 56px)}
+
+/* Sidebar */
+.sidebar{width:var(--sidebar);background:var(--white);border-right:1px solid var(--border);padding:16px 0;overflow-y:auto;flex-shrink:0}
+.sidebar-items{list-style:none}
+.sidebar-item{padding:10px 18px;font-size:.83rem;color:var(--muted);cursor:pointer;border-left:3px solid transparent;transition:all .15s;display:flex;align-items:center;gap:8px}
+.sidebar-item:hover{background:var(--blue-lt);color:var(--blue)}
+.sidebar-item.active{background:var(--blue-lt);color:var(--blue);border-left-color:var(--blue);font-weight:600}
+.sidebar-item.answered{color:var(--teal)}
+.sidebar-item.answered::after{content:'✓';margin-left:auto;font-size:.75rem}
+.sidebar-collapse{width:28px;height:52px;background:var(--white);border:1px solid var(--border);border-left:none;display:flex;align-items:center;justify-content:center;cursor:pointer;position:absolute;right:-14px;top:50%;transform:translateY(-50%);border-radius:0 6px 6px 0;z-index:10}
+
+/* Main content */
+.exam-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.question-area{flex:1;display:grid;grid-template-columns:1fr 1fr;overflow:auto}
+.q-left{padding:36px 32px;border-right:1px solid var(--border);overflow-y:auto}
+.q-right{padding:36px 32px;overflow-y:auto;background:#fff}
+
+/* Question box (gray instruction area at top right) */
+.q-instruction{background:#f0f4f8;border-radius:8px;padding:16px 18px;font-size:.9rem;color:var(--text);line-height:1.6;margin-bottom:20px}
+
+/* Passage / context text */
+.passage{font-size:.9rem;line-height:1.75;color:var(--text)}
+.passage p{margin-bottom:14px}
+.audio-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.audio-bar button{width:36px;height:36px;border:1.5px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.audio-bar button svg{width:14px;height:14px;fill:var(--muted)}
+
+/* MCQ options */
+.mcq-options{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.mcq-opt{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .18s;font-size:.9rem;line-height:1.5}
+.mcq-opt:hover{border-color:var(--blue);background:var(--blue-lt)}
+.mcq-opt.selected{border-color:var(--blue);background:var(--blue-lt)}
+.mcq-opt.correct{border-color:var(--correct);background:#e8f5e9}
+.mcq-opt.wrong{border-color:var(--wrong);background:#fde8e8}
+.opt-letter{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;transition:all .18s;color:var(--muted)}
+.mcq-opt.selected .opt-letter{background:var(--blue);border-color:var(--blue);color:#fff}
+.mcq-opt.correct .opt-letter{background:var(--correct);border-color:var(--correct);color:#fff}
+.mcq-opt.wrong .opt-letter{background:var(--wrong);border-color:var(--wrong);color:#fff}
+
+/* Essay */
+.essay-wrap{display:flex;flex-direction:column;gap:8px}
+.essay-wrap textarea{width:100%;min-height:220px;padding:14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--text);resize:vertical;outline:none;line-height:1.65;transition:border-color .2s}
+.essay-wrap textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,107,181,.1)}
+.word-count{font-size:.75rem;color:var(--muted);text-align:right}
+.word-count.warn{color:#e65100}
+
+/* Navigation footer */
+.exam-footer{background:var(--white);border-top:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+.btn-nav{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:8px;border:1.5px solid var(--border);font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .15s;background:#fff;color:var(--text)}
+.btn-nav:hover{background:var(--bg);border-color:#aaa}
+.btn-nav.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn-nav.primary:hover{background:#1558a0}
+.btn-nav svg{width:16px;height:16px}
+.footer-note{font-size:.78rem;color:var(--muted)}
+
+/* ══════════════════════════════════════
+   RESULTS SCREEN
+══════════════════════════════════════ */
+#screen-results{align-items:center;justify-content:center;background:linear-gradient(135deg,#0a2540 0%,#1a4a7a 100%);padding:40px 20px}
+.results-card{background:#fff;border-radius:16px;width:640px;max-width:96vw;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.3)}
+.results-head{background:var(--navy);padding:32px 36px;text-align:center}
+.results-head h2{font-family:'Source Serif 4',serif;color:#fff;font-size:1.6rem;margin-bottom:6px}
+.results-head p{color:#7fb8c8;font-size:.88rem}
+.score-circle{width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.1);border:3px solid rgba(255,255,255,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:20px auto 0}
+.score-num{font-size:2.2rem;font-weight:700;color:#fff;line-height:1}
+.score-label{font-size:.72rem;color:#7fb8c8;margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
+.results-body{padding:28px 36px}
+.result-row{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
+.result-row:last-child{border-bottom:none}
+.result-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.75rem;font-weight:700;margin-top:1px}
+.result-icon.c{background:#e8f5e9;color:var(--correct)}
+.result-icon.w{background:#fde8e8;color:var(--wrong)}
+.result-icon.e{background:#e3f2fd;color:var(--blue)}
+.result-q{font-size:.85rem;color:var(--text);line-height:1.5;flex:1}
+.result-q .your{font-size:.78rem;color:var(--muted);margin-top:3px}
+.result-q .correct-ans{font-size:.78rem;color:var(--correct);font-weight:600;margin-top:2px}
+.btn-again{display:block;width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;margin-top:20px;transition:background .2s}
+.btn-again:hover{background:#1558a0}
+
+/* Loading */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:14px;color:var(--muted);font-size:.9rem}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Error */
+.error-box{background:#fde8e8;border:1px solid #ef9a9a;border-radius:8px;padding:16px;color:var(--wrong);font-size:.88rem;margin:20px}
+
+@media(max-width:768px){
+  .question-area{grid-template-columns:1fr;grid-template-rows:auto auto}
+  .q-left{border-right:none;border-bottom:1px solid var(--border)}
+  .sidebar{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ REGISTRATION SCREEN ══ -->
+<div class="screen active" id="screen-register">
+  <div class="reg-card">
+    <div class="reg-logo">
+      <div class="mark">SW</div>
+      <span>Assessment Portal</span>
+    </div>
+    <h1>K-12 Exam</h1>
+    <p>Complete all questions honestly. Your responses will be reviewed by an evaluator and scored automatically.</p>
+    <div class="info-pills">
+      <!-- <span class="pill">📋 Multiple question types</span>
+      <span class="pill">⏱ Timed assessment</span>
+      <span class="pill">🔒 Responses are private</span> -->
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>First Name</label>
+        <input type="text" id="reg-first" placeholder="Sarah"/>
+      </div>
+      <div class="field">
+        <label>Last Name</label>
+        <input type="text" id="reg-last" placeholder="Johnson"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" id="reg-email" placeholder="sarah@example.com"/>
+    </div>
+    <div>
+        <div class="field">
+            <label>Account Type</label>
+            <select id="reg-role">
+            <option value="student">Student</option>
+            <option value="admin">Admin</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Grade</label>
+            <select id="reg-level">
+              <option value="">Select your grade...</option>
+              <option>Grade 5</option>
+              <option>Grade 6</option>
+              <option>Grade 7</option>
+              <option>Grade 8</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="field" id="password-field" style="display:none">
+        <label>Admin Password</label>
+        <input type="password" id="reg-password" placeholder="Enter admin password"/>
+      </div>
+    
+    <button class="btn-start" onclick="startExam()">Login →</button>
+  </div>
+</div>
+
+
+<!-- ══ ASSESSMENT SELECTION SCREEN ══ -->
+<div class="screen" id="screen-assessment-list">
+  <div class="reg-card">
+    <div class="reg-logo">
+      <div class="mark">QQ</div>
+      <span>QuestionQuest</span>
+    </div>
+
+    <h1>Available Assessments</h1>
+    <p id="assessment-list-subtitle">Select an assessment to begin.</p>
+
+    <div id="assessment-list"></div>
+
+    <button class="btn-start" style="margin-top:18px; background:#6b7f96" onclick="showScreen('register')">
+      Back
+    </button>
+  </div>
+</div>
+
+
+<!-- ══ EXAM SCREEN ══ -->
+<div class="screen" id="screen-exam">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="dot"></div>
+      Assessment Portal
+      <span class="topbar-title" id="exam-title"></span>
+    </div>
+    <div class="topbar-right">
+      <span class="counter" id="q-counter">1 of 1</span>
+      <div class="timer">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <span id="timer-display">00:00</span>
+      </div>
+      <button class="btn-pause" onclick="togglePause()" title="Pause">
+        <svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+  </div>
+
+  <!-- Body -->
+  <div class="exam-body">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <ul class="sidebar-items" id="sidebar-list"></ul>
+    </div>
+
+    <!-- Main -->
+    <div class="exam-main">
+      <div class="question-area" id="question-area">
+        <!-- Rendered dynamically -->
+      </div>
+      <div class="exam-footer">
+        <button class="btn-nav" id="btn-prev" onclick="prevQuestion()" style="visibility:hidden">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          Previous
+        </button>
+        <span class="footer-note" id="footer-note">Select an answer to continue</span>
+        <button class="btn-nav primary" id="btn-next" onclick="nextQuestion()">
+          Next
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ RESULTS SCREEN ══ -->
+<div class="screen" id="screen-results">
+  <div class="results-card">
+    <div class="results-head">
+      <h2>Assessment Complete</h2>
+      <p id="results-candidate"></p>
+      <div class="score-circle">
+        <div class="score-num" id="results-score">—</div>
+        <div class="score-label">MCQ Score</div>
+      </div>
+    </div>
+    <div class="results-body">
+      <div id="results-breakdown"></div>
+      <button class="btn-again" onclick="location.reload()">← Start New Assessment</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG ─────────────────────────────────────────────────────────
+const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8000'
+  : 'https://YOUR_RENDER_BACKEND_URL';
+let selectedAssessmentId = null; 
+
+// ─── STATE ──────────────────────────────────────────────────────────
+let candidate = {};
+let questions  = [];
+let answers    = {};   // { "question_id": "answer" }
+let currentIdx = 0;
+let timerSecs  = 0;
+let timerInterval = null;
+let paused = false;
+let assessmentTitle = '';
+
+// ─── SCREENS ────────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+// ─── REGISTRATION ───────────────────────────────────────────────────
+<!-- Replace the existing <script> startExam() function and add this listener -->
+
+  // Show/hide password based on role
+  document.getElementById('reg-role').addEventListener('change', function() {
+    const isAdmin = this.value === 'admin';
+    document.getElementById('password-field').style.display = isAdmin ? 'block' : 'none';
+    document.getElementById('reg-level').closest('.field').style.display = isAdmin ? 'none' : 'block';
+  });
+
+  async function startExam() {
+    const first = document.getElementById('reg-first').value.trim();
+    const last  = document.getElementById('reg-last').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const role  = document.getElementById('reg-role').value;
+    const level = document.getElementById('reg-level').value;
+
+    if (!first || !last) { alert('Please enter your first and last name.'); return; }
+    if (!email || !email.includes('@')) { alert('Please enter a valid email.'); return; }
+
+    if (role === 'admin') {
+      const password = document.getElementById('reg-password').value;
+      if (!password) { alert('Please enter the admin password.'); return; }
+
+      try {
+        const res = await fetch(`${API}/admin-login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) { alert('Invalid admin password.'); return; }
+        // Redirect admin to the admin panel
+        window.location.href = '../admin/admin.html';
+      } catch (err) {
+        alert('Could not reach the server. Is the backend running?');
+      }
+      return; // stop here for admins
+    }
+
+  // Student flow (no password needed)
+  if (!level) { 
+    alert('Please select your grade.'); 
+    return; 
+  }
+
+  candidate = { 
+  name: first + ' ' + last, 
+  email, 
+  level 
+};
+
+  await loadAvailableAssessments(level);
+  showScreen('assessment-list');
+  }
+
+
+  async function loadAvailableAssessments(level) {
+  const box = document.getElementById('assessment-list');
+  const subtitle = document.getElementById('assessment-list-subtitle');
+
+  subtitle.textContent = `Available assessments for ${level}`;
+  box.innerHTML = `
+    <div style="color:var(--muted); font-size:.9rem; padding:12px 0">
+      Loading assessments...
+    </div>
+  `;
+
+  try {
+    const res = await fetch(`${API}/assessments/by-group/${encodeURIComponent(level)}`);
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.detail || 'Could not load assessments');
+    }
+
+    if (!data.length) {
+      box.innerHTML = `
+        <div class="error-box">
+          No active assessments were found for <strong>${level}</strong>.<br/>
+          Ask the admin to create an assessment, set the group to <strong>${level}</strong>, and set status to <strong>Active</strong>.
+        </div>
+      `;
+      return;
+    }
+
+    box.innerHTML = data.map(a => `
+      <div style="
+        border:1px solid var(--border);
+        border-radius:12px;
+        padding:18px;
+        margin-bottom:14px;
+        background:#fff;
+        box-shadow:0 4px 12px rgba(0,0,0,.05);
+      ">
+        <h3 style="
+          color:var(--navy);
+          margin-bottom:6px;
+          font-family:'Source Serif 4',serif;
+          font-size:1.2rem;
+        ">
+          ${escapeHtml(a.title)}
+        </h3>
+
+        <p style="
+          color:var(--muted);
+          font-size:.88rem;
+          margin-bottom:14px;
+          line-height:1.5;
+        ">
+          ${escapeHtml(a.description || 'No description available.')}
+        </p>
+
+        <button class="btn-start" onclick="beginAssessment(${a.id})">
+          Start Assessment
+        </button>
+      </div>
+    `).join('');
+
+  } catch (err) {
+    box.innerHTML = `
+      <div class="error-box">
+        Could not load assessments. Make sure your backend is running at ${API}.<br/>
+        <strong>Error:</strong> ${escapeHtml(err.message)}
+      </div>
+    `;
+  }
+}
+
+
+async function beginAssessment(id) {
+  selectedAssessmentId = id;
+
+  answers = {};
+  currentIdx = 0;
+  timerSecs = 0;
+  paused = false;
+
+  showScreen('exam');
+  await loadAssessment();
+  startTimer();
+}
+
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+// ─── LOAD ASSESSMENT FROM BACKEND ───────────────────────────────────
+async function loadAssessment() {
+  const area = document.getElementById('question-area');
+  area.innerHTML = '<div class="loading"><div class="spinner"></div><span>Loading assessment...</span></div>';
+
+  try {
+    if (!selectedAssessmentId) {
+      throw new Error('No assessment selected.');
+    }
+
+    const res = await fetch(`${API}/assessments/${selectedAssessmentId}`);
+    const data = await res.json();
+
+    if (data.error) throw new Error(data.error);
+
+    questions = data.questions;
+    if (!questions || questions.length === 0) {
+      throw new Error('This assessment has no questions yet.');
+    }
+
+    assessmentTitle = data.title;
+    document.getElementById('exam-title').textContent = '— ' + data.title;
+
+    buildSidebar();
+    renderQuestion(0);
+
+  } catch (err) {
+    area.innerHTML = `<div class="error-box">
+      Could not load assessment. Make sure your backend is running at ${API}.<br/>
+      <strong>Error:</strong> ${err.message}
+    </div>`;
+  }
+}
+
+// ─── SIDEBAR ────────────────────────────────────────────────────────
+function buildSidebar() {
+  const list = document.getElementById('sidebar-list');
+  list.innerHTML = '';
+  questions.forEach((q, i) => {
+    const li = document.createElement('li');
+    li.className = 'sidebar-item' + (i === 0 ? ' active' : '');
+    li.id = 'sitem-' + i;
+    li.textContent = 'Item ' + (i + 1);
+    li.onclick = () => { currentIdx = i; renderQuestion(i); };
+    list.appendChild(li);
+  });
+}
+
+function updateSidebar() {
+  questions.forEach((q, i) => {
+    const li = document.getElementById('sitem-' + i);
+    if (!li) return;
+    li.className = 'sidebar-item';
+    if (i === currentIdx) li.classList.add('active');
+    if (answers[q.id] !== undefined && answers[q.id] !== '') li.classList.add('answered');
+  });
+  // progress bar
+  const answered = questions.filter(q => answers[q.id] !== undefined && answers[q.id] !== '').length;
+  const pct = questions.length ? (answered / questions.length * 100) : 0;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('q-counter').textContent = (currentIdx + 1) + ' of ' + questions.length;
+}
+
+// ─── RENDER QUESTION ────────────────────────────────────────────────
+function renderQuestion(idx) {
+  currentIdx = idx;
+  const q = questions[idx];
+  if (!q) return;
+
+  const area = document.getElementById('question-area');
+
+  let answerHtml = '';
+
+  if (q.type === 'mcq') {
+    const opts = q.options.map((opt, oi) => {
+      const letter = String.fromCharCode(65 + oi);
+      const sel = answers[q.id] === letter ? 'selected' : '';
+
+      return `
+        <div class="mcq-opt ${sel}" onclick="selectMCQ(${q.id}, '${letter}', this)">
+          <div class="opt-letter">${letter}</div>
+          <span>${String(opt).replace(/^[A-D]\.\s*/, '')}</span>
+        </div>
+      `;
+    }).join('');
+
+    answerHtml = `
+      <div class="q-instruction">Choose the best answer.</div>
+      <div class="mcq-options">${opts}</div>
+    `;
+  }
+
+  else if (q.type === 'true_false') {
+    const selected = answers[q.id] || '';
+
+    answerHtml = `
+      <div class="q-instruction">Select True or False.</div>
+      <div class="mcq-options">
+        <div class="mcq-opt ${selected === 'true' ? 'selected' : ''}" onclick="selectSimpleAnswer(${q.id}, 'true')">
+          <div class="opt-letter">T</div>
+          <span>True</span>
+        </div>
+        <div class="mcq-opt ${selected === 'false' ? 'selected' : ''}" onclick="selectSimpleAnswer(${q.id}, 'false')">
+          <div class="opt-letter">F</div>
+          <span>False</span>
+        </div>
+      </div>
+    `;
+  }
+
+  else if (q.type === 'fill_blank') {
+    const value = answers[q.id] || '';
+
+    answerHtml = `
+      <div class="q-instruction">Type your answer in the blank.</div>
+      <div class="essay-wrap">
+        <input
+          class="field-input"
+          style="width:100%;padding:14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem"
+          value="${escapeHtml(value)}"
+          placeholder="Type your answer..."
+          oninput="saveTextAnswer(${q.id}, this.value)"
+        />
+      </div>
+    `;
+  }
+
+  else if (q.type === 'math') {
+    const value = answers[q.id] || '';
+
+    answerHtml = `
+      <div class="q-instruction">Enter your mathematical answer.</div>
+      <div class="essay-wrap">
+        <input
+          class="field-input"
+          style="width:100%;padding:14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem"
+          value="${escapeHtml(value)}"
+          placeholder="Example: x=2 or 1/2"
+          oninput="saveTextAnswer(${q.id}, this.value)"
+        />
+      </div>
+    `;
+  }
+
+  else if (q.type === 'essay') {
+    const value = answers[q.id] || '';
+
+    answerHtml = `
+      <div class="q-instruction">Write your response below.</div>
+      <div class="essay-wrap">
+        <textarea
+          placeholder="Type your answer here..."
+          oninput="saveEssay(${q.id}, this)"
+        >${escapeHtml(value)}</textarea>
+        <div class="word-count" id="wc-${q.id}">
+          ${value.trim() ? value.trim().split(/\s+/).length : 0} words
+        </div>
+      </div>
+    `;
+  }
+
+  else if (q.type === 'match') {
+    const saved = answers[q.id] ? JSON.parse(answers[q.id]) : {};
+
+    answerHtml = `
+      <div class="q-instruction">Match each item on the left with the correct item on the right.</div>
+      <div class="essay-wrap">
+        ${q.options.map((pair, i) => `
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center;margin-bottom:12px">
+            <div style="padding:12px;background:#f0f4f8;border-radius:8px">
+              ${escapeHtml(pair.left)}
+            </div>
+            <input
+              style="padding:12px;border:1.5px solid var(--border);border-radius:8px"
+              placeholder="Type matching answer"
+              value="${escapeHtml(saved[pair.left] || '')}"
+              oninput="saveMatchAnswer(${q.id}, '${escapeHtml(pair.left)}', this.value)"
+            />
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  else if (q.type === 'drag_order') {
+    const saved = answers[q.id] ? JSON.parse(answers[q.id]) : q.options;
+
+    answerHtml = `
+      <div class="q-instruction">Write the items in the correct order.</div>
+      <div class="essay-wrap">
+        ${saved.map((item, i) => `
+          <input
+            style="padding:12px;border:1.5px solid var(--border);border-radius:8px;margin-bottom:10px"
+            value="${escapeHtml(item)}"
+            oninput="saveOrderAnswer(${q.id})"
+            class="order-input-${q.id}"
+          />
+        `).join('')}
+      </div>
+    `;
+  }
+
+  else {
+    answerHtml = `
+      <div class="error-box">
+        Unsupported question type: ${escapeHtml(q.type)}
+      </div>
+    `;
+  }
+
+  area.innerHTML = `
+    <div class="q-left">
+      <div class="passage">
+        <p style="font-size:.78rem;font-weight:700;color:var(--blue);
+                  text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px">
+          ${escapeHtml(q.category || 'Question')}
+        </p>
+
+        <p style="font-size:1rem;font-weight:600;color:var(--navy);
+                  line-height:1.6;font-family:'Source Serif 4',serif">
+          ${escapeHtml(q.text)}
+        </p>
+      </div>
+    </div>
+
+    <div class="q-right">
+      ${answerHtml}
+    </div>
+  `;
+
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+
+  btnPrev.style.visibility = idx > 0 ? 'visible' : 'hidden';
+  btnPrev.onclick = prevQuestion;
+
+  if (idx === questions.length - 1) {
+    btnNext.textContent = 'Submit Assessment';
+    btnNext.onclick = confirmSubmit;
+  } else {
+    btnNext.innerHTML = `
+      Next
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px">
+        <path d="M9 18l6-6-6-6"/>
+      </svg>
+    `;
+    btnNext.onclick = nextQuestion;
+  }
+
+  const ans = answers[q.id];
+  document.getElementById('footer-note').textContent = ans ? '✓ Answer saved' : 'Select or type an answer';
+
+  updateSidebar();
+}
+
+
+
+// ─── MCQ SELECTION ──────────────────────────────────────────────────
+function selectMCQ(qId, letter, el) {
+  answers[qId] = letter;
+  // Clear all options
+  el.closest('.mcq-options').querySelectorAll('.mcq-opt').forEach(o => {
+    o.classList.remove('selected');
+    o.querySelector('.opt-letter').style.background = '';
+    o.querySelector('.opt-letter').style.color = '';
+  });
+  el.classList.add('selected');
+  document.getElementById('footer-note').textContent = '✓ Answer saved';
+  updateSidebar();
+}
+
+
+function selectSimpleAnswer(qId, value) {
+  answers[qId] = value;
+  renderQuestion(currentIdx);
+}
+
+function saveTextAnswer(qId, value) {
+  answers[qId] = value;
+  document.getElementById('footer-note').textContent = value.trim() ? '✓ Answer saved' : 'Type your answer';
+  updateSidebar();
+}
+
+function saveMatchAnswer(qId, left, value) {
+  let current = {};
+
+  try {
+    current = answers[qId] ? JSON.parse(answers[qId]) : {};
+  } catch {
+    current = {};
+  }
+
+  current[left] = value;
+  answers[qId] = JSON.stringify(current);
+
+  document.getElementById('footer-note').textContent = '✓ Answer saved';
+  updateSidebar();
+}
+
+function saveOrderAnswer(qId) {
+  const inputs = document.querySelectorAll(`.order-input-${qId}`);
+  const values = Array.from(inputs).map(inp => inp.value.trim()).filter(Boolean);
+
+  answers[qId] = JSON.stringify(values);
+
+  document.getElementById('footer-note').textContent = values.length ? '✓ Answer saved' : 'Type your order';
+  updateSidebar();
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+
+// ─── ESSAY ──────────────────────────────────────────────────────────
+function saveEssay(qId, el) {
+  answers[qId] = el.value;
+  const words = el.value.trim() ? el.value.trim().split(/\s+/).length : 0;
+  const wc = document.getElementById('wc-' + qId);
+  if (wc) {
+    wc.textContent = words + ' words';
+    wc.className = 'word-count' + (words < 30 && words > 0 ? ' warn' : '');
+  }
+  document.getElementById('footer-note').textContent = words > 0 ? '✓ Answer saved' : 'Type your response';
+  updateSidebar();
+}
+
+// ─── NAVIGATION ─────────────────────────────────────────────────────
+function nextQuestion() {
+  if (currentIdx < questions.length - 1) {
+    renderQuestion(currentIdx + 1);
+  }
+}
+function prevQuestion() {
+  if (currentIdx > 0) {
+    renderQuestion(currentIdx - 1);
+  }
+}
+
+// ─── SUBMIT ─────────────────────────────────────────────────────────
+function confirmSubmit() {
+  const unanswered = questions.filter(q => !answers[q.id] || answers[q.id] === '');
+  if (unanswered.length > 0) {
+    const ok = confirm(`You have ${unanswered.length} unanswered question(s). Submit anyway?`);
+    if (!ok) return;
+  } else {
+    const ok = confirm('Submit your assessment? You cannot make changes after submitting.');
+    if (!ok) return;
+  }
+  submitExam();
+}
+
+async function submitExam() {
+  stopTimer();
+  try {
+    const res = await fetch(`${API}/submit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        candidate: candidate.name,
+        email: candidate.email,
+        assessment_id:selectedAssessmentId,
+        answers: Object.fromEntries(
+          Object.entries(answers).map(([k, v]) => [k, v])
+        )
+      })
+    });
+    const result = await res.json();
+    showResults(result);
+  } catch (err) {
+    alert('Submission failed. Please check your connection and try again.');
+  }
+}
+
+// ─── RESULTS ────────────────────────────────────────────────────────
+function showResults(result) {
+  showScreen('results');
+  document.getElementById('results-candidate').textContent = candidate.name + ' · ' + candidate.level;
+  document.getElementById('results-score').textContent =
+  `${result.score ?? result.mcq_score} / ${result.total_possible ?? result.mcq_total ?? '?'}`;
+
+  const breakdown = document.getElementById('results-breakdown');
+  breakdown.innerHTML = '<div style="font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Question Breakdown</div>';
+
+  questions.forEach((q, i) => {
+    const userAns = answers[q.id] || '—';
+    let iconClass = 'e';
+    let iconChar  = 'E';
+    let note = '<span class="your">Essay — submitted for review</span>';
+
+    if (q.type === 'mcq') {
+      // We don't have correct answer on frontend for security
+      // Just show what they answered
+      iconClass = 'e';
+      iconChar  = (i + 1);
+      note = `<span class="your">Your answer: <strong>${userAns}</strong></span>`;
+    }
+
+    const row = document.createElement('div');
+    row.className = 'result-row';
+    row.innerHTML = `
+      <div class="result-icon ${iconClass}">${iconChar}</div>
+      <div class="result-q">
+        <div>${q.text.substring(0, 90)}${q.text.length > 90 ? '…' : ''}</div>
+        ${note}
+      </div>`;
+    breakdown.appendChild(row);
+  });
+
+  if (result.percentage !== undefined) {
+    const pctEl = document.createElement('div');
+    pctEl.style.cssText = 'text-align:center;margin-top:16px;font-size:.85rem;color:var(--muted)';
+    pctEl.textContent = `Auto-graded percentage: ${result.percentage}%`;
+    breakdown.appendChild(pctEl);
+  }
+}
+
+// ─── TIMER ──────────────────────────────────────────────────────────
+function startTimer() {
+  timerInterval = setInterval(() => {
+    if (!paused) {
+      timerSecs++;
+      const m = String(Math.floor(timerSecs / 60)).padStart(2, '0');
+      const s = String(timerSecs % 60).padStart(2, '0');
+      document.getElementById('timer-display').textContent = m + ':' + s;
+    }
+  }, 1000);
+}
+function stopTimer() { clearInterval(timerInterval); }
+function togglePause() {
+  paused = !paused;
+  document.getElementById('timer-display').style.opacity = paused ? '.3' : '1';
+}
+</script>
+</body>
+</html>
