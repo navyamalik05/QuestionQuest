@@ -53,7 +53,7 @@ class Submission(Base):
     assessment_id  = Column(Integer)
     answers        = Column(Text)
     ai_scores      = Column(Text)
-    total_score    = Column(Integer, default=0)
+    total_score    = Column(Integer)
     total_possible = Column(Integer, default=0)
     percentage     = Column(Integer, default=0)
     submitted_at   = Column(DateTime, default=datetime.utcnow)
