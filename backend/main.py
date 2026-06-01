@@ -18,13 +18,25 @@ app = FastAPI()
 def health_check():
     return {"status": "ok", "message": "QuestionQuest API is running"}
 
+FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:5500")
+FRONTEND_ORIGIN_WWW = os.getenv("FRONTEND_ORIGIN_WWW", "")
+VERCEL_ORIGIN = os.getenv("VERCEL_ORIGIN", "")
+
+allowed_origins = [
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    FRONTEND_ORIGIN,
+]
+
+if FRONTEND_ORIGIN_WWW:
+    allowed_origins.append(FRONTEND_ORIGIN_WWW)
+
+if VERCEL_ORIGIN:
+    allowed_origins.append(VERCEL_ORIGIN)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        FRONTEND_ORIGIN,
-        "http://localhost:5500",
-        "http://127.0.0.1:5500"
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
