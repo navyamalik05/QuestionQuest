@@ -194,24 +194,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <label>Email Address</label>
       <input type="email" id="reg-email" placeholder="sarah@example.com"/>
     </div>
-    <div>
-        <div class="field">
-            <label>Account Type</label>
-            <select id="reg-role">
-            <option value="student">Student</option>
-            <option value="admin">Admin</option>
-            </select>
-        </div>
-        <div class="field">
-            <label>Grade</label>
-            <select id="reg-level">
-              <option value="">Select your grade...</option>
-              <option>Grade 5</option>
-              <option>Grade 6</option>
-              <option>Grade 7</option>
-              <option>Grade 8</option>
-            </select>
-        </div>
+    <div class="field">
+      <label>Grade</label>
+      <select id="reg-level">
+        <option value="">Select your grade...</option>
+        <option>Grade 5</option>
+        <option>Grade 6</option>
+        <option>Grade 7</option>
+        <option>Grade 8</option>
+      </select>
     </div>
 
     <div class="field" id="password-field" style="display:none">
@@ -344,42 +335,15 @@ function showScreen(id) {
 // ─── REGISTRATION ───────────────────────────────────────────────────
 <!-- Replace the existing <script> startExam() function and add this listener -->
 
-  // Show/hide password based on role
-  document.getElementById('reg-role').addEventListener('change', function() {
-    const isAdmin = this.value === 'admin';
-    document.getElementById('password-field').style.display = isAdmin ? 'block' : 'none';
-    document.getElementById('reg-level').closest('.field').style.display = isAdmin ? 'none' : 'block';
-  });
 
   async function startExam() {
     const first = document.getElementById('reg-first').value.trim();
     const last  = document.getElementById('reg-last').value.trim();
     const email = document.getElementById('reg-email').value.trim();
-    const role  = document.getElementById('reg-role').value;
     const level = document.getElementById('reg-level').value;
 
     if (!first || !last) { alert('Please enter your first and last name.'); return; }
     if (!email || !email.includes('@')) { alert('Please enter a valid email.'); return; }
-
-    if (role === 'admin') {
-      const password = document.getElementById('reg-password').value;
-      if (!password) { alert('Please enter the admin password.'); return; }
-
-      try {
-        const res = await fetch(`${API}/admin-login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
-        const data = await res.json();
-        if (!res.ok) { alert('Invalid admin password.'); return; }
-        // Redirect admin to the admin panel
-        window.location.href = '../admin/admin.html';
-      } catch (err) {
-        alert('Could not reach the server. Is the backend running?');
-      }
-      return; // stop here for admins
-    }
 
   // Student flow (no password needed)
   if (!level) { 
