@@ -31,13 +31,16 @@ BOOTSTRAP_PASSWORD = os.getenv("ADMIN_BOOTSTRAP_PASSWORD", "Justice_2026!")
 # Auth helpers
 # ─────────────────────────────────────────────
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+import bcrypt as _bcrypt
 
 def hash_password(pw: str) -> str:
-    return pwd_context.hash(pw)
+    return _bcrypt.hashpw(pw.encode('utf-8'), _bcrypt.gensalt()).decode('utf-8')
 
 def verify_password(pw: str, hashed: str) -> bool:
-    return pwd_context.verify(pw, hashed)
+    try:
+        return _bcrypt.checkpw(pw.encode('utf-8'), hashed.encode('utf-8'))
+    except Exception:
+        return False
 
 def create_token(admin_id: int, email: str) -> str:
     payload = {
