@@ -702,16 +702,20 @@ function logout() {
 // ── Stats ──
 async function loadStats() {
   try {
-    const [qs, as, rs] = await Promise.all([
-      adminFetch('/questions') .then(r => r.json()),
-      adminFetch(`/assessments`).then(r => r.json()),
-      adminFetch('/admin-users').then(r => r.json()),
+    const [qs, assessmentsData, resultsData] = await Promise.all([
+      adminFetch('/questions').then(r => r.json()),
+      adminFetch('/assessments').then(r => r.json()),
       adminFetch('/results').then(r => r.json()),
     ]);
+
     document.getElementById('s-items').textContent   = qs.length;
-    document.getElementById('s-assess').textContent  = as.length;
-    document.getElementById('s-results').textContent = rs.length;
-  } catch { /* backend may not be running yet */ }
+    document.getElementById('s-assess').textContent  = assessmentsData.length;
+    document.getElementById('s-results').textContent = resultsData.length;
+  } catch {
+    document.getElementById('s-items').textContent   = '—';
+    document.getElementById('s-assess').textContent  = '—';
+    document.getElementById('s-results').textContent = '—';
+  }
 }
 
 // ── Item Bank ──
@@ -719,7 +723,7 @@ async function loadItems() {
   const list = document.getElementById('item-list');
   list.innerHTML = '<div style="color:#aaa;font-size:13px;padding:10px"><i class="fa fa-spinner fa-spin"></i> Loading...</div>';
   try {
-    const data = await fetch(`${API}/questions`).then(r => r.json());
+    const data = await adminFetch('/questions').then(r => r.json());
     items = data;
     renderItems();
   } catch {
@@ -770,7 +774,7 @@ async function deleteItem(id, e) {
   e.stopPropagation();
   if (!confirm('Delete this question?')) return;
   try {
-    await fetch(`${API}/questions/${id}`, { method: 'DELETE' });
+    await adminFetch(`/questions/${id}`, { method: 'DELETE' });
     items   = items.filter(i => i.id !== id);
     builder = builder.filter(i => i !== id);
     renderItems();
@@ -830,7 +834,7 @@ async function saveAssmt() {
   const title = document.getElementById('sa-t').value.trim();
   if (!title) { toast('Title required.', 'danger'); return; }
   try {
-    const res = await fetch(`${API}/assessments`, {
+    const res = await adminFetch('/assessments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -986,7 +990,7 @@ async function addItem() {
   }
 
   try {
-    const res = await fetch(`${API}/questions`, {
+    const res = await adminFetch('/questions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text, type, options, correct, category, difficulty })
@@ -1004,7 +1008,7 @@ async function loadAssessments() {
   const tb = document.getElementById('atbody');
   tb.innerHTML = '<tr class="loading-row"><td colspan="6"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>';
   try {
-    assessments = await fetch(`${API}/assessments`).then(r => r.json());
+    assessments = await adminFetch('/assessments').then(r => r.json());
     renderAssessments();
   } catch {
     tb.innerHTML = '<tr class="loading-row"><td colspan="6" style="color:#a94442"><i class="fa fa-exclamation-circle"></i> Backend not reachable.</td></tr>';
@@ -1040,7 +1044,7 @@ async function addAssmt() {
   const title = document.getElementById('na-t').value.trim();
   if (!title) { toast('Title required.', 'danger'); return; }
   try {
-    await fetch(`${API}/assessments`, {
+    await adminFetch('/assessments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1074,7 +1078,7 @@ async function saveEditAssmt() {
   const title = document.getElementById('ea-t').value.trim();
   if (!title) { toast('Title required.', 'danger'); return; }
   try {
-    await fetch(`${API}/assessments/${id}`, {
+    await adminFetch(`/assessments/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1093,7 +1097,7 @@ async function saveEditAssmt() {
 async function toggleStatus(id, current) {
   const newStatus = current === 'Active' ? 'Draft' : 'Active';
   try {
-    await fetch(`${API}/assessments/${id}`, {
+    await adminFetch(`/assessments/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus })
@@ -1106,7 +1110,7 @@ async function toggleStatus(id, current) {
 async function deleteAssmt(id) {
   if (!confirm('Delete this assessment?')) return;
   try {
-    await fetch(`${API}/assessments/${id}`, { method: 'DELETE' });
+    await adminFetch(`/assessments/${id}`, { method: 'DELETE' });
     toast('Assessment deleted.');
     loadAssessments();
     loadStats();
@@ -1119,7 +1123,7 @@ async function loadResults() {
   tb.innerHTML = '<tr class="loading-row"><td colspan="7"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>';
 
   try {
-    const data = await fetch(`${API}/results`).then(r => r.json());
+    const data = await adminFetch('/results').then(r => r.json());
 
     tb.innerHTML = '';
 
@@ -1325,85 +1329,8 @@ async function deactivateAdminUser(adminId) {
   }
 }
 
-async function createAdminUser() {
-  const name = document.getElementById('new-admin-name').value.trim();
-  const email = document.getElementById('new-admin-email').value.trim();
-  const password = document.getElementById('new-admin-password').value;
-
-  if (!name) {
-    alert('Please enter the admin name.');
-    return;
-  }
-
-  if (!email || !email.includes('@')) {
-    alert('Please enter a valid email address.');
-    return;
-  }
-
-  if (!password || password.length < 8) {
-    alert('Please enter a password with at least 8 characters.');
-    return;
-  }
-
-  try {
-    const res = await adminFetch('/admin-users', {
-      method: 'POST',
-      body: JSON.stringify({
-        name,
-        email,
-        password
-      })
-    });
-
-    if (!res) return;
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.detail || 'Failed to create admin user.');
-      return;
-    }
-
-    document.getElementById('new-admin-name').value = '';
-    document.getElementById('new-admin-email').value = '';
-    document.getElementById('new-admin-password').value = '';
-
-    closeMo('mo-add-admin-user');
-    toast('Admin user created.');
-    loadAdminUsers();
-
-  } catch {
-    alert('Could not create admin user. Check backend connection.');
-  }
-}
 
 
-async function deactivateAdminUser(adminId) {
-  const ok = confirm('Deactivate this admin user? They will no longer be able to log in.');
-
-  if (!ok) return;
-
-  try {
-    const res = await adminFetch(`/admin-users/${adminId}`, {
-      method: 'DELETE'
-    });
-
-    if (!res) return;
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.detail || 'Failed to deactivate admin user.');
-      return;
-    }
-
-    toast('Admin user deactivated.');
-    loadAdminUsers();
-
-  } catch {
-    alert('Could not deactivate admin user.');
-  }
-}
 
 
 // ── Modals ──
