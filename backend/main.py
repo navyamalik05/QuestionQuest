@@ -1,13 +1,27 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Any
-from database import SessionLocal, Question, Assessment, Submission
+from database import SessionLocal, Question, Assessment, Submission, AdminUser
 import json
 import os
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
+from passlib.context import CryptContext
+from jose import jwt, JWTError
 
 load_dotenv()
+
+JWT_SECRET = os.getenv("JWT_SECRET", "change-this-secret-in-production")
+JWT_ALGORITHM = "HS256"
+JWT_EXPIRE_HOURS = 12
+
+ADMIN_BOOTSTRAP_NAME = os.getenv("ADMIN_BOOTSTRAP_NAME", "")
+ADMIN_BOOTSTRAP_EMAIL = os.getenv("ADMIN_BOOTSTRAP_EMAIL", "")
+ADMIN_BOOTSTRAP_PASSWORD = os.getenv("ADMIN_BOOTSTRAP_PASSWORD", "")
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # ─────────────────────────────────────────────
 # Environment Config
@@ -28,6 +42,32 @@ app = FastAPI(
     title="QuestionQuest API",
     version="1.0.0"
 )
+
+@app.on_event("startup")
+def create_initial_admin():
+    db = SessionLocal()
+
+    try:
+        existing_count = db.query(AdminUser).count()
+
+        if existing_count == 0:
+            if not ADMIN_BOOTSTRAP_EMAIL or not ADMIN_BOOTSTRAP_PASSWORD:
+                print("No bootstrap admin created. Missing ADMIN_BOOTSTRAP_EMAIL or ADMIN_BOOTSTRAP_PASSWORD.")
+                return
+
+            admin = AdminUser(
+                name=ADMIN_BOOTSTRAP_NAME or "Initial Admin",
+                email=ADMIN_BOOTSTRAP_EMAIL.lower().strip(),
+                password_hash=hash_password(ADMIN_BOOTSTRAP_PASSWORD),
+                is_active=True
+            )
+
+            db.add(admin)
+            db.commit()
+            print(f"Bootstrap admin created: {admin.email}")
+
+    finally:
+        db.close()
 
 # ─────────────────────────────────────────────
 # CORS
@@ -85,6 +125,7 @@ def health():
 # ─────────────────────────────────────────────
 
 class AdminLogin(BaseModel):
+    name: str = ""
     email: str
     password: str
 
@@ -121,6 +162,53 @@ class SubmissionIn(BaseModel):
     answers: dict
 
 
+class AdminUserIn(BaseModel):
+    name: str
+    email: str
+    password: str
+
+
+def hash_password(password: str):
+    return pwd_context.hash(password)
+
+def verify_password(password: str, password_hash: str):
+    return pwd_context.verify(password, password_hash)
+
+def create_admin_token(admin: AdminUser):
+    payload = {
+        "sub": str(admin.id),
+        "email": admin.email,
+        "role": "admin",
+        "exp": datetime.utcnow() + timedelta(hours=JWT_EXPIRE_HOURS)
+    }
+
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+def require_admin(authorization: str = Header(None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing admin token")
+
+    token = authorization.replace("Bearer ", "").strip()
+
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        admin_id = int(payload.get("sub"))
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+
+    db = SessionLocal()
+    admin = db.query(AdminUser).filter(
+        AdminUser.id == admin_id,
+        AdminUser.is_active == True
+    ).first()
+
+    if not admin:
+        raise HTTPException(status_code=401, detail="Admin user not found or inactive")
+
+    return admin
+
 # ─────────────────────────────────────────────
 # Helper
 # ─────────────────────────────────────────────
@@ -142,18 +230,37 @@ def normalize_answer(value):
 
 @app.post("/admin-login")
 def admin_login(data: AdminLogin):
-    if data.password != ADMIN_PASSWORD:
-        raise HTTPException(status_code=401, detail="Invalid admin password")
+    db = SessionLocal()
 
-    return {"success": True, "message": "Admin login successful"}
+    admin = db.query(AdminUser).filter(
+        AdminUser.email == data.email.lower().strip(),
+        AdminUser.is_active == True
+    ).first()
 
+    if not admin:
+        raise HTTPException(status_code=401, detail="Invalid admin credentials")
+
+    if not verify_password(data.password, admin.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid admin credentials")
+
+    token = create_admin_token(admin)
+
+    return {
+        "success": True,
+        "token": token,
+        "admin": {
+            "id": admin.id,
+            "name": admin.name,
+            "email": admin.email
+        }
+    }
 
 # ─────────────────────────────────────────────
 # Questions
 # ─────────────────────────────────────────────
 
 @app.get("/questions")
-def get_questions():
+def get_questions(current_admin: AdminUser = Depends(require_admin)):
     db = SessionLocal()
 
     try:
@@ -177,7 +284,7 @@ def get_questions():
 
 
 @app.post("/questions")
-def create_question(q: QuestionIn):
+def create_question(q: QuestionIn, current_admin: AdminUser = Depends(require_admin)):
     db = SessionLocal()
 
     try:
@@ -208,7 +315,7 @@ def create_question(q: QuestionIn):
 
 
 @app.delete("/questions/{qid}")
-def delete_question(qid: int):
+def delete_question(qid: int, current_admin: AdminUser = Depends(require_admin)):
     db = SessionLocal()
 
     try:
@@ -238,7 +345,7 @@ def delete_question(qid: int):
 # ─────────────────────────────────────────────
 
 @app.get("/assessments")
-def list_assessments():
+def list_assessments(current_admin: AdminUser = Depends(require_admin)):
     db = SessionLocal()
 
     try:
@@ -261,7 +368,7 @@ def list_assessments():
 
 
 @app.post("/assessments")
-def create_assessment(a: AssessmentIn):
+def create_assessment(a: AssessmentIn, current_admin: AdminUser = Depends(require_admin)):
     db = SessionLocal()
 
     try:
@@ -295,9 +402,8 @@ def create_assessment(a: AssessmentIn):
     finally:
         db.close()
 
-
-@app.get("/assessments/{aid}")
-def get_assessment(aid: int):
+@app.post("/assessments")
+def create_assessment(a: AssessmentIn, current_admin: AdminUser = Depends(require_admin)):
     db = SessionLocal()
 
     try:
@@ -345,7 +451,7 @@ def get_assessment(aid: int):
 
 
 @app.put("/assessments/{aid}")
-def update_assessment(aid: int, data: AssessmentUpdate):
+def update_assessment(aid: int, data: AssessmentUpdate, current_admin: AdminUser = Depends(require_admin)):
     db = SessionLocal()
 
     try:
@@ -385,7 +491,7 @@ def update_assessment(aid: int, data: AssessmentUpdate):
 
 
 @app.delete("/assessments/{aid}")
-def delete_assessment(aid: int):
+def delete_assessment(aid: int, current_admin: AdminUser = Depends(require_admin)):
     db = SessionLocal()
 
     try:
@@ -561,7 +667,7 @@ def submit(s: SubmissionIn):
 # ─────────────────────────────────────────────
 
 @app.get("/results")
-def get_results():
+def get_results(current_admin: AdminUser = Depends(require_admin)):
     db = SessionLocal()
 
     try:
@@ -591,3 +697,67 @@ def get_results():
 
     finally:
         db.close()
+
+
+@app.get("/admin-users")
+def list_admin_users(current_admin: AdminUser = Depends(require_admin)):
+    db = SessionLocal()
+    admins = db.query(AdminUser).order_by(AdminUser.created_at.desc()).all()
+
+    return [
+        {
+            "id": a.id,
+            "name": a.name,
+            "email": a.email,
+            "is_active": a.is_active,
+            "created_at": str(a.created_at)
+        }
+        for a in admins
+    ]
+
+@app.post("/admin-users")
+def create_admin_user(data: AdminUserIn, current_admin: AdminUser = Depends(require_admin)):
+    db = SessionLocal()
+
+    existing = db.query(AdminUser).filter(
+        AdminUser.email == data.email.lower().strip()
+    ).first()
+
+    if existing:
+        raise HTTPException(status_code=400, detail="Admin email already exists")
+
+    admin = AdminUser(
+        name=data.name.strip(),
+        email=data.email.lower().strip(),
+        password_hash=hash_password(data.password),
+        is_active=True
+    )
+
+    db.add(admin)
+    db.commit()
+    db.refresh(admin)
+
+    return {
+        "id": admin.id,
+        "name": admin.name,
+        "email": admin.email,
+        "is_active": admin.is_active,
+        "message": "Admin user created"
+    }
+
+@app.delete("/admin-users/{admin_id}")
+def deactivate_admin_user(admin_id: int, current_admin: AdminUser = Depends(require_admin)):
+    db = SessionLocal()
+
+    if current_admin.id == admin_id:
+        raise HTTPException(status_code=400, detail="You cannot deactivate your own account")
+
+    admin = db.query(AdminUser).filter(AdminUser.id == admin_id).first()
+
+    if not admin:
+        raise HTTPException(status_code=404, detail="Admin user not found")
+
+    admin.is_active = False
+    db.commit()
+
+    return {"message": "Admin user deactivated"}

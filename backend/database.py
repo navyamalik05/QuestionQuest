@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
@@ -24,6 +24,16 @@ engine = create_engine(DATABASE_URL, connect_args=connect_args)
 Base = declarative_base()
 SessionLocal = sessionmaker(bind=engine)
 
+
+class AdminUser(Base):
+    __tablename__ = "admin_users"
+
+    id            = Column(Integer, primary_key=True)
+    name          = Column(String, nullable=False)
+    email         = Column(String, unique=True, index=True, nullable=False)
+    password_hash = Column(String, nullable=False)
+    is_active     = Column(Boolean, default=True)
+    created_at    = Column(DateTime, default=datetime.utcnow)
 
 class Question(Base):
     __tablename__ = "questions"

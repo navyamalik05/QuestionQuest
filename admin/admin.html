@@ -180,8 +180,13 @@ math-field:focus-within {
       line-height:1.6;
       margin-bottom:28px;
     ">
-      Enter your admin email and password to manage assessments, questions, and results.
+      Enter your full name, email and password to manage assessments, questions, and results.
     </p>
+
+    <div class="form-group">
+      <label>Name</label>
+      <input class="form-control" id="admin-login-name" type="text" placeholder="Your name"/>
+    </div>
 
     <div class="form-group">
       <label>Email Address</label>
@@ -228,6 +233,11 @@ math-field:focus-within {
         <div class="dd-menu">
           <a onclick="showPage('itembank');closeDD()">Item Bank (Questions)</a>
           <a onclick="showPage('assessments');closeDD()">Assessments</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <div class="nav-link" onclick="showPage('adminusers')">
+          <i class="fa fa-users fa-fw"></i> Admin Users
         </div>
       </li>
       <li class="nav-item"><div class="nav-link" onclick="showPage('results')"><i class="fa fa-bar-chart fa-fw"></i> Results</div></li>
@@ -317,6 +327,38 @@ math-field:focus-within {
     <table>
       <thead><tr><th>Title</th><th>Description</th><th>Questions</th><th>Group</th><th>Status</th><th>Actions</th></tr></thead>
       <tbody id="atbody"><tr class="loading-row"><td colspan="6"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ADMIN USERS -->
+<div class="page-sec" id="page-adminusers">
+  <ul class="action-links">
+    <li>
+      <a onclick="openMo('mo-add-admin-user')">
+        <i class="fa fa-plus"></i> New Admin User
+      </a>
+    </li>
+  </ul>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="admin-users-body">
+        <tr class="loading-row">
+          <td colspan="5">
+            <i class="fa fa-spinner fa-spin"></i> Loading...
+          </td>
+        </tr>
+      </tbody>
     </table>
   </div>
 </div>
@@ -485,6 +527,44 @@ math-field:focus-within {
   </div>
 </div>
 
+<!-- ── Add Admin User ── -->
+<div class="mo" id="mo-add-admin-user">
+  <div class="mb">
+    <div class="mh">
+      <h4><i class="fa fa-user-plus"></i> New Admin User</h4>
+      <button class="mc-btn" onclick="closeMo('mo-add-admin-user')">&times;</button>
+    </div>
+
+    <div class="mbd">
+      <div class="form-group">
+        <label>Name *</label>
+        <input class="form-control" id="new-admin-name" placeholder="Full name"/>
+      </div>
+
+      <div class="form-group">
+        <label>Email *</label>
+        <input class="form-control" id="new-admin-email" type="email" placeholder="admin@example.com"/>
+      </div>
+
+      <div class="form-group">
+        <label>Password *</label>
+        <input class="form-control" id="new-admin-password" type="password" placeholder="Create a strong password"/>
+      </div>
+
+      <div style="font-size:12px;color:#777;line-height:1.5">
+        This user will be able to log in to the Admin Portal and manage questions, assessments, and results.
+      </div>
+    </div>
+
+    <div class="mft">
+      <button class="btn btn-default" onclick="closeMo('mo-add-admin-user')">Cancel</button>
+      <button class="btn btn-primary" onclick="createAdminUser()">
+        <i class="fa fa-check"></i> Create Admin
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ── New Assessment ── -->
 <div class="mo" id="mo-add-assess">
   <div class="mb">
@@ -595,11 +675,14 @@ function showPage(id) {
   document.querySelectorAll('.page-sec').forEach(s => s.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
   closeDD();
+
   if (id === 'home')        loadStats();
   if (id === 'itembank')    loadItems();
   if (id === 'assessments') loadAssessments();
   if (id === 'results')     loadResults();
+  if (id === 'adminusers')  loadAdminUsers();
 }
+
 function toggleDD(id, e) {
   e.preventDefault(); e.stopPropagation();
   const el = document.getElementById(id);
@@ -611,7 +694,8 @@ function closeDD() { document.querySelectorAll('.nav-item').forEach(n => n.class
 document.addEventListener('click', closeDD);
 
 function logout() {
-  sessionStorage.removeItem('qq_admin_logged_in');
+  sessionStorage.removeItem('qq_admin_token');
+  sessionStorage.removeItem('qq_admin_user');
   window.location.reload();
 }
 
@@ -619,9 +703,10 @@ function logout() {
 async function loadStats() {
   try {
     const [qs, as, rs] = await Promise.all([
-      fetch(`${API}/questions`).then(r => r.json()),
-      fetch(`${API}/assessments`).then(r => r.json()),
-      fetch(`${API}/results`).then(r => r.json()),
+      adminFetch('/questions') .then(r => r.json()),
+      adminFetch(`/assessments`).then(r => r.json()),
+      adminFetch('/admin-users').then(r => r.json()),
+      adminFetch('/results').then(r => r.json()),
     ]);
     document.getElementById('s-items').textContent   = qs.length;
     document.getElementById('s-assess').textContent  = as.length;
@@ -1095,6 +1180,232 @@ async function loadResults() {
 }
 
 
+async function loadAdminUsers() {
+  const tb = document.getElementById('admin-users-body');
+
+  tb.innerHTML = `
+    <tr class="loading-row">
+      <td colspan="5">
+        <i class="fa fa-spinner fa-spin"></i> Loading...
+      </td>
+    </tr>
+  `;
+
+  try {
+    const res = await adminFetch('/admin-users');
+
+    if (!res) return;
+
+    const data = await res.json();
+
+    tb.innerHTML = '';
+
+    if (!data.length) {
+      tb.innerHTML = `
+        <tr class="loading-row">
+          <td colspan="5">No admin users found.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    data.forEach(user => {
+      const status = user.is_active
+        ? '<span class="bp bp-green">Active</span>'
+        : '<span class="bp bp-gray">Inactive</span>';
+
+      const canDeactivate = user.is_active
+        ? `<button class="btn btn-danger btn-sm" onclick="deactivateAdminUser(${user.id})">
+             <i class="fa fa-ban"></i> Deactivate
+           </button>`
+        : '';
+
+      const tr = document.createElement('tr');
+
+      tr.innerHTML = `
+        <td><strong>${escapeHtml(user.name || 'Unknown')}</strong></td>
+        <td>${escapeHtml(user.email || '—')}</td>
+        <td>${status}</td>
+        <td style="font-size:12px;color:#888">
+          ${user.created_at ? new Date(user.created_at).toLocaleString() : '—'}
+        </td>
+        <td>${canDeactivate}</td>
+      `;
+
+      tb.appendChild(tr);
+    });
+
+  } catch {
+    tb.innerHTML = `
+      <tr class="loading-row">
+        <td colspan="5" style="color:#a94442">
+          Could not load admin users.
+        </td>
+      </tr>
+    `;
+  }
+}
+
+async function createAdminUser() {
+  const name = document.getElementById('new-admin-name').value.trim();
+  const email = document.getElementById('new-admin-email').value.trim();
+  const password = document.getElementById('new-admin-password').value;
+
+  if (!name) {
+    alert('Please enter the admin name.');
+    return;
+  }
+
+  if (!email || !email.includes('@')) {
+    alert('Please enter a valid email address.');
+    return;
+  }
+
+  if (!password || password.length < 8) {
+    alert('Please enter a password with at least 8 characters.');
+    return;
+  }
+
+  try {
+    const res = await adminFetch('/admin-users', {
+      method: 'POST',
+      body: JSON.stringify({
+        name,
+        email,
+        password
+      })
+    });
+
+    if (!res) return;
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.detail || 'Failed to create admin user.');
+      return;
+    }
+
+    document.getElementById('new-admin-name').value = '';
+    document.getElementById('new-admin-email').value = '';
+    document.getElementById('new-admin-password').value = '';
+
+    closeMo('mo-add-admin-user');
+    toast('Admin user created.');
+    loadAdminUsers();
+
+  } catch {
+    alert('Could not create admin user. Check backend connection.');
+  }
+}
+
+async function deactivateAdminUser(adminId) {
+  const ok = confirm('Deactivate this admin user? They will no longer be able to log in.');
+
+  if (!ok) return;
+
+  try {
+    const res = await adminFetch(`/admin-users/${adminId}`, {
+      method: 'DELETE'
+    });
+
+    if (!res) return;
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.detail || 'Failed to deactivate admin user.');
+      return;
+    }
+
+    toast('Admin user deactivated.');
+    loadAdminUsers();
+
+  } catch {
+    alert('Could not deactivate admin user.');
+  }
+}
+
+async function createAdminUser() {
+  const name = document.getElementById('new-admin-name').value.trim();
+  const email = document.getElementById('new-admin-email').value.trim();
+  const password = document.getElementById('new-admin-password').value;
+
+  if (!name) {
+    alert('Please enter the admin name.');
+    return;
+  }
+
+  if (!email || !email.includes('@')) {
+    alert('Please enter a valid email address.');
+    return;
+  }
+
+  if (!password || password.length < 8) {
+    alert('Please enter a password with at least 8 characters.');
+    return;
+  }
+
+  try {
+    const res = await adminFetch('/admin-users', {
+      method: 'POST',
+      body: JSON.stringify({
+        name,
+        email,
+        password
+      })
+    });
+
+    if (!res) return;
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.detail || 'Failed to create admin user.');
+      return;
+    }
+
+    document.getElementById('new-admin-name').value = '';
+    document.getElementById('new-admin-email').value = '';
+    document.getElementById('new-admin-password').value = '';
+
+    closeMo('mo-add-admin-user');
+    toast('Admin user created.');
+    loadAdminUsers();
+
+  } catch {
+    alert('Could not create admin user. Check backend connection.');
+  }
+}
+
+
+async function deactivateAdminUser(adminId) {
+  const ok = confirm('Deactivate this admin user? They will no longer be able to log in.');
+
+  if (!ok) return;
+
+  try {
+    const res = await adminFetch(`/admin-users/${adminId}`, {
+      method: 'DELETE'
+    });
+
+    if (!res) return;
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.detail || 'Failed to deactivate admin user.');
+      return;
+    }
+
+    toast('Admin user deactivated.');
+    loadAdminUsers();
+
+  } catch {
+    alert('Could not deactivate admin user.');
+  }
+}
+
+
 // ── Modals ──
 function openMo(id) {
   if (id === 'mo-add-item') {
@@ -1152,11 +1463,18 @@ function showAdminApp() {
 }
 
 async function adminLogin() {
+  const name = document.getElementById('admin-login-name').value.trim();
   const email = document.getElementById('admin-login-email').value.trim();
   const password = document.getElementById('admin-login-password').value;
   const errorBox = document.getElementById('admin-login-error');
 
   errorBox.style.display = 'none';
+
+  if (!name) {
+    errorBox.textContent = 'Please enter your name.';
+    errorBox.style.display = 'block';
+    return;
+  }
 
   if (!email || !email.includes('@')) {
     errorBox.textContent = 'Please enter a valid email address.';
@@ -1165,7 +1483,7 @@ async function adminLogin() {
   }
 
   if (!password) {
-    errorBox.textContent = 'Please enter the admin password.';
+    errorBox.textContent = 'Please enter your admin password.';
     errorBox.style.display = 'block';
     return;
   }
@@ -1174,16 +1492,20 @@ async function adminLogin() {
     const res = await fetch(`${API}/admin-login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ name, email, password })
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
-      errorBox.textContent = 'Invalid admin password.';
+      errorBox.textContent = data.detail || 'Invalid admin credentials.';
       errorBox.style.display = 'block';
       return;
     }
 
-    sessionStorage.setItem('qq_admin_logged_in', 'true');
+    sessionStorage.setItem('qq_admin_token', data.token);
+    sessionStorage.setItem('qq_admin_user', JSON.stringify(data.admin));
+
     showAdminApp();
 
   } catch {
@@ -1192,8 +1514,47 @@ async function adminLogin() {
   }
 }
 
+
+
+function getAdminToken() {
+  return sessionStorage.getItem('qq_admin_token');
+}
+
+async function adminFetch(path, options = {}) {
+  const token = getAdminToken();
+
+  const headers = {
+    ...(options.headers || {}),
+    Authorization: `Bearer ${token}`
+  };
+
+  if (options.body && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  }
+
+  const res = await fetch(`${API}${path}`, {
+    ...options,
+    headers
+  });
+
+  if (res.status === 401) {
+    sessionStorage.removeItem('qq_admin_token');
+    sessionStorage.removeItem('qq_admin_user');
+    alert('Your admin session expired. Please log in again.');
+    window.location.reload();
+    return;
+  }
+
+  return res;
+}
+
+
+
+
 function checkAdminSession() {
-  if (sessionStorage.getItem('qq_admin_logged_in') === 'true') {
+  const token = sessionStorage.getItem('qq_admin_token');
+
+  if (token) {
     showAdminApp();
   }
 }
