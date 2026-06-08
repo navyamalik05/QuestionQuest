@@ -1,0 +1,2069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assessment RFP Development Toolkit | NCSA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0d1b2a;
+    --navy-mid: #1b2e45;
+    --blue: #1e4f8c;
+    --blue-light: #2c6fad;
+    --teal: #0e7c7b;
+    --teal-light: #17a2a1;
+    --gold: #c9963b;
+    --gold-light: #e8b556;
+    --cream: #faf8f3;
+    --white: #ffffff;
+    --gray-100: #f4f5f7;
+    --gray-200: #e8eaef;
+    --gray-400: #9aa1b0;
+    --gray-600: #5a6170;
+    --gray-800: #2d3240;
+    --sidebar-w: 300px;
+    --found-color: #1e5091;
+    --equity-color: #0e6b6b;
+    --justice-color: #7a2e6e;
+    --danger: #c0392b;
+    --success: #27ae60;
+    --radius: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--cream);
+    color: var(--gray-800);
+    line-height: 1.7;
+    display: flex;
+    min-height: 100vh;
+    font-size: 15px;
+  }
+
+  /* ─── SIDEBAR ─────────────────────────────────────────────────────── */
+  #sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: var(--sidebar-w);
+    background: var(--navy);
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    transition: transform .3s ease;
+  }
+
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-track { background: transparent; }
+  #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+
+  .sidebar-header {
+    padding: 28px 20px 20px;
+    background: linear-gradient(160deg, #0d1b2a 0%, #1a3558 100%);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    flex-shrink: 0;
+  }
+
+  .sidebar-logo {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .sidebar-title {
+    font-family: 'Source Sans 3', sans-serif;
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .nav-section-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    padding: 18px 20px 6px;
+  }
+
+  .nav-item {
+    display: block;
+    padding: 9px 20px;
+    color: rgba(255,255,255,.7);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 400;
+    border-left: 3px solid transparent;
+    transition: all .18s;
+    cursor: pointer;
+    line-height: 1.4;
+  }
+
+  .nav-item:hover {
+    background: rgba(255,255,255,.06);
+    color: var(--white);
+    border-left-color: var(--gold);
+  }
+
+  .nav-item.active {
+    background: rgba(201,150,59,.12);
+    color: var(--gold-light);
+    border-left-color: var(--gold);
+    font-weight: 600;
+  }
+
+  .nav-sub {
+    padding-left: 36px;
+    font-size: 12px;
+    color: rgba(255,255,255,.5);
+    border-left: 3px solid transparent;
+  }
+
+  .nav-sub:hover { color: rgba(255,255,255,.8); border-left-color: var(--teal-light); }
+  .nav-sub.active { color: var(--teal-light); border-left-color: var(--teal-light); }
+
+  /* ─── MAIN CONTENT ────────────────────────────────────────────────── */
+  #main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    max-width: calc(100% - var(--sidebar-w));
+  }
+
+  /* ─── TOP BAR ─────────────────────────────────────────────────────── */
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 14px 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .breadcrumb {
+    font-size: 12px;
+    color: var(--gray-400);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .breadcrumb span { color: var(--gray-600); }
+  .breadcrumb .sep { color: var(--gray-200); }
+
+  .tier-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all .2s;
+  }
+
+  .tier-found { background: #dce8f7; color: var(--found-color); }
+  .tier-equity { background: #d4eeed; color: var(--equity-color); }
+  .tier-justice { background: #ead4e8; color: var(--justice-color); }
+  .tier-badge:hover { filter: brightness(0.92); }
+
+  /* ─── HERO ────────────────────────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, #1d3d6b 100%);
+    padding: 80px 64px 72px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 80% 50%, rgba(46,111,173,.3) 0%, transparent 60%),
+                radial-gradient(ellipse at 20% 80%, rgba(14,124,123,.2) 0%, transparent 50%);
+  }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.2;
+    max-width: 640px;
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 em {
+    color: var(--gold-light);
+    font-style: normal;
+  }
+
+  .hero-meta {
+    color: rgba(255,255,255,.6);
+    font-size: 14px;
+    position: relative;
+    margin-bottom: 36px;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 40px;
+    position: relative;
+  }
+
+  .stat {
+    text-align: left;
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: var(--gold-light);
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: rgba(255,255,255,.5);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  /* ─── PAGE SECTIONS ───────────────────────────────────────────────── */
+  .page-section {
+    padding: 56px 64px;
+    display: none;
+  }
+
+  .page-section.active { display: block; }
+
+  .section-header {
+    margin-bottom: 36px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  .chapter-tag {
+    display: inline-block;
+    background: var(--navy);
+    color: var(--gold);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 3px;
+    margin-bottom: 12px;
+  }
+
+  .section-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.25;
+    margin-bottom: 8px;
+  }
+
+  .section-header p {
+    color: var(--gray-600);
+    font-size: 15px;
+    max-width: 680px;
+  }
+
+  /* ─── PROSE ───────────────────────────────────────────────────────── */
+  .prose p { margin-bottom: 16px; color: var(--gray-800); line-height: 1.75; }
+
+  .prose h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--navy);
+    margin: 32px 0 12px;
+    font-weight: 600;
+  }
+
+  .prose h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy-mid);
+    margin: 24px 0 8px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+
+  .prose ul {
+    margin: 0 0 16px 20px;
+    color: var(--gray-800);
+  }
+
+  .prose li { margin-bottom: 6px; line-height: 1.65; }
+
+  /* ─── TIER BLOCKS ─────────────────────────────────────────────────── */
+  .tier-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 28px 0;
+  }
+
+  .tier-card {
+    border-radius: var(--radius);
+    padding: 24px;
+    border-top: 4px solid;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tier-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: .04;
+    pointer-events: none;
+  }
+
+  .tier-card.foundational {
+    background: #f0f6ff;
+    border-color: var(--found-color);
+  }
+
+  .tier-card.equity {
+    background: #f0faf9;
+    border-color: var(--equity-color);
+  }
+
+  .tier-card.justice {
+    background: #faf0f9;
+    border-color: var(--justice-color);
+  }
+
+  .tier-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .foundational .tier-label { color: var(--found-color); }
+  .equity .tier-label { color: var(--equity-color); }
+  .justice .tier-label { color: var(--justice-color); }
+
+  .tier-card p {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+  }
+
+  /* ─── EXEMPLAR BLOCKS ─────────────────────────────────────────────── */
+  .exemplar {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 24px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  }
+
+  .exemplar-header {
+    background: var(--navy);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .exemplar-header span {
+    color: var(--gold);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .exemplar-header .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.3);
+  }
+
+  .exemplar-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    divide-inline: 1px solid var(--gray-200);
+  }
+
+  .exemplar-col {
+    padding: 20px 22px;
+    border-right: 1px solid var(--gray-100);
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+  }
+
+  .exemplar-col:last-child { border-right: none; }
+
+  .exemplar-col-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .found-label { color: var(--found-color); }
+  .equity-label { color: var(--equity-color); }
+  .justice-label { color: var(--justice-color); }
+
+  /* ─── CALLOUT BOXES ───────────────────────────────────────────────── */
+  .callout {
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin: 20px 0;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    font-size: 14px;
+  }
+
+  .callout-icon {
+    font-size: 18px;
+    line-height: 1.3;
+    flex-shrink: 0;
+  }
+
+  .callout.info { background: #eff6ff; border-left: 4px solid var(--blue-light); }
+  .callout.info .callout-icon { color: var(--blue); }
+  .callout.warning { background: #fff8ec; border-left: 4px solid var(--gold); }
+  .callout.warning .callout-icon { color: var(--gold); }
+  .callout.danger { background: #fff1f0; border-left: 4px solid var(--danger); }
+  .callout.danger .callout-icon { color: var(--danger); }
+  .callout.success { background: #f0faf4; border-left: 4px solid var(--success); }
+  .callout.success .callout-icon { color: var(--success); }
+
+  .callout p { margin: 0; line-height: 1.6; }
+  .callout strong { font-weight: 600; display: block; margin-bottom: 4px; }
+
+  /* ─── TABLES ──────────────────────────────────────────────────────── */
+  .table-wrap { overflow-x: auto; margin: 24px 0; border-radius: var(--radius); border: 1px solid var(--gray-200); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    background: var(--white);
+  }
+
+  thead {
+    background: var(--navy);
+    color: var(--white);
+  }
+
+  thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: .5px;
+  }
+
+  tbody tr:nth-child(even) { background: var(--gray-100); }
+  tbody tr:hover { background: #ebf1fb; }
+
+  tbody td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: top;
+    line-height: 1.55;
+    color: var(--gray-800);
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+
+  .td-code {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 12px;
+    color: var(--blue);
+    white-space: nowrap;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .tag-req { background: #dce8f7; color: var(--found-color); }
+  .tag-opt { background: var(--gray-100); color: var(--gray-600); }
+  .tag-rec { background: #d4eeed; color: var(--equity-color); }
+
+  /* ─── MCR CARDS ───────────────────────────────────────────────────── */
+  .mcr-grid { display: grid; gap: 18px; margin: 24px 0; }
+
+  .mcr-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    transition: box-shadow .2s;
+  }
+
+  .mcr-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.09); }
+
+  .mcr-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    cursor: pointer;
+    background: var(--white);
+  }
+
+  .mcr-num {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .mcr-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--navy);
+    flex: 1;
+  }
+
+  .mcr-toggle {
+    color: var(--gray-400);
+    font-size: 18px;
+    transition: transform .2s;
+  }
+
+  .mcr-card.open .mcr-toggle { transform: rotate(180deg); }
+
+  .mcr-body {
+    display: none;
+    padding: 0 20px 20px;
+    border-top: 1px solid var(--gray-100);
+  }
+
+  .mcr-card.open .mcr-body { display: block; }
+
+  .mcr-language {
+    background: #faf8f3;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 16px 18px;
+    font-size: 13.5px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin: 14px 0;
+    font-style: italic;
+  }
+
+  .mcr-language .must {
+    color: var(--navy);
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  .mcr-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+
+  .mcr-meta-block {
+    background: var(--gray-100);
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 12.5px;
+  }
+
+  .mcr-meta-block strong {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 6px;
+  }
+
+  /* ─── SCORING RUBRIC ──────────────────────────────────────────────── */
+  .rubric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .rubric-card {
+    border-radius: var(--radius);
+    padding: 20px;
+    border-top: 4px solid;
+  }
+
+  .rubric-card.score-0 { background: #fff5f5; border-color: #e74c3c; }
+  .rubric-card.score-1 { background: #fff8ec; border-color: #e67e22; }
+  .rubric-card.score-2 { background: #f4f8ee; border-color: #27ae60; }
+  .rubric-card.score-3 { background: #eff6ff; border-color: var(--blue); }
+
+  .rubric-score {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .score-0 .rubric-score { color: #e74c3c; }
+  .score-1 .rubric-score { color: #e67e22; }
+  .score-2 .rubric-score { color: #27ae60; }
+  .score-3 .rubric-score { color: var(--blue); }
+
+  .rubric-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    color: var(--navy);
+  }
+
+  .rubric-card p {
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  /* ─── STEPS / QUICKSTART ──────────────────────────────────────────── */
+  .steps-list { counter-reset: step-counter; }
+
+  .step {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 28px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    counter-increment: step-counter;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .step-num::after {
+    content: '';
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: calc(100% + 8px);
+    background: var(--gray-200);
+  }
+
+  .step:last-child .step-num::after { display: none; }
+
+  .step-content { flex: 1; padding-top: 8px; }
+
+  .step-content h3 {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0 0 6px;
+  }
+
+  .step-content p {
+    font-size: 14px;
+    color: var(--gray-600);
+    margin: 0;
+    line-height: 1.65;
+  }
+
+  /* ─── CHECKLIST ───────────────────────────────────────────────────── */
+  .checklist {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 20px 0;
+  }
+
+  .checklist-header {
+    background: var(--navy-mid);
+    color: var(--white);
+    padding: 12px 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 13.5px;
+    line-height: 1.55;
+    cursor: pointer;
+    transition: background .15s;
+  }
+
+  .checklist-item:last-child { border-bottom: none; }
+  .checklist-item:hover { background: var(--gray-100); }
+
+  .checklist-item input[type=checkbox] {
+    margin-top: 2px;
+    width: 16px; height: 16px;
+    flex-shrink: 0;
+    accent-color: var(--navy);
+    cursor: pointer;
+  }
+
+  .checklist-item.checked { text-decoration: line-through; color: var(--gray-400); }
+
+  /* ─── PLACEHOLDER SYMBOLS ─────────────────────────────────────────── */
+  .placeholder-code {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 12.5px;
+    background: #f0f4ff;
+    color: var(--blue);
+    padding: 1px 6px;
+    border-radius: 3px;
+    border: 1px solid #ccd9f0;
+  }
+
+  /* ─── DECISION GUIDE ──────────────────────────────────────────────── */
+  .decision-flow {
+    display: grid;
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .decision-node {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    position: relative;
+  }
+
+  .decision-node .q-num {
+    position: absolute;
+    top: -12px; left: 20px;
+    background: var(--navy);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .decision-node .q-text {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--navy);
+    margin-bottom: 12px;
+  }
+
+  .decision-node .answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .answer {
+    background: var(--gray-100);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .answer strong {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    color: var(--blue);
+  }
+
+  /* ─── BOTTOM PADDING ──────────────────────────────────────────────── */
+  .page-section { padding-bottom: 80px; }
+
+  /* ─── PROGRESS ────────────────────────────────────────────────────── */
+  .progress-bar {
+    height: 2px;
+    background: var(--gold);
+    position: fixed;
+    top: 0; left: var(--sidebar-w);
+    right: 0;
+    transform-origin: left;
+    transform: scaleX(0);
+    z-index: 200;
+    transition: transform .3s ease;
+  }
+
+  /* ─── SEARCH BAR ──────────────────────────────────────────────────── */
+  .search-wrap {
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+
+  .search-input {
+    width: 100%;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--white);
+    font-size: 12.5px;
+    font-family: 'Source Sans 3', sans-serif;
+    outline: none;
+    transition: background .2s;
+  }
+
+  .search-input::placeholder { color: rgba(255,255,255,.35); }
+  .search-input:focus { background: rgba(255,255,255,.12); border-color: rgba(201,150,59,.5); }
+
+  /* ─── BACK TO TOP ─────────────────────────────────────────────────── */
+  .back-top {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    background: var(--navy);
+    color: var(--gold);
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,.2);
+    opacity: 0;
+    transform: translateY(12px);
+    transition: all .3s;
+    z-index: 80;
+    border: none;
+  }
+
+  .back-top.visible { opacity: 1; transform: translateY(0); }
+  .back-top:hover { background: var(--blue); }
+
+  /* ─── DIVIDER ─────────────────────────────────────────────────────── */
+  .divider {
+    height: 1px;
+    background: var(--gray-200);
+    margin: 32px 0;
+  }
+
+  /* ─── RESPONSIVE ──────────────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    :root { --sidebar-w: 0px; }
+    #sidebar { transform: translateX(-300px); width: 300px; }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; max-width: 100%; }
+    .topbar { padding: 12px 20px; }
+    .hero { padding: 48px 24px 40px; }
+    .hero h1 { font-size: 28px; }
+    .page-section { padding: 36px 24px; }
+    .tier-grid, .rubric-grid, .exemplar-grid { grid-template-columns: 1fr; }
+    .mcr-meta { grid-template-columns: 1fr; }
+    .decision-node .answers { grid-template-columns: 1fr; }
+    .menu-btn { display: flex; }
+  }
+
+  .menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: var(--navy);
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  /* ─── ANNEX AI ────────────────────────────────────────────────────── */
+  .ai-use-case {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-bottom: 14px;
+  }
+
+  .ai-use-case h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ai-use-case h4 .ai-badge {
+    background: #e8f0fe;
+    color: #1a56db;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .ai-use-case p { font-size: 13.5px; color: var(--gray-600); margin: 0; line-height: 1.65; }
+
+  /* print */
+  @media print {
+    #sidebar, .topbar, .back-top, .progress-bar { display: none !important; }
+    #main { margin-left: 0; }
+    .page-section { display: block !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════ -->
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">NCSA / NCIEA</div>
+    <div class="sidebar-title">Assessment RFP<br>Development Toolkit</div>
+  </div>
+
+  <div class="search-wrap">
+    <input class="search-input" id="sidebarSearch" type="text" placeholder="Search sections…" oninput="filterNav(this.value)">
+  </div>
+
+  <div id="navLinks">
+    <div class="nav-section-label">Getting Started</div>
+    <a class="nav-item active" data-section="overview" onclick="showSection('overview')">Overview &amp; Purpose</a>
+    <a class="nav-item" data-section="quickstart" onclick="showSection('quickstart')">Quick Start Guide</a>
+    <a class="nav-item" data-section="tier-guide" onclick="showSection('tier-guide')">Tier-Selection Guide</a>
+    <a class="nav-item" data-section="language-legend" onclick="showSection('language-legend')">Language Legend</a>
+    <a class="nav-item" data-section="rubric" onclick="showSection('rubric')">Universal Rubric</a>
+    <a class="nav-item" data-section="customization" onclick="showSection('customization')">Customization Key</a>
+
+    <div class="nav-section-label">Compliance Floor</div>
+    <a class="nav-item" data-section="mcr" onclick="showSection('mcr')">Minimum Compliance Reqs.</a>
+    <a class="nav-item nav-sub" data-section="mcr" onclick="showSection('mcr')">MCR 1–10 &amp; Attestation</a>
+    <a class="nav-item nav-sub" data-section="mcr" onclick="showSection('mcr')">Enforcement Provisions</a>
+
+    <div class="nav-section-label">Chapters</div>
+    <a class="nav-item" data-section="ch1" onclick="showSection('ch1')">I — Procurement Process</a>
+    <a class="nav-item" data-section="ch2" onclick="showSection('ch2')">II — Background &amp; Vendors</a>
+    <a class="nav-item nav-sub" data-section="ch2" onclick="showSection('ch2')">Glossary of Terms</a>
+    <a class="nav-item nav-sub" data-section="ch2" onclick="showSection('ch2')">Rightsholders &amp; RAC</a>
+    <a class="nav-item nav-sub" data-section="ch2" onclick="showSection('ch2')">Community Partnerships</a>
+    <a class="nav-item" data-section="ch3" onclick="showSection('ch3')">III — Statement of Work</a>
+    <a class="nav-item" data-section="ch4" onclick="showSection('ch4')">IV — Assessment Design</a>
+    <a class="nav-item nav-sub" data-section="ch4" onclick="showSection('ch4')">Content Frameworks</a>
+    <a class="nav-item nav-sub" data-section="ch4" onclick="showSection('ch4')">Item Development</a>
+    <a class="nav-item nav-sub" data-section="ch4" onclick="showSection('ch4')">Culturally Responsive Items</a>
+    <a class="nav-item nav-sub" data-section="ch4" onclick="showSection('ch4')">Standard Setting</a>
+    <a class="nav-item nav-sub" data-section="ch4" onclick="showSection('ch4')">Reporting</a>
+    <a class="nav-item" data-section="ch5" onclick="showSection('ch5')">V — Test Administration</a>
+    <a class="nav-item" data-section="ch6" onclick="showSection('ch6')">VI — Validation Efforts</a>
+    <a class="nav-item" data-section="ch7" onclick="showSection('ch7')">VII — Managing Risk</a>
+    <a class="nav-item" data-section="ch8" onclick="showSection('ch8')">VIII — Terms &amp; Conditions</a>
+
+    <div class="nav-section-label">Annex</div>
+    <a class="nav-item" data-section="annexA" onclick="showSection('annexA')">Annex A — AI Accountability</a>
+    <a class="nav-item nav-sub" data-section="annexA" onclick="showSection('annexA')">Definitions &amp; Disclosures</a>
+    <a class="nav-item nav-sub" data-section="annexA" onclick="showSection('annexA')">AI Use Cases</a>
+    <a class="nav-item nav-sub" data-section="annexA" onclick="showSection('annexA')">State Decision Rights</a>
+  </div>
+</nav>
+
+<!-- ══ MAIN ══════════════════════════════════════════════════════════════ -->
+<div id="main">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <div class="breadcrumb">
+      <span id="breadcrumbText">Overview &amp; Purpose</span>
+    </div>
+    <button class="tier-badge tier-found" onclick="showSection('tier-guide')">Foundational</button>
+    <button class="tier-badge tier-equity" onclick="showSection('tier-guide')">Equity</button>
+    <button class="tier-badge tier-justice" onclick="showSection('tier-guide')">Justice</button>
+  </div>
+
+  <!-- ── HERO (only on overview) ─────────────────────────────────────── -->
+  <div id="heroBlock">
+    <div class="hero">
+      <div class="hero-eyebrow">Center for Measurement Justice · NCIEA</div>
+      <h1>Assessment Request for<br>Proposal (RFP) <em>Development</em><br>Toolkit</h1>
+      <div class="hero-meta">Jennifer Randall &amp; Thao Vo · Juan D'Brot · Complete Design Guide for State-Level Assessments</div>
+      <div class="hero-stats">
+        <div class="stat"><div class="stat-num">166</div><div class="stat-label">Pages</div></div>
+        <div class="stat"><div class="stat-num">8</div><div class="stat-label">Chapters</div></div>
+        <div class="stat"><div class="stat-num">10</div><div class="stat-label">Compliance Reqs.</div></div>
+        <div class="stat"><div class="stat-num">3</div><div class="stat-label">Language Tiers</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTIONS ══════════════════════════════════════════════════════ -->
+
+  <!-- OVERVIEW -->
+  <section class="page-section active" id="sec-overview">
+    <div class="section-header">
+      <div class="chapter-tag">Introduction</div>
+      <h2>Purpose of the Toolkit</h2>
+      <p>A design guide for developing state-level educational assessment RFPs, covering every stage from planning and procurement through validation.</p>
+    </div>
+    <div class="prose">
+      <p>This document is a design guide for developing a Request for Proposal (RFP) for state-level educational assessments. The document details guidance and considerations for each stage of the assessment process, from initial planning and procurement to item development, administration, psychometrics, reporting, and validation procedures.</p>
+      <p>A key feature is the inclusion of ready-to-implement exemplars: tables, figures, and language blocks that can be directly incorporated into RFPs. Where relevant, the guide provides three language tiers—focused on <strong>foundational</strong>, <strong>equity</strong>, and <strong>justice</strong>—offering states different language levels of commitment they wish vendors to include in their proposals.</p>
+
+      <h3>The Three Language Tiers</h3>
+    </div>
+
+    <div class="tier-grid">
+      <div class="tier-card foundational">
+        <div class="tier-label">Foundational</div>
+        <p>Proposals adopting this language ensure that all students have an equal opportunity to participate in and demonstrate their learning on the assessment. This includes ensuring the assessment is accessible to students with disabilities, free from obvious bias, and administered fairly.</p>
+      </div>
+      <div class="tier-card equity">
+        <div class="tier-label">Equity</div>
+        <p>Proposals adopting this language go beyond acknowledging fairness and actively expand the participation of students, schools, and communities directly impacted by the proposal. This level seeks to identify and address potential disparities, with special attention to historically and systematically excluded groups.</p>
+      </div>
+      <div class="tier-card justice">
+        <div class="tier-label">Justice</div>
+        <p>Proposals adopting this language represent the most ambitious language in proposal writing because they explicitly recognize systemic inequities (e.g., racism, sexism, ableism, intersectionality) and their profound impact on educational outcomes. Proposals at this level would explicitly name and address these inequities and actively involve marginalized communities in the assessment development.</p>
+      </div>
+    </div>
+
+    <div class="prose">
+      <h3>Chapter Scope: Required and Optional Sections</h3>
+      <p>Every chapter in the toolkit contains material that some states will adopt as-is, some will customize, and some will omit. The table below identifies the default disposition of each chapter.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Chapter</th><th>Disposition</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><strong>I — Procurement Process and Timeline</strong></td><td><span class="tag tag-req">Required</span></td><td>State-specific dates and procurement vehicle. Apply your state's standard procurement boilerplate where applicable.</td></tr>
+          <tr><td><strong>II — Background Information for Vendors</strong></td><td><span class="tag tag-req">Required</span></td><td>Includes the Rightsholder Accountability Council provisions and community partnership framing. Tier choice has the largest effect here.</td></tr>
+          <tr><td><strong>III — Statement of Work</strong></td><td><span class="tag tag-req">Required</span></td><td>Project management framing. Lightly tier-sensitive.</td></tr>
+          <tr><td><strong>IV — Assessment Design and Development</strong></td><td><span class="tag tag-req">Required if in scope</span></td><td>Includes content frameworks, item development, standard setting, and reporting. AI Vendor Accountability Annex is referenced here.</td></tr>
+          <tr><td><strong>V — Test Administration</strong></td><td><span class="tag tag-req">Required if in scope</span></td><td>Includes item-adaptive testing, irregularities, remote/virtual testing definitions, scoring, AI scoring, security.</td></tr>
+          <tr><td><strong>VI — Validation Efforts</strong></td><td><span class="tag tag-req">Required</span></td><td>Validity evidence is required for any assessment used for high-stakes decisions. Justice tier moves community involvement upstream into construct articulation.</td></tr>
+          <tr><td><strong>VII — Managing Risk</strong></td><td><span class="tag tag-rec">Recommended</span></td><td>Conflict of interest, issue and risk management, fiscal management. Strongly recommended for any multi-year contract.</td></tr>
+          <tr><td><strong>VIII — Terms and Conditions</strong></td><td><span class="tag tag-req">Required</span></td><td>Penalties, bid evaluation process, cost proposal. The Four-Point Scoring Rubric and Deliverables Checklists are referenced from this chapter.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- QUICK START -->
+  <section class="page-section" id="sec-quickstart">
+    <div class="section-header">
+      <div class="chapter-tag">Getting Started</div>
+      <h2>How to Use This Toolkit — A Quick Start</h2>
+      <p>Five decisions will assemble a complete RFP from this toolkit. Each step references the chapter, table, or appendix where the relevant content lives.</p>
+    </div>
+
+    <div class="steps-list">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Decide your tier</h3>
+          <p>Choose Foundational, Equity, or Justice. The toolkit provides ready-to-use exemplar language at each tier across every section. The choice should be made by the state team that will own the procurement, with input from leadership about what your political and legal context can support. See the Tier-Selection Decision Guide for help. Your tier choice will determine which column of every tiered table you draw from. States may also opt to move back and forth between tiers for different components of the RFP.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Define your scope</h3>
+          <p>Identify which assessment components are in scope (e.g., summative only; summative plus interim; the full system). Chapter II includes a Components of the Assessment System table — complete it first. Anything you mark out-of-scope can be removed from the resulting RFP.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Customize the state-specific placeholders</h3>
+          <p>Throughout the toolkit, you will see placeholders enclosed in angle brackets — for example, <span class="placeholder-code">&lt;state name&gt;</span>, <span class="placeholder-code">&lt;List specific state systems&gt;</span>, <span class="placeholder-code">&lt;Subject Area&gt;</span>. These are the only places the language is intended to change. Before releasing the RFP, search the document for the strings <strong>&lt;</strong>, <strong>&gt;</strong>, and <strong>[</strong> to confirm no placeholder was missed.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3>Adopt the Minimum Compliance Requirements</h3>
+          <p>The toolkit includes a Minimum Compliance Requirements page. These are the commitments that are non-negotiable for any tier — including annual bias review, fair compensation for rightsholders, AI training data disclosure, and current-year accessibility (VPAT) reporting. Vendors who do not accept these commitments are disqualified, regardless of how their proposal otherwise scores.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h3>Plan your evaluation</h3>
+          <p>Two structures support evaluation: the Four-Point Scoring Rubric (included in the front matter) and the Required Deliverables Checklists at the end of each chapter. The deliverables checklist is a completeness check — it verifies that the vendor produced every required artifact — and is used before substantive scoring begins. The four-point rubric is then applied to score the substance of each response section.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">ℹ️</div>
+      <p><strong>Pre-release checklist</strong> Before you release the RFP, the state team should agree on the tier(s) (Step 1), the scope (Step 2), the customization choices (Step 3), any state-specific additions to the Minimum Compliance Requirements (Step 4), and how the team will divide evaluation responsibilities (Step 5). A pre-release checklist appears in the Bid Evaluation Process chapter.</p>
+    </div>
+  </section>
+
+  <!-- TIER GUIDE -->
+  <section class="page-section" id="sec-tier-guide">
+    <div class="section-header">
+      <div class="chapter-tag">Framework</div>
+      <h2>Tier-Selection Decision Guide</h2>
+      <p>The toolkit offers three tiers of exemplar language. Each tier escalates the substantive commitments your RFP will require of vendors.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tier</th><th>What it commits the state to</th><th>Typical context</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag-req">Foundational</span><br><small>(Fairness)</small></td>
+            <td>Access, non-discrimination, baseline procedural fairness. Standards-aligned bias review. Accessibility compliance. Equal opportunity to demonstrate learning.</td>
+            <td>Appropriate in any state. A defensible floor regardless of political context. Useful when "equity" framing is unworkable.</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-rec">Equity</span></td>
+            <td>Subgroup outcomes addressed, not just overall. Targeted outreach and engagement of historically underserved communities. Disaggregated validity, reliability, and impact analysis. Bias review committees with community representation.</td>
+            <td>Appropriate where the state has political and legal latitude to name and address group-level disparities, and where community engagement infrastructure exists or can be funded.</td>
+          </tr>
+          <tr>
+            <td><span class="tag" style="background:#ead4e8;color:var(--justice-color)">Justice</span></td>
+            <td>Community decision-making authority, not just consultation. Rightsholder Accountability Council with sign-off rights. Data sovereignty. Co-creation of constructs, items, and reporting. Material redistribution of resources to community partners.</td>
+            <td>Appropriate where state leadership is prepared to share decision rights with impacted communities and to dedicate resources to community-led governance over the contract lifetime.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-family:'Playfair Display',serif;font-size:20px;color:var(--navy);margin:28px 0 16px;">Decision Questions</h3>
+
+    <div class="decision-flow">
+      <div class="decision-node">
+        <div class="q-num">Question 1</div>
+        <div class="q-text">Is your state's political and legal climate one in which the words "equity" and "culturally responsive" can appear in a state procurement document without triggering a disqualifying objection?</div>
+        <div class="answers">
+          <div class="answer"><strong>If NO →</strong> Use Foundational (Fairness) language throughout. The Foundational tier is substantively meaningful and does not foreclose later moves toward Equity or Justice.</div>
+          <div class="answer"><strong>If YES →</strong> Continue to Question 2.</div>
+        </div>
+      </div>
+      <div class="decision-node">
+        <div class="q-num">Question 2</div>
+        <div class="q-text">Does your state currently disaggregate assessment results by race/ethnicity, disability status, English learner status, and socioeconomic status, and act on those disaggregations?</div>
+        <div class="answers">
+          <div class="answer"><strong>If NO →</strong> Use Equity language. Your RFP will help build the disaggregation and response infrastructure your state needs.</div>
+          <div class="answer"><strong>If YES →</strong> Continue to Question 3.</div>
+        </div>
+      </div>
+      <div class="decision-node">
+        <div class="q-num">Question 3</div>
+        <div class="q-text">Is your state prepared to share decision-making authority — including item approval, reporting design, and validity evidence priorities — with a community-controlled body whose decisions the vendor cannot unilaterally override?</div>
+        <div class="answers">
+          <div class="answer"><strong>If NO →</strong> Use Equity language and consider moving toward Justice in the next procurement cycle. Begin building the community engagement infrastructure now.</div>
+          <div class="answer"><strong>If YES →</strong> Use Justice language. The Rightsholder Accountability Council provisions become operative.</div>
+        </div>
+      </div>
+      <div class="decision-node">
+        <div class="q-num">Question 4</div>
+        <div class="q-text">Does your cost proposal include line items for fair compensation of community participants, accessibility accommodations, translation, and ongoing community engagement?</div>
+        <div class="answers">
+          <div class="answer"><strong>If NO →</strong> These are non-negotiable across all tiers. Before releasing the RFP, add them to the cost proposal template as required line items.</div>
+          <div class="answer"><strong>If YES →</strong> Proceed.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <p><strong>Mixed-tier RFPs are common and appropriate.</strong> A state might adopt Justice-tier language for community partnership and validity evidence (Chapters II and VI) while using Equity-tier language for procurement procedures (Chapters I and III) where community decision rights are less applicable. The tier you choose should be section-appropriate, not necessarily document-wide.</p>
+    </div>
+  </section>
+
+  <!-- LANGUAGE LEGEND -->
+  <section class="page-section" id="sec-language-legend">
+    <div class="section-header">
+      <div class="chapter-tag">Reference</div>
+      <h2>Language Strength Legend</h2>
+      <p>Every exemplar language block in this toolkit uses a controlled vocabulary so that vendors and reviewers understand what is binding, what is preferred, and what is optional.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Word</th><th>Meaning</th><th>Use when…</th></tr></thead>
+        <tbody>
+          <tr><td><strong>MUST / SHALL</strong></td><td>Binding requirement. Non-compliance disqualifies the proposal.</td><td>The state will not negotiate this point — bias review, fair compensation for rightsholders, AI training data disclosure, current-year accessibility reporting.</td></tr>
+          <tr><td><strong>WILL</strong></td><td>Statement of fact about what the awarded vendor will do.</td><td>Describing scope of work the vendor performs once the contract is signed.</td></tr>
+          <tr><td><strong>SHOULD</strong></td><td>Strong preference. Deviation requires justification.</td><td>Practices the state strongly prefers but is willing to consider alternatives for. Use sparingly.</td></tr>
+          <tr><td><strong>MAY</strong></td><td>Optional. Vendor discretion.</td><td>Genuinely optional enhancements that do not affect evaluation.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warning">
+      <div class="callout-icon">📌</div>
+      <p><strong>Practical convention:</strong> when a section asserts that something must happen and the vendor's response will be scored on whether they commit to it, use MUST. When the section describes what will already be true under the contract, use WILL. Reserve SHOULD for the small number of genuine preferences.</p>
+    </div>
+
+    <div class="prose">
+      <h3>Customization Symbols Key</h3>
+      <p>Every exemplar language block uses placeholder symbols where state-specific information must be inserted.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Placeholder</th><th>Meaning</th><th>Example replacement</th></tr></thead>
+        <tbody>
+          <tr><td><span class="placeholder-code">&lt;state name&gt;</span></td><td>Full name of the state issuing the RFP</td><td>Massachusetts</td></tr>
+          <tr><td><span class="placeholder-code">&lt;State&gt;</span></td><td>State name when used as a possessive or adjective</td><td>Massachusetts'</td></tr>
+          <tr><td><span class="placeholder-code">&lt;Subject Area&gt;</span></td><td>Content area within scope</td><td>Mathematics, English Language Arts, Science</td></tr>
+          <tr><td><span class="placeholder-code">&lt;Specific Degree/Certification&gt;</span></td><td>Minimum credential the vendor's staff must hold</td><td>Bachelor's degree in subject area; valid teaching license</td></tr>
+          <tr><td><span class="placeholder-code">&lt;Number&gt;</span></td><td>Years, count, percentage, or threshold the state specifies</td><td>3 (years); 5 (panel members)</td></tr>
+          <tr><td><span class="placeholder-code">&lt;List specific …&gt;</span></td><td>Italicized list the state replaces with state-specific items</td><td>Replace with a complete list — do not leave the angle brackets in the final RFP</td></tr>
+          <tr><td><span class="placeholder-code">[number]</span></td><td>Square brackets indicate a value the state should determine</td><td>3 (innovative assessment methods)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout danger">
+      <div class="callout-icon">⚠️</div>
+      <p><strong>Before releasing the RFP,</strong> search the document for the strings &lt;, &gt;, and [ to confirm no placeholder was missed. A common procurement-disqualifying error is leaving a placeholder in the final document — vendors will either ask clarifying questions that delay the procurement or, worse, submit responses that quote the unfilled placeholder back to the state.</p>
+    </div>
+  </section>
+
+  <!-- RUBRIC -->
+  <section class="page-section" id="sec-rubric">
+    <div class="section-header">
+      <div class="chapter-tag">Evaluation</div>
+      <h2>Universal Rubric</h2>
+      <p>Apply the same 0–3 scale across every section of the RFP. The descriptors below define what each score level means in general; chapter-specific anchors follow.</p>
+    </div>
+
+    <div class="rubric-grid">
+      <div class="rubric-card score-0">
+        <div class="rubric-score">0</div>
+        <div class="rubric-label">Does not address</div>
+        <p>The response is missing, restates the requirement without substance, contradicts the requirement, or refers to a future state that the vendor commits no resources to build.</p>
+      </div>
+      <div class="rubric-card score-1">
+        <div class="rubric-score">1</div>
+        <div class="rubric-label">Minimally addresses</div>
+        <p>The response acknowledges the requirement and describes intent, but lacks specifics on process, timeline, qualifications, or evidence. Reads as boilerplate. Does not provide reviewers with anything to evaluate beyond the assertion itself.</p>
+      </div>
+      <div class="rubric-card score-2">
+        <div class="rubric-score">2</div>
+        <div class="rubric-label">Adequately addresses</div>
+        <p>The response describes a named process, identifies roles and qualifications, names specific deliverables and a timeline, and includes at least one concrete example from prior work that demonstrates the vendor has done this before.</p>
+      </div>
+      <div class="rubric-card score-3">
+        <div class="rubric-score">3</div>
+        <div class="rubric-label">Exceeds expectations</div>
+        <p>The response provides a documented protocol with evidence of past impact, names rightsholder partners with letters of support, specifies decision rights including community sign-off where applicable, and demonstrates a track record of having changed practice in response to community input. The response anticipates implementation challenges and addresses them.</p>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <p><strong>Scoring convention:</strong> a section is evaluated holistically. If a response includes one paragraph of substance and three paragraphs of restated requirement, the score is 1, not 2. Reviewers should be able to point to the specific evidence that supports a score of 2 or 3.</p>
+    </div>
+  </section>
+
+  <!-- CUSTOMIZATION (folded into language-legend above, keeping section for nav) -->
+  <section class="page-section" id="sec-customization">
+    <div class="section-header">
+      <div class="chapter-tag">Reference</div>
+      <h2>Customization &amp; Symbols Key</h2>
+      <p>Every exemplar language block uses placeholder symbols where state-specific information must be inserted. Use this key to ensure no placeholder is missed in the final document.</p>
+    </div>
+    <div class="prose">
+      <p>See the <a href="#" onclick="showSection('language-legend');return false;" style="color:var(--blue)">Language Legend</a> section for the complete Customization Symbols Key, including all placeholders and example replacements.</p>
+    </div>
+  </section>
+
+  <!-- MCR -->
+  <section class="page-section" id="sec-mcr">
+    <div class="section-header">
+      <div class="chapter-tag">Compliance Floor</div>
+      <h2>Minimum Compliance Requirements</h2>
+      <p>Commitments that the state Department of Education will not negotiate. Vendors who decline any MCR are disqualified before substantive evaluation begins.</p>
+    </div>
+
+    <div class="callout warning">
+      <div class="callout-icon">🔒</div>
+      <p><strong>How these requirements operate:</strong> The MCRs are scored as a single binary: accept or decline. A vendor who accepts every MCR proceeds to substantive scoring; a vendor who declines any MCR does not. Vendors may propose stricter language — they may not propose weaker language. This section applies at all three tiers.</p>
+    </div>
+
+    <div class="mcr-grid">
+
+      <div class="mcr-card">
+        <div class="mcr-header" onclick="toggleMCR(this)">
+          <div class="mcr-num">1</div>
+          <div class="mcr-title">Annual Bias and Sensitivity Review</div>
+          <div class="mcr-toggle">▾</div>
+        </div>
+        <div class="mcr-body">
+          <div class="mcr-language">The vendor <span class="must">MUST</span> conduct an annual bias and sensitivity review of all operational assessment items. The review <span class="must">MUST</span> be conducted by a committee that includes external members with documented qualifications, including at minimum: one representative of a disability advocacy organization; one representative of a multilingual learner advocacy organization; one community representative drawn from the state's rightsholder map; and one practitioner with documented expertise in culturally responsive assessment practices. The vendor <span class="must">MUST</span> produce a public-facing annual summary report of the bias and sensitivity review's findings, items modified as a result, items removed as a result, and items retained over committee objection (if any). The summary report <span class="must">MUST</span> be delivered to the state within 90 days of the review's conclusion and <span class="must">MUST</span> be written so non-specialist audiences can understand it.</div>
+          <div class="mcr-meta">
+            <div class="mcr-meta-block"><strong>Rationale</strong>Annual bias review is the single most common assessment-quality commitment vendors make in proposals and the single least frequently verified commitment in practice. Requiring an external review committee with named seat categories converts the commitment from a promise to a verifiable obligation.</div>
+            <div class="mcr-meta-block"><strong>Verification</strong>(a) The public-facing annual summary report; (b) committee composition records submitted to the state at the start of each review cycle; (c) at the state's discretion, an independent third-party audit of the review process (see MCR-10).</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mcr-card">
+        <div class="mcr-header" onclick="toggleMCR(this)">
+          <div class="mcr-num">2</div>
+          <div class="mcr-title">Disaggregated Reporting</div>
+          <div class="mcr-toggle">▾</div>
+        </div>
+        <div class="mcr-body">
+          <div class="mcr-language">The vendor <span class="must">MUST</span> produce disaggregated reports of assessment outcomes, validity evidence, and reliability evidence for every state-defined reporting subgroup. At minimum, disaggregation <span class="must">MUST</span> include race and ethnicity, disability status, English learner status, socioeconomic status, gender, and any additional subgroups identified by the state. Where intersectional disaggregation is statistically defensible, the vendor <span class="must">MUST</span> also report at the intersection of subgroups. The vendor <span class="must">MUST</span> define and disclose the small-cell suppression rules used to protect student privacy in disaggregated reports. The vendor <span class="must">MUST NOT</span> use suppression as a mechanism for hiding disparities.</div>
+          <div class="mcr-meta">
+            <div class="mcr-meta-block"><strong>Rationale</strong>Disaggregated reporting is the prerequisite for identifying and addressing disparate impact. Including this as a Minimum Compliance Requirement ensures disaggregation is not negotiable away during contract negotiations or budget cuts.</div>
+            <div class="mcr-meta-block"><strong>Verification</strong>(a) Sample disaggregated reports submitted with the proposal; (b) written disclosure of suppression rules; (c) review of disaggregated outputs from the first operational reporting cycle.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mcr-card">
+        <div class="mcr-header" onclick="toggleMCR(this)">
+          <div class="mcr-num">3</div>
+          <div class="mcr-title">Fair Compensation for Rightsholders</div>
+          <div class="mcr-toggle">▾</div>
+        </div>
+        <div class="mcr-body">
+          <div class="mcr-language">The vendor <span class="must">MUST</span> fairly compensate all rightsholder participants for their time and expertise. This includes community members, parents of students, students of legal age, community-based advocates, fairness review committee members, item review panelists, standard-setting panelists, cognitive lab participants, and any other rightsholder serving in a contracted role on the work. Compensation rates <span class="must">MUST</span> be competitive with consulting rates for comparable subject-matter expertise and <span class="must">MUST</span> be disclosed in the cost proposal as a line item titled "Rightsholder Compensation Schedule." Honorary or token amounts do not satisfy this requirement. The vendor <span class="must">MUST</span> also budget for accommodations that enable participation, including childcare, transportation, technology access, and qualified human translation.</div>
+          <div class="mcr-meta">
+            <div class="mcr-meta-block"><strong>Rationale</strong>Without fair compensation, community-engagement commitments default to extractive arrangements in which the state and vendor benefit from community expertise without compensating it.</div>
+            <div class="mcr-meta-block"><strong>Verification</strong>(a) The Rightsholder Compensation Schedule line item in the cost proposal; (b) the accommodations budget line; (c) audit of payment records during periodic management monitoring meetings.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mcr-card">
+        <div class="mcr-header" onclick="toggleMCR(this)">
+          <div class="mcr-num">4</div>
+          <div class="mcr-title">Documented Community Engagement Across the Assessment Lifecycle</div>
+          <div class="mcr-toggle">▾</div>
+        </div>
+        <div class="mcr-body">
+          <div class="mcr-language">The vendor <span class="must">MUST</span> conduct documented community engagement at each phase of the assessment lifecycle: planning, item development, field testing, scoring, reporting, and validation review. "Documented" means the vendor <span class="must">MUST</span> produce, for each phase: (a) a record of which rightsholders were engaged; (b) the specific input received; (c) the design or operational decisions affected by that input; and (d) decisions made over rightsholder objection, if any. The vendor <span class="must">MUST</span> specify, at the start of the contract, the decision rights held by community engagement bodies at each phase (advisory, approval, or veto authority).</div>
+          <div class="mcr-meta">
+            <div class="mcr-meta-block"><strong>Rationale</strong>Community engagement without traceability is not verifiable. The lifecycle scope (six phases) ensures engagement is not collapsed to a single late-stage focus group.</div>
+            <div class="mcr-meta-block"><strong>Verification</strong>(a) The engagement-to-decision crosswalk produced for each phase; (b) periodic management monitoring meetings that include community representation; (c) the Rightsholder Accountability Council's annual report to the state.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mcr-card">
+        <div class="mcr-header" onclick="toggleMCR(this)">
+          <div class="mcr-num">5</div>
+          <div class="mcr-title">Artificial Intelligence Disclosure and State Oversight (Conditional)</div>
+          <div class="mcr-toggle">▾</div>
+        </div>
+        <div class="mcr-body">
+          <div class="mcr-language">This requirement applies if the vendor uses artificial intelligence at any stage of the assessment lifecycle — including item generation, item review, scoring, reporting, anomaly detection, or quality control. The vendor <span class="must">MUST</span> provide an AI Disclosure that includes: (1) each AI model used and its role; (2) training data sources and demographic composition; (3) a justification for the base architecture; (4) bias auditing procedures; (5) the community review process for AI-generated content; and (6) human-in-the-loop procedures. The state retains the right to require the vendor to replace any AI model whose disparate-impact performance exceeds defined thresholds.</div>
+          <div class="mcr-meta">
+            <div class="mcr-meta-block"><strong>Rationale</strong>Stakeholder reviewers identified AI as the highest-risk and least-disclosed component of contemporary assessment contracts. State veto authority over model selection is critical: without it, the vendor's third-party AI vendor effectively controls a substantial portion of the assessment.</div>
+            <div class="mcr-meta-block"><strong>Verification</strong>(a) The AI Disclosure document submitted with the proposal; (b) annual bias audits with disclosed methodology; (c) independent algorithmic audits at the state's discretion; (d) sample human-review records during operational monitoring.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mcr-card">
+        <div class="mcr-header" onclick="toggleMCR(this)">
+          <div class="mcr-num">6</div>
+          <div class="mcr-title">Accessibility Compliance and Specific Population Plans</div>
+          <div class="mcr-toggle">▾</div>
+        </div>
+        <div class="mcr-body">
+          <div class="mcr-language">The vendor <span class="must">MUST</span> provide a current-year (issued within twelve months of proposal submission) Voluntary Product Accessibility Template (VPAT) report covering the assessment platform, item types, score reports, family-facing reports, and any administrator-facing systems. A VPAT older than twelve months does not satisfy this requirement. The vendor <span class="must">MUST</span> also provide: (a) a remediation plan, with target dates, for every accessibility gap disclosed in the VPAT; (b) a specific plan for students with severe cognitive disabilities; (c) a specific plan for students who cannot access online testing; and (d) a multilingual learner accommodations plan that goes beyond translation to address linguistic and cultural variation in responses.</div>
+          <div class="mcr-meta">
+            <div class="mcr-meta-block"><strong>Rationale</strong>Stakeholder reviewers identified students with severe cognitive disabilities and students who cannot access online testing as systematically underserved by contemporary state assessment contracts.</div>
+            <div class="mcr-meta-block"><strong>Verification</strong>(a) The current-year VPAT report; (b) the remediation plan with named target dates; (c) the specific population plans, each signed by a named advocacy partner; (d) operational verification during the first administration cycle.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mcr-card">
+        <div class="mcr-header" onclick="toggleMCR(this)">
+          <div class="mcr-num">7</div>
+          <div class="mcr-title">Conflict of Interest Disclosure</div>
+          <div class="mcr-toggle">▾</div>
+        </div>
+        <div class="mcr-body">
+          <div class="mcr-language">The vendor and every named subcontractor <span class="must">MUST</span> disclose any actual or potential conflict of interest in the proposal. Disclosable conflicts include: (a) existing or recent contracts with the state; (b) employment, consulting, or advisory relationships between vendor staff and current or former state officials; (c) ownership stakes in competing companies; (d) prior involvement in litigation involving the state's assessment system; and (e) any compensation arrangement that would be paid to a state official in connection with this contract. The vendor <span class="must">MUST</span> update the conflict-of-interest disclosure when material new conflicts arise during the contract term, within 30 days.</div>
+          <div class="mcr-meta">
+            <div class="mcr-meta-block"><strong>Rationale</strong>Naming it as an MCR aligns it with the rest of the floor: a vendor that cannot disclose its conflicts cannot proceed to substantive evaluation.</div>
+            <div class="mcr-meta-block"><strong>Verification</strong>(a) The conflict-of-interest disclosure submitted with the proposal; (b) annual recertification during the contract term; (c) reference to the state's procurement office's standing conflict-of-interest verification procedures.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mcr-card">
+        <div class="mcr-header" onclick="toggleMCR(this)">
+          <div class="mcr-num">8</div>
+          <div class="mcr-title">Data Privacy, Security, and Community Data Access</div>
+          <div class="mcr-toggle">▾</div>
+        </div>
+        <div class="mcr-body">
+          <div class="mcr-language">The vendor <span class="must">MUST</span> comply with all applicable federal and state data privacy laws including FERPA, COPPA where applicable, and any state-specific student data privacy statute. The vendor <span class="must">MUST NOT</span> use student-level data for any purpose outside the contracted work without the state's written authorization for each such use. The vendor <span class="must">MUST</span> provide community partners with access to disaggregated, suppression-protected data in non-technical, accessible formats. Where the state adopts the Justice tier, the vendor <span class="must">MUST</span> honor any community data sovereignty agreement entered into between the state and a specific community.</div>
+          <div class="mcr-meta">
+            <div class="mcr-meta-block"><strong>Rationale</strong>Without this MCR, vendors routinely provide community access only through formal data requests reviewed for vendor convenience — effectively gating data behind administrative friction.</div>
+            <div class="mcr-meta-block"><strong>Verification</strong>(a) The vendor's data privacy compliance attestation; (b) sample community-facing data reports submitted with the proposal; (c) review of data access logs during periodic management monitoring; (d) review of any community data sovereignty agreements in force.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mcr-card">
+        <div class="mcr-header" onclick="toggleMCR(this)">
+          <div class="mcr-num">9</div>
+          <div class="mcr-title">Validity with Targeted Populations</div>
+          <div class="mcr-toggle">▾</div>
+        </div>
+        <div class="mcr-body">
+          <div class="mcr-language">The vendor <span class="must">MUST</span> conduct cognitive labs and think-aloud studies with targeted student populations as part of validity evidence collection. "Targeted populations" <span class="must">MUST</span> include, at minimum: students with severe cognitive disabilities; multilingual learners across the languages most commonly spoken in the state; students from communities who have been historically and systematically excluded by state assessment; and any additional populations identified by the Rightsholder Accountability Council or fairness review committee. Cognitive lab participants <span class="must">MUST</span> be fairly compensated under the Rightsholder Compensation Schedule.</div>
+          <div class="mcr-meta">
+            <div class="mcr-meta-block"><strong>Rationale</strong>Validity is frequently asserted but rarely demonstrated specifically across HSE populations. Naming specific populations prevents vendors from defaulting to convenience samples.</div>
+            <div class="mcr-meta-block"><strong>Verification</strong>(a) The cognitive lab study plan submitted with the proposal; (b) participant recruitment records demonstrating coverage of named populations; (c) cognitive lab reports disaggregated by population; (d) traceability from cognitive lab findings to item revisions.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mcr-card">
+        <div class="mcr-header" onclick="toggleMCR(this)">
+          <div class="mcr-num">10</div>
+          <div class="mcr-title">Independent Third-Party Review Authority</div>
+          <div class="mcr-toggle">▾</div>
+        </div>
+        <div class="mcr-body">
+          <div class="mcr-language">The vendor <span class="must">MUST</span> permit, at the state's discretion and expense, an independent third-party review of any element of the contracted work. Reviewable elements include, without limitation, bias and sensitivity review processes; AI training data, training procedures, and outputs; accessibility audits; validity evidence and supporting analyses; community engagement records; and cost-proposal compliance. The vendor <span class="must">MUST NOT</span> impose contractual restrictions on the scope of any state-commissioned independent review, on the publication of the state's findings from the review, or on the independent reviewer's access to underlying data, methods, or staff.</div>
+          <div class="mcr-meta">
+            <div class="mcr-meta-block"><strong>Rationale</strong>Without independent review authority, the state's ability to verify any other MCR depends on the vendor's self-reporting. Independent review is the backstop that makes every other MCR enforceable.</div>
+            <div class="mcr-meta-block"><strong>Verification</strong>(a) The vendor's written acceptance of this requirement; (b) the absence of conflicting language elsewhere in the proposal; (c) operational verification when an independent review is commissioned.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+
+    <h3 style="font-family:'Playfair Display',serif;font-size:20px;color:var(--navy);margin:0 0 16px;">Vendor Attestation Checklist</h3>
+    <p style="color:var(--gray-600);font-size:14px;margin-bottom:16px;">This checklist mirrors the Vendor Attestation Form. A signed Vendor Attestation is a condition of bid eligibility.</p>
+
+    <div class="checklist">
+      <div class="checklist-header">Acceptance — Vendor Attestation Form</div>
+      <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"> MCR-1. Annual Bias and Sensitivity Review — Accepted.</label>
+      <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"> MCR-2. Disaggregated Reporting — Accepted.</label>
+      <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"> MCR-3. Fair Compensation for Rightsholders — Accepted.</label>
+      <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"> MCR-4. Documented Community Engagement Across the Assessment Lifecycle — Accepted.</label>
+      <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"> MCR-5. Artificial Intelligence Disclosure and State Oversight — Accepted (if AI is used; otherwise mark Not Applicable).</label>
+      <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"> MCR-6. Accessibility Compliance and Specific Population Plans — Accepted.</label>
+      <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"> MCR-7. Conflict of Interest Disclosure — Accepted.</label>
+      <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"> MCR-8. Data Privacy, Security, and Community Data Access — Accepted.</label>
+      <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"> MCR-9. Cognitive Validity with Targeted Populations — Accepted.</label>
+      <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"> MCR-10. Independent Third-Party Review Authority — Accepted.</label>
+    </div>
+  </section>
+
+  <!-- CHAPTER I -->
+  <section class="page-section" id="sec-ch1">
+    <div class="section-header">
+      <div class="chapter-tag">Chapter I</div>
+      <h2>Procurement Process and Timeline</h2>
+      <p>This chapter outlines the procurement process for the statewide assessment system and provides a detailed timeline and key dates.</p>
+    </div>
+    <div class="prose">
+      <h3>Purpose of the Procurement</h3>
+      <p>This section should outline the state's purpose of seeking proposals from qualified vendors to develop, implement, and maintain a comprehensive statewide assessment system. This system will be a critical tool for measuring student achievement, informing instructional practices, and ensuring accountability across the state's educational landscape.</p>
+      <h3>Process Overview</h3>
+      <p>To facilitate a fair and transparent evaluation of all submissions, the procurement process will follow a competitive sealed proposal method.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Stage</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="td-code">01</td><td><strong>Release of RFP</strong></td><td>Official release of this document outlining the assessment system's requirements and specifications.</td></tr>
+          <tr><td class="td-code">02</td><td><strong>Vendor Q&amp;A Period</strong></td><td>A designated period for vendors to submit questions seeking clarification on the RFP.</td></tr>
+          <tr><td class="td-code">03</td><td><strong>Proposal Submission Deadline</strong></td><td>The deadline for vendors to submit their complete proposals.</td></tr>
+          <tr><td class="td-code">04</td><td><strong>Proposal Evaluation</strong></td><td>A comprehensive evaluation of all submitted proposals by a designated evaluation committee.</td></tr>
+          <tr><td class="td-code">05</td><td><strong>Oral Presentations (optional)</strong></td><td>If necessary, vendors may be invited to give oral presentations to clarify aspects of their proposals.</td></tr>
+          <tr><td class="td-code">06</td><td><strong>Contract Negotiation and Award</strong></td><td>Negotiation and award of the contract to the selected vendor(s).</td></tr>
+          <tr><td class="td-code">07</td><td><strong>Implementation and Transition</strong></td><td>The start of the contract, including system implementation and transition activities.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose">
+      <h3>Key Dates — Example Timeline</h3>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Activity</th><th>Date</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Release of RFP</td><td>[Date]</td><td>[Notes]</td></tr>
+          <tr><td>Vendor Question Deadline</td><td>[Date]</td><td></td></tr>
+          <tr><td>State Answers to Vendor Questions</td><td>[Date]</td><td></td></tr>
+          <tr><td>Proposal Evaluation Period</td><td>[Date]</td><td></td></tr>
+          <tr><td>Oral Presentations (If Applicable)</td><td>[Date]</td><td></td></tr>
+          <tr><td>Notice of Intent to Award</td><td>[Date]</td><td></td></tr>
+          <tr><td>Contract Negotiation Period</td><td>[Date]</td><td></td></tr>
+          <tr><td>Contract Award</td><td>[Date]</td><td></td></tr>
+          <tr><td>Contract Start Date</td><td>[Date]</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CHAPTER II -->
+  <section class="page-section" id="sec-ch2">
+    <div class="section-header">
+      <div class="chapter-tag">Chapter II</div>
+      <h2>Background Information for Vendors</h2>
+      <p>Equips vendors with a thorough understanding of the state's assessment system, its governing policies, and the diverse educational landscape within which it operates.</p>
+    </div>
+
+    <div class="prose">
+      <h3>Glossary of Terms</h3>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+        <tbody>
+          <tr><td class="td-code">ALD</td><td>Achievement Level Descriptor</td></tr>
+          <tr><td class="td-code">LDS</td><td>Longitudinal Data System</td></tr>
+          <tr><td class="td-code">SWD</td><td>Students with Disabilities</td></tr>
+          <tr><td class="td-code">REM</td><td>Racially and Ethnically Minoritized</td></tr>
+          <tr><td class="td-code">RAC</td><td>Rightsholders Accountability Council</td></tr>
+          <tr><td class="td-code">HSE</td><td>Historically and Systemically Excluded</td></tr>
+          <tr><td class="td-code">ToA</td><td>Theory of Action</td></tr>
+          <tr><td class="td-code">UDL</td><td>Universal Design for Learning</td></tr>
+          <tr><td class="td-code">VPAT</td><td>Voluntary Product Accessibility Template</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose">
+      <h3>Rightsholders, Clients, and Partners</h3>
+      <p><strong>Rightsholders</strong> are individuals or groups directly affected by the assessments' outcomes but hold minimal to no direct decision-making power in its design or implementation. Examples include students, parents, or local community-based advocates.</p>
+      <p><strong>Partners</strong> are individuals or groups who have a vested interest in the assessment and hold some decision-making power in the assessment development processes. Partners include legislators, the Governor's office, the state budget office, the state procurement office, the state auditor's office, and local school boards.</p>
+
+      <h3>Rightsholder Accountability Council (RAC)</h3>
+      <p>The RAC is a community engagement body comprised of individuals and groups representing intersecting marginalized populations from the local community. Input provided by RACs helps inform the intended context of the assessment, provides meaningful and actionable feedback concerning the intended outcomes, and informs the selection of the most relevant and appropriate measures to evaluate them.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Member</th><th>Proportion</th><th>Frequency</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Students</strong></td><td>30%</td><td>Ongoing and iterative participation across all assessment development stages, including construct definition, review and development, administration, planning, reporting, and interpretation of results.</td></tr>
+          <tr><td><strong>Parents/Guardians</strong></td><td>30%</td><td>Ongoing and iterative participation across all assessment development stages. Regular feedback sessions and surveys to capture student perspectives.</td></tr>
+          <tr><td><strong>Community-Based Advocates</strong></td><td>20%</td><td>Regular and consistent engagement throughout the assessment lifecycle. Cadence can be quarterly or as needed during key development stages.</td></tr>
+          <tr><td><strong>Educators/School Staff</strong></td><td>20%</td><td>Regular and consistent engagement throughout the assessment lifecycle, focusing on professional expertise on assessment design and implementation. Cadence can be quarterly or as needed.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose">
+      <h3>Assessment System Background — Exemplar Language</h3>
+    </div>
+
+    <div class="exemplar">
+      <div class="exemplar-header"><div class="dot"></div><span>Exemplar Language: Assessment System Background</span></div>
+      <div class="exemplar-grid">
+        <div class="exemplar-col">
+          <div class="exemplar-col-label found-label">Foundational</div>
+          "The proposed assessment system will fully comply with the state's governing documents to ensure all students have equal opportunity to demonstrate their knowledge. The state also requires that all assessments offer appropriate accommodations for different subgroups of students. The proposed assessment system will fully comply with these requirements and provide clear reporting of assessment results, including disaggregated data for subgroups, as required by law…"
+        </div>
+        <div class="exemplar-col">
+          <div class="exemplar-col-label equity-label">Equity</div>
+          "The proposed assessment system recognizes that score differences across student subgroups often indicate systemic inequities. Therefore, the proposal will analyze disaggregated data, paying close attention to historically marginalized groups. When describing differences between subgroups, the proposal will use 'opportunity gap' to highlight systemic factors such as inequitable access to resources and quality instruction…"
+        </div>
+        <div class="exemplar-col">
+          <div class="exemplar-col-label justice-label">Justice</div>
+          "The proposed assessment system is grounded in the understanding that systemic inequities disproportionately impact marginalized communities. Terms like 'achievement gap' perpetuate harmful narratives and fail to address the systemic factors contributing to these disparities. Thus, proposals should use language that brings attention to these systemic barriers, such as 'education debt,' to reflect the historical and ongoing injustices impacting student outcomes for marginalized learners…"
+        </div>
+      </div>
+    </div>
+
+    <div class="prose">
+      <h3>Major Reference Documents</h3>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Code</th><th>Document</th></tr></thead>
+        <tbody>
+          <tr><td class="td-code">A</td><td>The Standards for Educational and Psychological Testing</td></tr>
+          <tr><td class="td-code">B</td><td>White paper on common accessibility language for states and assessment vendors</td></tr>
+          <tr><td class="td-code">C</td><td>Criteria for Procuring and Evaluating High Quality Assessments</td></tr>
+          <tr><td class="td-code">D</td><td>Operational Best Practices for Statewide Large-Scale Assessment Programs</td></tr>
+          <tr><td class="td-code">E</td><td>Culturally responsive assessment: Provisional principles</td></tr>
+          <tr><td class="td-code">F</td><td>Strategies that address culturally responsive evaluation</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CHAPTER III -->
+  <section class="page-section" id="sec-ch3">
+    <div class="section-header">
+      <div class="chapter-tag">Chapter III</div>
+      <h2>Statement of Work</h2>
+      <p>Project and program management requirements for the assessment system vendor, including key contacts, documentation, change management, and scheduling.</p>
+    </div>
+    <div class="prose">
+      <h3>Program Management</h3>
+      <p>The vendor shall establish and maintain effective program management practices throughout the contract. Key areas include:</p>
+      <ul>
+        <li><strong>Key Contacts</strong> — Designated contacts on both the state and vendor sides for all communications.</li>
+        <li><strong>Executive Management Meetings</strong> — Regular meetings between senior leadership to review program status and resolve escalated issues.</li>
+        <li><strong>Documentation Repository</strong> — A centralized, state-accessible repository for all project documents, deliverables, and decision logs.</li>
+        <li><strong>Change Management</strong> — A formal process for managing changes to scope, schedule, and budget, with written approval from the state required before implementation.</li>
+        <li><strong>Annual Kickoff Meetings</strong> — Formal kickoff at the start of each contract year to align on priorities, schedule, and any program changes.</li>
+        <li><strong>Periodic Management Monitoring Meetings</strong> — Regular monitoring meetings (typically monthly or quarterly) that include community representation.</li>
+      </ul>
+
+      <h3>Project Management</h3>
+      <p>The vendor shall maintain a project management approach that includes a detailed project schedule updated monthly, a project management team with named roles and responsibilities, and a plan for finalizing the Theory of Action (ToA) if applicable.</p>
+
+      <h3>Communication Support</h3>
+      <p>All communications between vendors and rightsholders/partners must always be jointly conducted with the client (state). Direct meetings between vendors and rightsholders — including presentations — must always be jointly conducted with the client to maintain transparency and equity of process.</p>
+
+      <h3>Disaster Planning and Recovery</h3>
+      <p>The vendor shall provide a documented disaster planning and recovery plan that covers system failure scenarios, data recovery timelines, and communication protocols to ensure assessment continuity.</p>
+    </div>
+  </section>
+
+  <!-- CHAPTER IV -->
+  <section class="page-section" id="sec-ch4">
+    <div class="section-header">
+      <div class="chapter-tag">Chapter IV</div>
+      <h2>Assessment Design and Development</h2>
+      <p>Content frameworks, item development, culturally responsive assessment principles, standard setting, and reporting requirements.</p>
+    </div>
+    <div class="prose">
+      <h3>Content Frameworks and Standards</h3>
+      <p>This section requires vendors to demonstrate full alignment with state content standards, including annotations that identify the depth, breadth, and complexity the assessment must measure. Vendors must provide Content Standards and Annotations that map each standard to test blueprint specifications.</p>
+
+      <h3>Achievement Level Descriptors (ALDs)</h3>
+      <p>Vendors must develop ALDs that describe what students at each performance level know and can do. ALDs must be developed in collaboration with the Rightsholder Accountability Council at the Justice tier, and must be written in accessible language for non-specialist audiences including parents and community members.</p>
+
+      <h3>Innovation in Assessment Design</h3>
+    </div>
+
+    <div class="tier-grid">
+      <div class="tier-card foundational">
+        <div class="tier-label">Student Choice — Foundational</div>
+        <p>Proposals MUST incorporate student choice in assessment topics, allowing students to select from various relevant options to increase engagement and demonstration of understanding within areas of personal interest.</p>
+      </div>
+      <div class="tier-card equity">
+        <div class="tier-label">Student Choice — Equity</div>
+        <p>Proposals MUST incorporate student choice in assessment topics, providing culturally relevant and diverse content that reflects students' lived experiences and backgrounds, addressing potential biases in topic selection.</p>
+      </div>
+      <div class="tier-card justice">
+        <div class="tier-label">Student Choice — Justice</div>
+        <p>Proposals MUST incorporate student choice in assessment topics, allowing students to co-create and define assessment topics based on their community- and culturally-identified needs and interests, promoting student agency and empowerment.</p>
+      </div>
+    </div>
+
+    <div class="prose">
+      <h3>Item Development</h3>
+      <p>The foundation of a fair and accurate assessment lies in the expertise and diversity of its item writers. Item writer recruitment must emphasize qualifications that value cultural responsiveness, implement proactive recruitment strategies, and establish inclusive hiring procedures.</p>
+
+      <h3>Principles of Culturally Responsive Assessment for Item Writing</h3>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Principle</th><th>Description</th><th>Key Red Flags</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Validating</strong></td><td>Assessment leverages students' cultural knowledge, strengths, and backgrounds to create relevant assessments that bridge the gap between academic concepts and lived experiences.</td><td>Marginalized cultural knowledge framed as "alternative" or "supplementary" rather than central.</td></tr>
+          <tr><td><strong>Comprehensive and Inclusive</strong></td><td>Assessment employs cultural resources to maintain students' ethnic identities, community connections, and success ethic across all content areas.</td><td>One cultural frame as default, others as "also represented."</td></tr>
+          <tr><td><strong>Multidimensional</strong></td><td>Assessment connected to curriculum and standards, allowing students to see the connection between curriculum, lived experiences, and the assessment.</td><td>Multidimensional construct forced into unidimensional psychometric model.</td></tr>
+          <tr><td><strong>Empowering</strong></td><td>Assessment is asset-based, leveraging and highlighting what students know and do well; encouraging collaborative problem-solving and cultural capital acquisition.</td><td>Score reports leading with deficits.</td></tr>
+          <tr><td><strong>Transformative</strong></td><td>Assessment items nurture a sense of obligation to communities and society, empowering students to be social critics and agents of change.</td><td>"Transformative" framed as individualistic upward mobility rather than community-level change.</td></tr>
+          <tr><td><strong>Emancipatory</strong></td><td>Assessment items challenge the notion of absolute scholarly truth, empowering students to contest and contextualize multiple perspectives.</td><td>Single "correct" answer where multiple are defensible.</td></tr>
+          <tr><td><strong>Humanistic</strong></td><td>Assessment items foster a deeper understanding of self and others and promote empathy and interconnectedness across diverse ethnic, racial, and social groups.</td><td>Token diversity — one item or character per identified group.</td></tr>
+          <tr><td><strong>Normative and Ethical</strong></td><td>Assessment items expose cultural biases and challenge Eurocentric norms inherent to mainstream educational policies and practices.</td><td>Assessment claims to be culturally neutral.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose">
+      <h3>Standard Setting</h3>
+      <p>Vendors must provide a documented standard-setting plan that includes a qualified external evaluator, a detailed process for incorporating rightsholder feedback into performance level definitions, and a plan for monitoring classification accuracy and consistency.</p>
+
+      <h3>Reporting</h3>
+      <p>Reporting must consider multiple audiences — students, families, educators, and policymakers — and must be designed with input from the RAC. Reports must be written in asset-based language and must account for measurement error in all score presentations.</p>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <p><strong>AI in Item Development:</strong> If AI is used for item generation, vendors must comply with the AI Vendor Accountability Annex (Annex A). Key requirements include a documented Training Data Disclosure, a bias auditing protocol, and mandatory human-in-the-loop review of every AI-generated item before it reaches students.</p>
+    </div>
+  </section>
+
+  <!-- CHAPTER V -->
+  <section class="page-section" id="sec-ch5">
+    <div class="section-header">
+      <div class="chapter-tag">Chapter V</div>
+      <h2>Test Administration</h2>
+      <p>Item-adaptive testing, remote testing, scoring procedures, AI scoring requirements, test security, and accessibility.</p>
+    </div>
+    <div class="prose">
+      <h3>Item-Adaptive Testing</h3>
+      <p>For assessments using adaptive testing algorithms, vendors must document the adaptive algorithm, including its psychometric basis, selection criteria, and how it handles irregularities such as connectivity failures, student disengagement, or anomalous response patterns.</p>
+
+      <h3>Remote and Virtual Testing</h3>
+      <p>Vendors must define "remote testing" and "virtual testing" as used in the contract, and must provide a comprehensive plan for students who cannot access online testing environments — including an alternative-format administration option with the same content coverage as the online assessment.</p>
+
+      <h3>Scoring</h3>
+      <ul>
+        <li><strong>Non-AI-based automated scoring</strong> — Rule-based and pattern-matching systems must be documented with clear evidence of validity and reliability across student subgroups.</li>
+        <li><strong>Hand-scoring</strong> — Vendors must document scorer training, reliability monitoring, and the process for resolving scoring discrepancies.</li>
+        <li><strong>AI Scoring</strong> — If AI is used for scoring, vendors must comply with Annex A requirements, including bias auditing across all reporting subgroups, human review of a defined percentage of AI-scored responses, and community review of AI scoring rubrics.</li>
+      </ul>
+
+      <h3>Test Security</h3>
+      <p>Vendors must provide comprehensive test security procedures and protocols covering pre-administration, administration, and post-administration periods. Security plans must address both physical and digital security, including procedures for detecting and responding to security incidents.</p>
+
+      <h3>Online Dynamic Reporting System</h3>
+      <p>The vendor must provide an online reporting system that allows educators and administrators to access disaggregated score reports, filter by reporting subgroup, and download data files in accessible formats for community partners.</p>
+    </div>
+
+    <div class="callout success">
+      <div class="callout-icon">✅</div>
+      <p><strong>Deliverables Checklist (Test Administration):</strong> Accessibility and Administration plan · Assistive Technology integration specs · AI Scoring documentation (if applicable) · Test Security procedures and qualifications.</p>
+    </div>
+  </section>
+
+  <!-- CHAPTER VI -->
+  <section class="page-section" id="sec-ch6">
+    <div class="section-header">
+      <div class="chapter-tag">Chapter VI</div>
+      <h2>Validation Efforts</h2>
+      <p>Claims, validity evidence, innovative methodological approaches, psychometrics, and the validation argument.</p>
+    </div>
+    <div class="prose">
+      <h3>Claims and Validity Evidence</h3>
+      <p>Vendors must develop a validity argument that identifies the intended inferences from assessment scores (claims) and marshals evidence to support each claim. The validity argument must address five major sources of validity evidence as identified in the Standards for Educational and Psychological Testing:</p>
+      <ul>
+        <li><strong>Content evidence</strong> — Alignment between assessment content and the constructs being measured.</li>
+        <li><strong>Response process evidence</strong> — Evidence that students engage with items in ways aligned with the intended construct, including cognitive lab evidence across targeted populations.</li>
+        <li><strong>Internal structure evidence</strong> — Psychometric evidence that the assessment behaves as intended, including factor analyses and fit statistics.</li>
+        <li><strong>Relations to other variables</strong> — Convergent and discriminant validity evidence showing the assessment relates to other measures as expected.</li>
+        <li><strong>Consequences evidence</strong> — Evidence regarding the impact of assessment use on students and institutions, including disparate impact analyses across all reporting subgroups.</li>
+      </ul>
+
+      <h3>Psychometrics</h3>
+      <p>The vendor must document its psychometric model and calibration procedures, including IRT model selection, field test analyses, operational item analyses, and scaling and equating procedures. All psychometric analyses must be disaggregated by reporting subgroup to support detection of differential item functioning (DIF) and disparate impact.</p>
+
+      <h3>Validation Argument and Peer Review</h3>
+      <p>The assembled validity evidence must be synthesized into a Validation Report that is reviewed by an independent peer review panel. The peer review panel must include at least one member with documented expertise in measurement equity and one community member representing the RAC's perspective on the validity evidence.</p>
+    </div>
+
+    <div class="callout warning">
+      <div class="callout-icon">⚠️</div>
+      <p><strong>Justice Tier Note:</strong> At the Justice tier, community involvement in validation moves upstream into construct articulation — the RAC must be involved in defining what "success" means before the construct is translated into test specifications. Community-defined constructs of success must be documented and traceable to assessment design choices.</p>
+    </div>
+  </section>
+
+  <!-- CHAPTER VII -->
+  <section class="page-section" id="sec-ch7">
+    <div class="section-header">
+      <div class="chapter-tag">Chapter VII</div>
+      <h2>Managing Risk</h2>
+      <p>Conflict of interest, issue and risk management, and fiscal management provisions.</p>
+    </div>
+    <div class="prose">
+      <h3>Conflict of Interest</h3>
+      <p>The vendor must disclose all actual or potential conflicts of interest at the time of proposal submission and must update this disclosure throughout the contract term. See MCR-7 for the complete list of disclosable conflicts.</p>
+
+      <h3>Issue and Risk Management</h3>
+      <p>The vendor must provide an Issue and Risk Management Plan that includes a risk register updated at each periodic management monitoring meeting, a defined escalation path for high-severity risks, and a process for involving the RAC in risk assessments that affect community engagement or data access.</p>
+
+      <h3>Fiscal Management</h3>
+      <p>The vendor must maintain documented fiscal management practices including budget tracking by deliverable, a process for managing scope change and associated budget adjustments, and annual financial reporting to the state that includes actual vs. budgeted spend on rightsholder compensation and community engagement.</p>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <p><strong>Deliverables Checklist (Managing Risk):</strong> Conflict of Interest Disclosure · Risk Register · Fiscal Management Plan · Annual Financial Report with Rightsholder Compensation accounting.</p>
+    </div>
+  </section>
+
+  <!-- CHAPTER VIII -->
+  <section class="page-section" id="sec-ch8">
+    <div class="section-header">
+      <div class="chapter-tag">Chapter VIII</div>
+      <h2>Terms &amp; Conditions</h2>
+      <p>Penalties, bid evaluation process, and cost proposal requirements.</p>
+    </div>
+    <div class="prose">
+      <h3>Penalties</h3>
+      <p>The contract must specify financial penalties for breach of MCRs and substantive deliverable failures. Penalty structures should be calibrated to the severity and impact of the breach on students and communities.</p>
+
+      <h3>Bid Evaluation Process</h3>
+      <p>The evaluation process proceeds in two stages:</p>
+      <ul>
+        <li><strong>Stage 1: MCR Compliance Check</strong> — The evaluation team verifies that the vendor has accepted every MCR using the Vendor Attestation form. Proposals failing this stage are disqualified without substantive review.</li>
+        <li><strong>Stage 2: Substantive Scoring</strong> — Qualifying proposals are scored using the Universal Rubric (0–3 scale) applied to each section. Proposals must meet a minimum overall score threshold to qualify for contract negotiation.</li>
+      </ul>
+      <p>The state uses a "best value" criterion rather than a "lowest cost" criterion for selecting from among qualifying proposals.</p>
+
+      <h3>Cost Proposal</h3>
+      <p>The cost proposal template must include separate line items for: core assessment development; rightsholder compensation schedule; accommodations budget (childcare, transportation, technology, translation); accessibility remediation; community engagement activities; and AI compliance activities (if applicable).</p>
+    </div>
+
+    <div class="callout success">
+      <div class="callout-icon">✅</div>
+      <p><strong>Pre-Release Checklist:</strong> Tier selection confirmed · Scope defined · All placeholders resolved · State-specific MCRs added · Evaluation responsibilities assigned · Penalty structures reviewed by procurement office.</p>
+    </div>
+  </section>
+
+  <!-- ANNEX A -->
+  <section class="page-section" id="sec-annexA">
+    <div class="section-header">
+      <div class="chapter-tag">Annex A</div>
+      <h2>AI Vendor Accountability</h2>
+      <p>Definitions, required disclosures, use-case-specific requirements, state decision rights, and verification mechanisms for all artificial intelligence used in assessment work.</p>
+    </div>
+
+    <div class="prose">
+      <h3>Purpose and Scope</h3>
+      <p>This Annex applies if the vendor uses artificial intelligence at any stage of the assessment lifecycle. It establishes the disclosure requirements, use-case-specific guardrails, state decision rights, and verification mechanisms that govern AI use in assessment. This Annex is referenced in the AI section of MCR-5 and in Chapters IV and V.</p>
+
+      <h3>Key Definitions</h3>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Artificial Intelligence (AI)</strong></td><td>Includes, without limitation, large language models, generative models, classifier models, scoring engines, and adaptive testing algorithms used at any stage of the assessment lifecycle.</td></tr>
+          <tr><td><strong>Custom vs. Off-the-Shelf AI</strong></td><td>Custom AI is trained or fine-tuned by the vendor for assessment purposes. Off-the-shelf AI is a third-party product used without modification to its underlying model.</td></tr>
+          <tr><td><strong>Training Data</strong></td><td>The data used to train, fine-tune, or calibrate any AI model used in the assessment lifecycle, including its demographic composition and cleaning procedures.</td></tr>
+          <tr><td><strong>Disparate-Impact Threshold</strong></td><td>The quantitative threshold beyond which AI-driven disparities in outcomes across reporting subgroups trigger mandatory human review or model replacement.</td></tr>
+          <tr><td><strong>Human-in-the-Loop</strong></td><td>A defined process in which qualified human reviewers review and approve AI outputs before those outputs reach students or inform scoring decisions.</td></tr>
+          <tr><td><strong>State Decision Rights</strong></td><td>The enumerated rights retained by the state to approve, reject, audit, or require replacement of AI models, training data, or AI-generated outputs.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose">
+      <h3>AI Use Cases</h3>
+    </div>
+
+    <div class="ai-use-case">
+      <h4>AI for Item Generation <span class="ai-badge">Use Case 2.1</span></h4>
+      <p>Vendors using AI to generate assessment items must provide Training Data Disclosure (model, data sources, demographic composition), a bias auditing protocol with named techniques and disparate-impact thresholds, evidence that the AI's base architecture is grounded in learning progressions or a comparable construct-aligned model, and mandatory human-in-the-loop review of every AI-generated item before it reaches operational use. At the Justice tier, community members must be involved in reviewing and approving AI-generated items.</p>
+    </div>
+
+    <div class="ai-use-case">
+      <h4>AI for Item Review <span class="ai-badge">Use Case 2.2</span></h4>
+      <p>AI used to assist in item review (e.g., automated bias flagging) must be validated against human expert judgments and must not replace the human bias and sensitivity review committee required by MCR-1. The AI's flagging decisions must be disclosed to committee members, who retain final approval authority.</p>
+    </div>
+
+    <div class="ai-use-case">
+      <h4>AI for Item Scoring <span class="ai-badge">Use Case 2.3</span></h4>
+      <p>AI scoring engines must demonstrate score reliability and validity equal to or greater than human hand-scoring across all reporting subgroups. The vendor must specify the percentage of AI-scored responses reviewed by qualified human scorers, the triggers for human review (e.g., low confidence scores, responses from flagged demographic groups), and the process for adjudicating disagreements between AI and human scores.</p>
+    </div>
+
+    <div class="ai-use-case">
+      <h4>AI for Adaptive Testing <span class="ai-badge">Use Case 2.4</span></h4>
+      <p>Adaptive algorithms must be documented with respect to item selection rules, exposure controls, and handling of aberrant response patterns. The algorithm must be validated for measurement equivalence across student subgroups, with particular attention to students with disabilities and multilingual learners.</p>
+    </div>
+
+    <div class="ai-use-case">
+      <h4>AI for Anomaly Detection and Test Security <span class="ai-badge">Use Case 2.5</span></h4>
+      <p>AI used for security monitoring must have documented false positive and false negative rates disaggregated by student demographic group. States must retain authority over the consequence of security flags — AI may flag but not adjudicate.</p>
+    </div>
+
+    <div class="ai-use-case">
+      <h4>AI for Reporting and Analytics <span class="ai-badge">Use Case 2.6</span></h4>
+      <p>AI-generated insights, predictions, or recommendations in reporting systems must be clearly labeled as AI-generated, must include confidence intervals or uncertainty estimates, and must be reviewed by qualified assessment professionals before being included in official score reports.</p>
+    </div>
+
+    <div class="prose">
+      <h3>State Decision Rights</h3>
+      <ul>
+        <li><strong>3.1 Pre-Deployment Approval</strong> — The state must approve any AI model before it is deployed in the assessment lifecycle.</li>
+        <li><strong>3.2 Mid-Contract Model Replacement</strong> — The state retains the right to require model replacement if disparate-impact thresholds are breached.</li>
+        <li><strong>3.3 Independent Algorithmic Audit</strong> — The state retains the right to commission an independent algorithmic audit at intervals defined by the state, at the state's expense.</li>
+        <li><strong>3.4 Off-the-Shelf Model Veto</strong> — The state retains the right to veto the use of any off-the-shelf model that the state cannot adequately audit or that fails the disparate-impact threshold.</li>
+        <li><strong>3.5 Community Sign-Off (Justice Tier)</strong> — At the Justice tier, the RAC must approve AI models used for item generation, scoring, and reporting before deployment.</li>
+      </ul>
+    </div>
+
+    <div class="callout success">
+      <div class="callout-icon">✅</div>
+      <p><strong>Required AI Deliverables:</strong> AI Disclosure Document · Training Data Disclosure · Annual AI Compliance Report · Independent Algorithmic Audit results · Public-Facing AI Use Summary · Community Engagement Artifacts (Equity and Justice tiers).</p>
+    </div>
+  </section>
+
+</div><!-- /main -->
+
+<!-- Back to Top -->
+<button class="back-top" id="backTop" onclick="scrollToTop()">↑</button>
+
+<script>
+  // ── NAVIGATION ─────────────────────────────────────────────────────────
+  const sections = {
+    'overview': { el: 'sec-overview', label: 'Overview & Purpose', hero: true },
+    'quickstart': { el: 'sec-quickstart', label: 'Quick Start Guide', hero: false },
+    'tier-guide': { el: 'sec-tier-guide', label: 'Tier-Selection Guide', hero: false },
+    'language-legend': { el: 'sec-language-legend', label: 'Language Legend', hero: false },
+    'rubric': { el: 'sec-rubric', label: 'Universal Rubric', hero: false },
+    'customization': { el: 'sec-customization', label: 'Customization Key', hero: false },
+    'mcr': { el: 'sec-mcr', label: 'Minimum Compliance Requirements', hero: false },
+    'ch1': { el: 'sec-ch1', label: 'Chapter I — Procurement Process', hero: false },
+    'ch2': { el: 'sec-ch2', label: 'Chapter II — Background & Vendors', hero: false },
+    'ch3': { el: 'sec-ch3', label: 'Chapter III — Statement of Work', hero: false },
+    'ch4': { el: 'sec-ch4', label: 'Chapter IV — Assessment Design', hero: false },
+    'ch5': { el: 'sec-ch5', label: 'Chapter V — Test Administration', hero: false },
+    'ch6': { el: 'sec-ch6', label: 'Chapter VI — Validation Efforts', hero: false },
+    'ch7': { el: 'sec-ch7', label: 'Chapter VII — Managing Risk', hero: false },
+    'ch8': { el: 'sec-ch8', label: 'Chapter VIII — Terms & Conditions', hero: false },
+    'annexA': { el: 'sec-annexA', label: 'Annex A — AI Accountability', hero: false },
+  };
+
+  function showSection(key) {
+    const cfg = sections[key];
+    if (!cfg) return;
+
+    // Hide all
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+    // Show target
+    document.getElementById(cfg.el).classList.add('active');
+    document.getElementById('heroBlock').style.display = cfg.hero ? 'block' : 'none';
+    document.getElementById('breadcrumbText').innerHTML = cfg.label;
+
+    // Active nav
+    document.querySelectorAll(`[data-section="${key}"]`).forEach(n => n.classList.add('active'));
+
+    // Scroll
+    document.getElementById('main').scrollTo({ top: 0 });
+    window.scrollTo({ top: 0 });
+
+    // Close sidebar on mobile
+    if (window.innerWidth <= 900) {
+      document.getElementById('sidebar').classList.remove('open');
+    }
+  }
+
+  // ── MCR ACCORDION ───────────────────────────────────────────────────────
+  function toggleMCR(header) {
+    const card = header.closest('.mcr-card');
+    card.classList.toggle('open');
+  }
+
+  // ── CHECKLIST ───────────────────────────────────────────────────────────
+  function toggleCheck(input) {
+    const item = input.closest('.checklist-item');
+    item.classList.toggle('checked', input.checked);
+  }
+
+  // ── SIDEBAR SEARCH ──────────────────────────────────────────────────────
+  function filterNav(query) {
+    query = query.toLowerCase().trim();
+    document.querySelectorAll('.nav-item').forEach(item => {
+      if (!query) { item.style.display = ''; return; }
+      const text = item.textContent.toLowerCase();
+      item.style.display = text.includes(query) ? '' : 'none';
+    });
+    document.querySelectorAll('.nav-section-label').forEach(label => {
+      label.style.display = query ? 'none' : '';
+    });
+  }
+
+  // ── MOBILE SIDEBAR TOGGLE ───────────────────────────────────────────────
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  // ── BACK TO TOP ─────────────────────────────────────────────────────────
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById('main').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── SCROLL EVENTS ───────────────────────────────────────────────────────
+  function onScroll() {
+    const scrolled = window.scrollY || document.documentElement.scrollTop;
+    const total = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const pct = total > 0 ? scrolled / total : 0;
+    document.getElementById('progressBar').style.transform = `scaleX(${pct})`;
+    document.getElementById('backTop').classList.toggle('visible', scrolled > 400);
+  }
+
+  window.addEventListener('scroll', onScroll);
+
+  // ── INIT ────────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    showSection('overview');
+  });
+</script>
+</body>
+</html>
