@@ -48,6 +48,8 @@ class Question(Base):
     category   = Column(String)
     difficulty = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
+    media = Column(Text, default="[]")
+    interaction_config = Column(Text, default="")
 
 class Assessment(Base):
     __tablename__ = "assessments"

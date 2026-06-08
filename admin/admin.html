@@ -127,6 +127,17 @@ math-field:focus-within {
 /* Match builder */
 .match-pair-row{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;margin-bottom:7px;align-items:center}
 .match-arrow{text-align:center;color:#aaa;font-size:16px;flex-shrink:0}
+
+/* Media attachment controls */
+.media-panel{border:1px solid #e0e0e0;background:#fafafa;border-radius:4px;padding:10px;margin-bottom:13px}
+.media-actions{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end}
+.media-preview{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.media-card{border:1px solid #ddd;background:#fff;border-radius:4px;padding:6px;width:150px;position:relative;font-size:11px;color:#666}
+.media-card img,.media-card video{width:100%;height:86px;object-fit:cover;border-radius:3px;background:#eee}
+.media-remove{position:absolute;right:4px;top:4px;border:none;background:#a94442;color:#fff;border-radius:50%;width:20px;height:20px;line-height:18px;cursor:pointer;font-size:12px}
+.media-caption{margin-top:4px;word-break:break-word}
+.generic-help{background:#fcf8e3;border:1px solid #faebcc;color:#8a6d3b;border-radius:4px;padding:8px 10px;font-size:12px;line-height:1.5;margin-bottom:10px}
+
 </style>
 </head>
 <body>
@@ -411,13 +422,82 @@ math-field:focus-within {
       <div class="form-group">
         <label>Question Type</label>
         <select class="form-control" id="ni-type" onchange="toggleQuestionType()">
-          <option value="mcq">Multiple Choice (MCQ)</option>
-          <option value="true_false">True / False</option>
-          <option value="fill_blank">Fill in the Blank</option>
-          <option value="math">Math Input (Equation Editor)</option>
-          <option value="match">Match the Following</option>
-          <option value="drag_order">Drag and Order</option>
-          <option value="essay">Essay / Long Answer</option>
+          <optgroup label="Multiple Question">
+            <option value="mcq">Multiple Choice — Standard</option>
+            <option value="multiple_response">Multiple Response</option>
+            <option value="true_false">True / False</option>
+            <option value="block_mcq">Block Question</option>
+          </optgroup>
+          <optgroup label="Choice Matrix">
+            <option value="choice_matrix_standard">Choice Matrix — Standard</option>
+            <option value="choice_matrix_inline">Choice Matrix — Inline</option>
+            <option value="choice_matrix_labels">Choice Matrix — Labels</option>
+            <option value="choice_matrix_nclex">Choice Matrix — NCLEX Scoring</option>
+          </optgroup>
+          <optgroup label="Fill in the Blank / Cloze">
+            <option value="fill_blank">Cloze with Text</option>
+            <option value="cloze_dropdown">Cloze with Drop-Down</option>
+            <option value="cloze_drag_drop">Cloze Drag-and-Drop</option>
+            <option value="cloze_math">Cloze Math</option>
+            <option value="cloze_math_image">Cloze Math with Image</option>
+            <option value="cloze_chemistry">Cloze Chemistry</option>
+            <option value="cloze_chemistry_image">Cloze Chemistry with Image</option>
+          </optgroup>
+          <optgroup label="Label Image">
+            <option value="label_image_drag_drop">Label Image with Drag-and-Drop</option>
+            <option value="label_image_dropdown">Label Image with Drop-Down</option>
+            <option value="label_image_text">Label Image with Text</option>
+            <option value="label_image_math">Label Image with Math</option>
+          </optgroup>
+          <optgroup label="Classify, Match, & Order">
+            <option value="classification">Classification</option>
+            <option value="match">Match List</option>
+            <option value="drag_order">Order List</option>
+            <option value="sort_list">Sort List</option>
+          </optgroup>
+          <optgroup label="Written & Recorded">
+            <option value="essay_rich">Essay with Rich Text</option>
+            <option value="essay">Essay with Plain Text</option>
+            <option value="short_text">Short Text</option>
+            <option value="audio_recorder">Audio Recorder</option>
+            <option value="video_recorder">Video Recorder</option>
+          </optgroup>
+          <optgroup label="Highlight and Drawing">
+            <option value="drawing">Drawing</option>
+            <option value="shading">Shading</option>
+            <option value="token_highlight">Token Highlight</option>
+            <option value="hotspot">Hotspot</option>
+          </optgroup>
+          <optgroup label="Math">
+            <option value="math">Math</option>
+            <option value="multistep_math">Multistep Math</option>
+            <option value="math_essay_rich">Math Essay with Rich Text</option>
+            <option value="math_question_generator">Math Question Generator</option>
+          </optgroup>
+          <optgroup label="Graphing">
+            <option value="graphing">Graphing</option>
+            <option value="graphing_first_quadrant">Graphing with the First Quadrant</option>
+            <option value="number_line_drag_drop">Number Line Drag-and-Drop</option>
+            <option value="number_line_plot">Number Line with Plot</option>
+          </optgroup>
+          <optgroup label="Charting">
+            <option value="bar_chart">Bar Chart</option>
+            <option value="line_chart">Line Chart</option>
+            <option value="histogram">Histogram</option>
+            <option value="dot_plot">Dot Plot</option>
+            <option value="line_plot">Line Plot</option>
+          </optgroup>
+          <optgroup label="Chemistry">
+            <option value="chemistry_formula">Chemistry Formula</option>
+            <option value="chemistry_essay_rich">Chemistry Essay with Rich Text</option>
+          </optgroup>
+          <optgroup label="Other">
+            <option value="file_upload">File Upload</option>
+            <option value="image_annotation_upload">Image Annotation Upload</option>
+            <option value="rating">Rating</option>
+            <option value="gridded">Gridded</option>
+            <option value="bow_tie">Bow-Tie</option>
+          </optgroup>
         </select>
       </div>
 
@@ -425,6 +505,28 @@ math-field:focus-within {
       <div class="form-group">
         <label>Question Text * <span style="font-weight:400;text-transform:none;color:#888">— wrap LaTeX in $…$ e.g. $x^2+1$</span></label>
         <textarea class="form-control" id="ni-t" rows="3" placeholder="Write the question here..."></textarea>
+      </div>
+
+      <!-- Media attachments -->
+      <div class="form-group">
+        <label>Question Media <span style="font-weight:400;text-transform:none;color:#888">— optional images/videos to explain the question</span></label>
+        <div class="media-panel">
+          <div class="media-actions">
+            <div>
+              <label style="text-transform:none;font-weight:600;letter-spacing:0">Upload image/video</label>
+              <input class="form-control" id="ni-media-file" type="file" accept="image/*,video/*" multiple onchange="handleMediaFiles(this.files)"/>
+            </div>
+            <div>
+              <label style="text-transform:none;font-weight:600;letter-spacing:0">Or paste media URL</label>
+              <input class="form-control" id="ni-media-url" placeholder="https://... image or video URL"/>
+            </div>
+            <button class="btn btn-default" type="button" onclick="addMediaUrl()"><i class="fa fa-link"></i> Add URL</button>
+          </div>
+          <div style="font-size:11px;color:#888;margin-top:6px;line-height:1.5">
+            For demos, small uploaded files can be saved as embedded data. For production videos, use a storage service such as Cloudinary/S3 and paste the URL.
+          </div>
+          <div class="media-preview" id="media-preview"></div>
+        </div>
       </div>
 
       <!-- Category / Difficulty -->
@@ -532,7 +634,23 @@ math-field:focus-within {
         </div>
       </div>
 
-    </div><!-- /mbd -->
+    
+      <!-- ── GENERIC ADVANCED BUILDER ── -->
+      <div id="generic-builder" style="display:none">
+        <div class="generic-help">
+          This advanced item type will be saved with its type, question text, media, scoring key, and configuration notes. Student-side rendering/scoring must be added for fully interactive behavior.
+        </div>
+        <div class="form-group">
+          <label>Correct Answer / Scoring Key</label>
+          <textarea class="form-control" id="generic-answer" rows="2" placeholder="Enter the correct answer, scoring key, rubric, expected labels, coordinates, categories, or valid responses."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Interaction Configuration</label>
+          <textarea class="form-control" id="generic-config" rows="4" placeholder="Describe choices, rows/columns, blanks, labels, hotspots, graph settings, rating scale, file requirements, etc."></textarea>
+        </div>
+      </div>
+
+      </div><!-- /mbd -->
     <div class="mft">
       <button class="btn btn-default" onclick="closeMo('mo-add-item')">Cancel</button>
       <button class="btn btn-primary" onclick="addItem()"><i class="fa fa-check"></i> Add to Bank</button>
@@ -682,6 +800,7 @@ let assessments = [];
 let builder = [];
 let dragId = null;
 let optCount = 0;
+let questionMedia = [];
 
 // ── Nav ──
 function showPage(id) {
@@ -745,12 +864,23 @@ async function loadItems() {
 }
 
 const TYPE_LABELS = {
-  mcq:'MCQ', true_false:'T/F', fill_blank:'FILL',
-  math:'MATH', match:'MATCH', drag_order:'ORDER', essay:'ESSAY'
+  mcq:'MCQ', multiple_response:'MULTI', true_false:'T/F', block_mcq:'BLOCK',
+  choice_matrix_standard:'MATRIX', choice_matrix_inline:'MATRIX-INLINE', choice_matrix_labels:'MATRIX-LABELS', choice_matrix_nclex:'NCLEX',
+  fill_blank:'CLOZE-TEXT', cloze_dropdown:'CLOZE-DD', cloze_drag_drop:'CLOZE-DRAG',
+  cloze_math:'CLOZE-MATH', cloze_math_image:'CLOZE-MATH-IMG', cloze_chemistry:'CLOZE-CHEM', cloze_chemistry_image:'CLOZE-CHEM-IMG',
+  label_image_drag_drop:'LABEL-DRAG', label_image_dropdown:'LABEL-DD', label_image_text:'LABEL-TEXT', label_image_math:'LABEL-MATH',
+  classification:'CLASSIFY', match:'MATCH', drag_order:'ORDER', sort_list:'SORT',
+  essay_rich:'ESSAY-RICH', essay:'ESSAY', short_text:'SHORT', audio_recorder:'AUDIO', video_recorder:'VIDEO',
+  drawing:'DRAW', shading:'SHADE', token_highlight:'HIGHLIGHT', hotspot:'HOTSPOT',
+  math:'MATH', multistep_math:'MULTISTEP', math_essay_rich:'MATH-ESSAY', math_question_generator:'MATH-GEN',
+  graphing:'GRAPH', graphing_first_quadrant:'GRAPH-Q1', number_line_drag_drop:'NUM-LINE-DRAG', number_line_plot:'NUM-LINE',
+  bar_chart:'BAR', line_chart:'LINE', histogram:'HIST', dot_plot:'DOT', line_plot:'LINE-PLOT',
+  chemistry_formula:'CHEM', chemistry_essay_rich:'CHEM-ESSAY',
+  file_upload:'FILE', image_annotation_upload:'IMG-ANNOTATE', rating:'RATING', gridded:'GRIDDED', bow_tie:'BOW-TIE'
 };
 const TYPE_COLORS = {
-  mcq:'bp-blue', true_false:'bp-green', fill_blank:'bp-orange',
-  math:'bp-blue', match:'bp-orange', drag_order:'bp-orange', essay:'bp-gray'
+  mcq:'bp-blue', multiple_response:'bp-blue', true_false:'bp-green', block_mcq:'bp-blue',
+  fill_blank:'bp-orange', math:'bp-blue', match:'bp-orange', drag_order:'bp-orange', essay:'bp-gray',
 };
 
 function renderItems() {
@@ -867,7 +997,7 @@ async function saveAssmt() {
 }
 
 // ── Question Type Toggle ──
-const ALL_BUILDERS = ['mcq-builder','tf-builder','fill-builder','math-builder','match-builder','order-builder','essay-builder'];
+const ALL_BUILDERS = ['mcq-builder','tf-builder','fill-builder','math-builder','match-builder','order-builder','essay-builder','generic-builder'];
 
 function toggleQuestionType() {
   const type = document.getElementById('ni-type').value;
@@ -875,17 +1005,26 @@ function toggleQuestionType() {
 
   const map = {
     mcq:        'mcq-builder',
+    multiple_response: 'mcq-builder',
     true_false: 'tf-builder',
     fill_blank: 'fill-builder',
+    cloze_math: 'fill-builder',
+    cloze_chemistry: 'fill-builder',
     math:       'math-builder',
+    chemistry_formula: 'math-builder',
     match:      'match-builder',
     drag_order: 'order-builder',
     essay:      'essay-builder',
+    essay_rich: 'essay-builder',
+    math_essay_rich: 'essay-builder',
+    chemistry_essay_rich: 'essay-builder',
+    short_text: 'essay-builder',
   };
   if (map[type]) document.getElementById(map[type]).style.display = '';
+  else document.getElementById('generic-builder').style.display = '';
 
   // Inject math-field for math type if not already present
-  if (type === 'math') {
+  if (type === 'math' || type === 'chemistry_formula') {
     const wrap = document.getElementById('math-correct-wrap');
     if (!document.getElementById('math-correct-field')) {
       const mf = document.createElement('math-field');
@@ -915,7 +1054,7 @@ function addOptRow() {
   div.innerHTML = `
     <div class="opt-letter-badge">${letter}</div>
     <input class="form-control" placeholder="Option ${letter}..." id="opt-text-${optCount}" style="flex:1"/>
-    <input type="radio" name="correct-opt" value="${letter}" class="opt-correct" title="Mark as correct"/>
+    <input type="checkbox" name="correct-opt" value="${letter}" class="opt-correct" title="Mark as correct"/>
     <button class="btn btn-danger btn-sm" onclick="removeOpt(${optCount})" style="flex-shrink:0"><i class="fa fa-times"></i></button>`;
   document.getElementById('opts-list').appendChild(div);
 }
@@ -948,6 +1087,76 @@ function addOrderRow() {
   document.getElementById('order-list').appendChild(div);
 }
 
+
+// ── Media Attachments ──
+function addMediaUrl() {
+  const input = document.getElementById('ni-media-url');
+  const url = input.value.trim();
+  if (!url) { toast('Paste an image or video URL first.', 'danger'); return; }
+  const lower = url.toLowerCase();
+  const type = /\.(mp4|webm|ogg|mov)(\?|#|$)/.test(lower) ? 'video' : 'image';
+  questionMedia.push({ type, source: url, name: url.split('/').pop() || 'Media URL' });
+  input.value = '';
+  renderMediaPreview();
+}
+
+function handleMediaFiles(files) {
+  [...files].forEach(file => {
+    if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+      toast('Only image and video files are supported.', 'danger');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast('File too large for direct database save. Use a media URL for files over 5MB.', 'danger');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      questionMedia.push({
+        type: file.type.startsWith('video/') ? 'video' : 'image',
+        source: e.target.result,
+        name: file.name,
+        mime: file.type,
+        size: file.size
+      });
+      renderMediaPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function removeMedia(index) {
+  questionMedia.splice(index, 1);
+  renderMediaPreview();
+}
+
+function renderMediaPreview() {
+  const wrap = document.getElementById('media-preview');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  questionMedia.forEach((m, idx) => {
+    const card = document.createElement('div');
+    card.className = 'media-card';
+    const preview = m.type === 'video'
+      ? `<video controls src="${m.source}"></video>`
+      : `<img src="${m.source}" alt="${escapeHtml(m.name || 'Question media')}">`;
+    card.innerHTML = `
+      <button class="media-remove" onclick="removeMedia(${idx})">×</button>
+      ${preview}
+      <div class="media-caption">${escapeHtml(m.name || m.type)}</div>
+    `;
+    wrap.appendChild(card);
+  });
+}
+
+function buildQuestionMeta(type) {
+  return {
+    media: questionMedia,
+    interaction_config: document.getElementById('generic-config')?.value.trim() || '',
+    advanced_type: type
+  };
+}
+
 // ── Add Item to Bank ──
 async function addItem() {
   const text       = document.getElementById('ni-t').value.trim();
@@ -959,15 +1168,20 @@ async function addItem() {
   let options = [];
   let correct = '';
 
-  if (type === 'mcq') {
+  if (type === 'mcq' || type === 'multiple_response' || type === 'block_mcq') {
     document.querySelectorAll('#opts-list .opt-row').forEach((row, idx) => {
       const letter = String.fromCharCode(65 + idx);
       const inp    = row.querySelector('input[id^="opt-text"]');
       if (inp && inp.value.trim()) options.push(letter + '. ' + inp.value.trim());
     });
-    const radio = document.querySelector('input[name="correct-opt"]:checked');
-    correct = radio ? radio.value : '';
-    if (!correct) { toast('Please mark the correct option.', 'danger'); return; }
+    const checked = [...document.querySelectorAll('input[name="correct-opt"]:checked')].map(x => x.value);
+    if (!checked.length) { toast('Please mark at least one correct option.', 'danger'); return; }
+    if (type === 'mcq' || type === 'block_mcq') {
+      if (checked.length !== 1) { toast('Standard MCQ needs exactly one correct option.', 'danger'); return; }
+      correct = checked[0];
+    } else {
+      correct = JSON.stringify(checked);
+    }
 
   } else if (type === 'true_false') {
     const radio = document.querySelector('input[name="tf-correct"]:checked');
@@ -998,15 +1212,21 @@ async function addItem() {
     });
     if (options.length < 2) { toast('Add at least 2 items.', 'danger'); return; }
 
-  } else if (type === 'essay') {
+  } else if (type === 'essay' || type === 'essay_rich' || type === 'math_essay_rich' || type === 'chemistry_essay_rich' || type === 'short_text') {
     correct = document.getElementById('essay-rubric').value.trim();
+
+  } else {
+    correct = document.getElementById('generic-answer').value.trim();
+    options = [];
   }
+
+  const metadata = buildQuestionMeta(type);
 
   try {
     const res = await adminFetch('/questions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, type, options, correct, category, difficulty })
+      body: JSON.stringify({ text, type, options, correct, category, difficulty, media: metadata.media, interaction_config: metadata.interaction_config })
     });
     const data = await res.json();
     closeMo('mo-add-item');
@@ -1357,6 +1577,14 @@ function openMo(id) {
     document.getElementById('order-list').innerHTML = '';
     document.getElementById('essay-rubric').value = '';
     document.getElementById('fill-answer').value = '';
+    document.getElementById('generic-answer').value = '';
+    document.getElementById('generic-config').value = '';
+    questionMedia = [];
+    renderMediaPreview();
+    const mfInput = document.getElementById('ni-media-file');
+    if (mfInput) mfInput.value = '';
+    const muInput = document.getElementById('ni-media-url');
+    if (muInput) muInput.value = '';
     optCount = 0;
     // Reset true/false
     document.querySelectorAll('input[name="tf-correct"]').forEach(r => r.checked = false);
