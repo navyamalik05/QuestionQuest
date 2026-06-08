@@ -278,6 +278,8 @@ def get_questions(current_admin: AdminUser = Depends(require_admin)):
                 "correct":    q.correct,
                 "category":   q.category,
                 "difficulty": q.difficulty,
+                "media": json.loads(q.media or "[]"),
+                "interaction_config": q.interaction_config or "",
             }
             for q in db.query(Question).all()
         ]
