@@ -137,6 +137,8 @@ class QuestionIn(BaseModel):
     correct:    str = ""
     category:   str = ""
     difficulty: str = "Intermediate"
+    media: list = []
+    interaction_config: str = ""
 
 class AssessmentIn(BaseModel):
     title:        str
@@ -293,6 +295,8 @@ def create_question(q: QuestionIn, current_admin: AdminUser = Depends(require_ad
             correct=q.correct,
             category=q.category,
             difficulty=q.difficulty,
+            media=json.dumps(q.media),
+            interaction_config=q.interaction_config
         )
         db.add(item)
         db.commit()
