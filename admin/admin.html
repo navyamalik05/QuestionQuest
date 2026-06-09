@@ -854,12 +854,38 @@ async function loadStats() {
 async function loadItems() {
   const list = document.getElementById('item-list');
   list.innerHTML = '<div style="color:#aaa;font-size:13px;padding:10px"><i class="fa fa-spinner fa-spin"></i> Loading...</div>';
+
   try {
-    const data = await adminFetch('/questions').then(r => r.json());
+    const res = await adminFetch('/questions');
+
+    if (!res) return;
+
+    const raw = await res.text();
+
+    if (!res.ok) {
+      list.innerHTML = `
+        <div style="color:#a94442;padding:10px;font-size:13px;line-height:1.6">
+          <i class="fa fa-exclamation-circle"></i>
+          Could not load questions.<br>
+          <strong>Status:</strong> ${res.status}<br>
+          <strong>Backend says:</strong> ${escapeHtml(raw)}
+        </div>
+      `;
+      return;
+    }
+
+    const data = JSON.parse(raw);
     items = data;
     renderItems();
-  } catch {
-    list.innerHTML = '<div style="color:#a94442;padding:10px;font-size:13px"><i class="fa fa-exclamation-circle"></i> Could not connect to backend.</div>';
+
+  } catch (err) {
+    list.innerHTML = `
+      <div style="color:#a94442;padding:10px;font-size:13px;line-height:1.6">
+        <i class="fa fa-exclamation-circle"></i>
+        Could not connect to backend.<br>
+        <strong>Error:</strong> ${escapeHtml(err.message)}
+      </div>
+    `;
   }
 }
 
