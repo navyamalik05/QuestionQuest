@@ -256,6 +256,7 @@ math-field:focus-within {
         <div class="nav-link" onclick="toggleDD('ni-auth',event)">Authoring <span class="caret"></span></div>
         <div class="dd-menu">
           <a onclick="showPage('itembank');closeDD()">Item Bank (Questions)</a>
+          <a onclick="showPage('itemsets');closeDD()">Item Sets</a>
           <a onclick="showPage('assessments');closeDD()">Assessments</a>
         </div>
       </li>
@@ -403,6 +404,30 @@ math-field:focus-within {
         </tr>
       </thead>
       <tbody id="rtbody"><tr class="loading-row"><td colspan="7"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ITEM SETS -->
+<div class="page-sec" id="page-itemsets">
+  <ul class="action-links">
+    <li><a onclick="openMo('mo-add-itemset')"><i class="fa fa-plus"></i> New Item Set</a></li>
+  </ul>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Difficulty</th>
+          <th>Sub-Questions</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="itemsets-body">
+        <tr class="loading-row"><td colspan="6"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>
+      </tbody>
     </table>
   </div>
 </div>
@@ -813,6 +838,7 @@ function showPage(id) {
   if (id === 'assessments') loadAssessments();
   if (id === 'results')     loadResults();
   if (id === 'adminusers')  loadAdminUsers();
+  if (id === 'itemsets')    loadItemSets();
 }
 
 function toggleDD(id, e) {
@@ -1623,6 +1649,23 @@ function openMo(id) {
     toggleQuestionType();
     for (let i = 0; i < 4; i++) addOptRow();
   }
+
+  if (id === 'mo-add-itemset') {
+  document.getElementById('is-title').value = '';
+  document.getElementById('is-stimulus').value = '';
+  document.getElementById('is-media-preview').innerHTML = '';
+  document.getElementById('is-subq-list').innerHTML = '';
+  document.getElementById('is-media-file').value = '';
+  document.getElementById('is-media-url').value = '';
+  itemSetMedia = [];
+  subQCount = 0;
+  subQOptCounts = {};
+  // Start with one empty sub-question
+  addSubQuestionRow();
+  // Seed its 4 MCQ options
+  for (let i = 0; i < 4; i++) addSubQOption(1);
+}
+
   document.getElementById(id).classList.add('open');
 }
 function closeMo(id) { document.getElementById(id).classList.remove('open'); }
@@ -1770,6 +1813,345 @@ function checkAdminSession() {
   }
 }
 
+
+
+<!-- ══════════════ ADD ITEM SET MODAL ══════════════ -->
+<div class="mo" id="mo-add-itemset">
+  <div class="mb" style="width:820px;max-width:97vw">
+    <div class="mh">
+      <h4><i class="fa fa-plus"></i> New Item Set</h4>
+      <button class="mc-btn" onclick="closeMo('mo-add-itemset')">&times;</button>
+    </div>
+    <div class="mbd" style="padding:0">
+      <div style="display:grid;grid-template-columns:1fr 1fr;min-height:420px">
+
+
+        <div style="padding:16px;border-right:1px solid #e0e0e0">
+          <div style="font-size:13px;font-weight:700;color:#1f4172;margin-bottom:12px;text-transform:uppercase;letter-spacing:.04em">
+            <i class="fa fa-image"></i> Stimulus (Shared Context)
+          </div>
+          <div class="form-group">
+            <label>Item Set Title *</label>
+            <input class="form-control" id="is-title" placeholder="e.g. Sunflower and Beanstalk Growth"/>
+          </div>
+          <div class="form-group">
+            <label>Stimulus Text</label>
+            <textarea class="form-control" id="is-stimulus" rows="4"
+              placeholder="Write the shared passage, scenario, or context here..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Stimulus Image / Video</label>
+            <div class="media-panel">
+              <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end">
+                <div>
+                  <input class="form-control" id="is-media-file" type="file" accept="image/*,video/*"
+                    onchange="handleItemSetMediaFiles(this.files)"/>
+                </div>
+                <div style="display:flex;gap:6px">
+                  <input class="form-control" id="is-media-url" placeholder="or paste URL" style="width:160px"/>
+                  <button class="btn btn-default" onclick="addItemSetMediaUrl()"><i class="fa fa-link"></i></button>
+                </div>
+              </div>
+              <div class="media-preview" id="is-media-preview" style="margin-top:8px"></div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Category</label>
+              <select class="form-control" id="is-category">
+                <option>Grade 5 Math</option><option>Grade 6 Math</option>
+                <option>Grade 7 Math</option><option>Grade 8 Math</option>
+                <option>Grade 9 Math</option><option>Grade 10 Math</option>
+                <option>Grade 11 Math</option><option>Grade 12 Math</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Difficulty</label>
+              <select class="form-control" id="is-difficulty">
+                <option>Basic</option><option selected>Intermediate</option><option>Advanced</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+
+        <div style="padding:16px;display:flex;flex-direction:column;gap:0">
+          <div style="font-size:13px;font-weight:700;color:#1f4172;margin-bottom:12px;text-transform:uppercase;letter-spacing:.04em">
+            <i class="fa fa-list-ol"></i> Sub-Questions
+          </div>
+          <div id="is-subq-list" style="flex:1;overflow-y:auto;max-height:400px;padding-right:4px"></div>
+          <button class="btn btn-default btn-sm" style="margin-top:10px;align-self:flex-start"
+            onclick="addSubQuestionRow()">
+            <i class="fa fa-plus"></i> Add Sub-Question
+          </button>
+        </div>
+
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-default" onclick="closeMo('mo-add-itemset')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveItemSet()">
+        <i class="fa fa-check"></i> Save Item Set
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+// ══════════════════════════════════════════
+// ITEM SETS
+// ══════════════════════════════════════════
+
+let itemSetMedia = [];
+let subQCount = 0;
+
+// ── Load & render item sets list ──
+async function loadItemSets() {
+  const tb = document.getElementById('itemsets-body');
+  tb.innerHTML = '<tr class="loading-row"><td colspan="6"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>';
+  try {
+    const res = await adminFetch('/item-sets');
+    const data = await res.json();
+    tb.innerHTML = '';
+    if (!data.length) {
+      tb.innerHTML = '<tr class="loading-row"><td colspan="6">No item sets yet.</td></tr>';
+      return;
+    }
+    data.forEach(set => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${escapeHtml(set.title)}</strong></td>
+        <td>${escapeHtml(set.category || '—')}</td>
+        <td>${escapeHtml(set.difficulty || '—')}</td>
+        <td style="text-align:center">
+          <span class="bp bp-blue">${(set.subquestions || []).length}</span>
+        </td>
+        <td style="font-size:12px;color:#aaa">${set.created_at ? new Date(set.created_at).toLocaleDateString() : '—'}</td>
+        <td>
+          <ul class="inline-links">
+            <li><a class="del" onclick="deleteItemSet(${set.id})">delete</a></li>
+          </ul>
+        </td>`;
+      tb.appendChild(tr);
+    });
+  } catch {
+    tb.innerHTML = '<tr class="loading-row"><td colspan="6" style="color:#a94442">Backend not reachable.</td></tr>';
+  }
+}
+
+async function deleteItemSet(id) {
+  if (!confirm('Delete this item set and all its sub-questions?')) return;
+  try {
+    await adminFetch(`/item-sets/${id}`, { method: 'DELETE' });
+    toast('Item set deleted.');
+    loadItemSets();
+  } catch { toast('Failed to delete.', 'danger'); }
+}
+
+// ── Item set media ──
+function handleItemSetMediaFiles(files) {
+  [...files].forEach(file => {
+    if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) return;
+    if (file.size > 5 * 1024 * 1024) { toast('File too large. Use a URL instead.', 'danger'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      itemSetMedia.push({ type: file.type.startsWith('video/') ? 'video' : 'image', source: e.target.result, name: file.name });
+      renderItemSetMediaPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function addItemSetMediaUrl() {
+  const url = document.getElementById('is-media-url').value.trim();
+  if (!url) return;
+  const isVid = /\.(mp4|webm|ogg|mov)(\?|#|$)/i.test(url);
+  itemSetMedia.push({ type: isVid ? 'video' : 'image', source: url, name: url.split('/').pop() || 'Media' });
+  document.getElementById('is-media-url').value = '';
+  renderItemSetMediaPreview();
+}
+
+function removeItemSetMedia(idx) {
+  itemSetMedia.splice(idx, 1);
+  renderItemSetMediaPreview();
+}
+
+function renderItemSetMediaPreview() {
+  const wrap = document.getElementById('is-media-preview');
+  wrap.innerHTML = '';
+  itemSetMedia.forEach((m, idx) => {
+    const card = document.createElement('div');
+    card.className = 'media-card';
+    card.innerHTML = `
+      <button class="media-remove" onclick="removeItemSetMedia(${idx})">×</button>
+      ${m.type === 'video'
+        ? `<video controls src="${m.source}"></video>`
+        : `<img src="${m.source}" alt="${escapeHtml(m.name)}">`}
+      <div class="media-caption">${escapeHtml(m.name)}</div>`;
+    wrap.appendChild(card);
+  });
+}
+
+// ── Sub-question rows ──
+function addSubQuestionRow() {
+  subQCount++;
+  const id = subQCount;
+  const div = document.createElement('div');
+  div.id = 'subq-' + id;
+  div.style.cssText = 'border:1px solid #e0e0e0;border-radius:4px;padding:10px;margin-bottom:10px;background:#fafafa;position:relative';
+  div.innerHTML = `
+    <button onclick="document.getElementById('subq-${id}').remove()"
+      style="position:absolute;right:8px;top:8px;background:none;border:none;color:#a94442;cursor:pointer;font-size:16px;font-weight:700">×</button>
+    <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:8px;text-transform:uppercase">
+      Sub-Question ${id}
+    </div>
+    <div class="form-group" style="margin-bottom:8px">
+      <label>Type</label>
+      <select class="form-control" id="subq-type-${id}" onchange="updateSubQType(${id})">
+        <option value="mcq">Multiple Choice</option>
+        <option value="true_false">True / False</option>
+        <option value="fill_blank">Fill in the Blank</option>
+        <option value="essay">Essay</option>
+        <option value="graphing">Graphing</option>
+        <option value="short_text">Short Text</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-bottom:8px">
+      <label>Question Text</label>
+      <textarea class="form-control" id="subq-text-${id}" rows="2"
+        placeholder="Write this sub-question..."></textarea>
+    </div>
+    <div id="subq-answer-area-${id}">
+      ${buildSubQAnswerHTML('mcq', id)}
+    </div>`;
+  document.getElementById('is-subq-list').appendChild(div);
+}
+
+function updateSubQType(id) {
+  const type = document.getElementById('subq-type-' + id).value;
+  document.getElementById('subq-answer-area-' + id).innerHTML = buildSubQAnswerHTML(type, id);
+  // Seed 4 options for MCQ
+  if (type === 'mcq') {
+    for (let i = 0; i < 4; i++) addSubQOption(id);
+  }
+}
+
+function buildSubQAnswerHTML(type, id) {
+  if (type === 'mcq') {
+    return `
+      <div class="opts-container" id="subq-opts-${id}"></div>
+      <button class="btn btn-default btn-sm" style="margin-top:6px" onclick="addSubQOption(${id})">
+        <i class="fa fa-plus"></i> Add Option
+      </button>
+      <div style="font-size:11px;color:#888;margin-top:4px">Check the correct option.</div>`;
+  }
+  if (type === 'true_false') {
+    return `
+      <div class="tf-radio-group">
+        <label><input type="radio" name="subq-tf-${id}" value="true"> True</label>
+        <label><input type="radio" name="subq-tf-${id}" value="false"> False</label>
+      </div>`;
+  }
+  if (type === 'fill_blank' || type === 'short_text') {
+    return `<input class="form-control" id="subq-correct-${id}" placeholder="Correct answer..."/>`;
+  }
+  if (type === 'essay') {
+    return `<textarea class="form-control" id="subq-correct-${id}" rows="2"
+      placeholder="Rubric / marking guide (optional)..."></textarea>`;
+  }
+  // graphing and other advanced types
+  return `<div style="font-size:11px;color:#888;background:#f5f5f5;border:1px solid #e0e0e0;border-radius:4px;padding:8px">
+    This question type will be saved. Full interactive rendering can be added later.
+  </div>`;
+}
+
+let subQOptCounts = {};
+function addSubQOption(id) {
+  if (!subQOptCounts[id]) subQOptCounts[id] = 0;
+  subQOptCounts[id]++;
+  const n = subQOptCounts[id];
+  const letter = String.fromCharCode(64 + n);
+  const row = document.createElement('div');
+  row.className = 'opt-row';
+  row.id = `subq-opt-row-${id}-${n}`;
+  row.innerHTML = `
+    <div class="opt-letter-badge">${letter}</div>
+    <input class="form-control" id="subq-opt-text-${id}-${n}" placeholder="Option ${letter}..." style="flex:1"/>
+    <input type="checkbox" name="subq-correct-opt-${id}" value="${letter}" class="opt-correct"
+      title="Mark as correct"/>
+    <button class="btn btn-danger btn-sm"
+      onclick="document.getElementById('subq-opt-row-${id}-${n}').remove()">
+      <i class="fa fa-times"></i>
+    </button>`;
+  document.getElementById('subq-opts-' + id).appendChild(row);
+}
+
+// ── Collect & save item set ──
+function collectSubQuestions() {
+  const results = [];
+  document.querySelectorAll('[id^="subq-"]:not([id*="-type-"]):not([id*="-text-"]):not([id*="-answer-"]):not([id*="-opts-"]):not([id*="-correct-"]):not([id*="-opt-"])').forEach(el => {
+    if (!el.id.match(/^subq-\d+$/)) return;
+    const rawId = el.id.replace('subq-', '');
+    const type = document.getElementById('subq-type-' + rawId)?.value || 'mcq';
+    const text = document.getElementById('subq-text-' + rawId)?.value.trim() || '';
+    let options = [];
+    let correct = '';
+
+    if (type === 'mcq') {
+      let optIdx = 1;
+      while (true) {
+        const inp = document.getElementById(`subq-opt-text-${rawId}-${optIdx}`);
+        if (!inp) break;
+        if (inp.value.trim()) {
+          const letter = String.fromCharCode(64 + optIdx);
+          options.push(letter + '. ' + inp.value.trim());
+        }
+        optIdx++;
+      }
+      const checked = [...document.querySelectorAll(`input[name="subq-correct-opt-${rawId}"]:checked`)].map(x => x.value);
+      correct = checked[0] || '';
+    } else if (type === 'true_false') {
+      const radio = document.querySelector(`input[name="subq-tf-${rawId}"]:checked`);
+      correct = radio ? radio.value : '';
+    } else {
+      const inp = document.getElementById('subq-correct-' + rawId);
+      correct = inp ? inp.value.trim() : '';
+    }
+
+    results.push({ text, type, options, correct, interaction_config: '' });
+  });
+  return results;
+}
+
+async function saveItemSet() {
+  const title = document.getElementById('is-title').value.trim();
+  if (!title) { toast('Please enter an item set title.', 'danger'); return; }
+  const subquestions = collectSubQuestions();
+  if (!subquestions.length) { toast('Add at least one sub-question.', 'danger'); return; }
+
+  const payload = {
+    title,
+    stimulus_text:  document.getElementById('is-stimulus').value.trim(),
+    stimulus_media: itemSetMedia,
+    category:       document.getElementById('is-category').value,
+    difficulty:     document.getElementById('is-difficulty').value,
+    subquestions,
+  };
+
+  try {
+    const res = await adminFetch('/item-sets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!res.ok) { toast(data.detail || 'Failed to save.', 'danger'); return; }
+    closeMo('mo-add-itemset');
+    toast('Item set saved! (ID ' + data.id + ')');
+    loadItemSets();
+  } catch (err) { toast('Failed: ' + err.message, 'danger'); }
+}
 
 // ── Init ──
 checkAdminSession();

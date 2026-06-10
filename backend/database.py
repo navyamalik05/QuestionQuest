@@ -47,6 +47,32 @@ class Question(Base):
     media = Column(Text, default="[]")
     interaction_config = Column(Text, default="")
 
+
+class ItemSet(Base):
+    __tablename__ = "item_sets"
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String, nullable=False)
+    stimulus_text = Column(Text, default="")
+    stimulus_media = Column(Text, default="[]")
+    category = Column(String, default="")
+    difficulty = Column(String, default="Intermediate")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class ItemSubQuestion(Base):
+    __tablename__ = "item_subquestions"
+
+    id = Column(Integer, primary_key=True)
+    item_set_id = Column(Integer, nullable=False)
+    text = Column(Text, default="")
+    type = Column(String, nullable=False)
+    options = Column(Text, default="[]")
+    correct = Column(Text, default="")
+    interaction_config = Column(Text, default="")
+    order_index = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
 class Assessment(Base):
     __tablename__ = "assessments"
     id           = Column(Integer, primary_key=True)

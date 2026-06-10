@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Any
-from database import SessionLocal, Question, Assessment, Submission, AdminUser
+from database import SessionLocal, Question, Assessment, Submission, AdminUser, ItemSet, ItemSubQuestion
 import json
 import os
 from dotenv import load_dotenv
@@ -164,6 +164,23 @@ class AdminUserIn(BaseModel):
     name:     str
     email:    str
     password: str
+
+
+class SubQuestionIn(BaseModel):
+    text: str = ""
+    type: str
+    options: List[Any] = []
+    correct: str = ""
+    interaction_config: str = ""
+
+
+class ItemSetIn(BaseModel):
+    title: str
+    stimulus_text: str = ""
+    stimulus_media: List[Any] = []
+    category: str = ""
+    difficulty: str = "Intermediate"
+    subquestions: List[SubQuestionIn] = []
 
 # ─────────────────────────────────────────────
 # Helpers
@@ -327,6 +344,113 @@ def delete_question(qid: int, current_admin: AdminUser = Depends(require_admin))
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         db.close()
+
+
+@app.get("/item-sets")
+def get_item_sets(current_admin: AdminUser = Depends(require_admin)):
+    db = SessionLocal()
+    try:
+        rows = db.query(ItemSet).order_by(ItemSet.created_at.desc()).all()
+        result = []
+
+        for item in rows:
+            subs = db.query(ItemSubQuestion).filter(
+                ItemSubQuestion.item_set_id == item.id
+            ).order_by(ItemSubQuestion.order_index.asc()).all()
+
+            result.append({
+                "id": item.id,
+                "title": item.title,
+                "stimulus_text": item.stimulus_text or "",
+                "stimulus_media": safe_loads(item.stimulus_media, "[]"),
+                "category": item.category or "",
+                "difficulty": item.difficulty or "",
+                "subquestions": [
+                    {
+                        "id": s.id,
+                        "text": s.text,
+                        "type": s.type,
+                        "options": safe_loads(s.options, "[]"),
+                        "correct": s.correct or "",
+                        "interaction_config": s.interaction_config or "",
+                        "order_index": s.order_index,
+                    }
+                    for s in subs
+                ]
+            })
+
+        return result
+
+    finally:
+        db.close()
+
+
+@app.post("/item-sets")
+def create_item_set(data: ItemSetIn, current_admin: AdminUser = Depends(require_admin)):
+    db = SessionLocal()
+    try:
+        item = ItemSet(
+            title=data.title.strip(),
+            stimulus_text=data.stimulus_text.strip(),
+            stimulus_media=json.dumps(data.stimulus_media),
+            category=data.category,
+            difficulty=data.difficulty,
+        )
+
+        db.add(item)
+        db.commit()
+        db.refresh(item)
+
+        for idx, sq in enumerate(data.subquestions):
+            sub = ItemSubQuestion(
+                item_set_id=item.id,
+                text=sq.text,
+                type=sq.type,
+                options=json.dumps(sq.options),
+                correct=sq.correct,
+                interaction_config=sq.interaction_config,
+                order_index=idx,
+            )
+            db.add(sub)
+
+        db.commit()
+
+        return {
+            "id": item.id,
+            "message": "Item set created"
+        }
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+    finally:
+        db.close()
+
+
+@app.delete("/item-sets/{item_id}")
+def delete_item_set(item_id: int, current_admin: AdminUser = Depends(require_admin)):
+    db = SessionLocal()
+    try:
+        item = db.query(ItemSet).filter(ItemSet.id == item_id).first()
+
+        if not item:
+            raise HTTPException(status_code=404, detail="Item set not found")
+
+        db.query(ItemSubQuestion).filter(
+            ItemSubQuestion.item_set_id == item_id
+        ).delete()
+
+        db.delete(item)
+        db.commit()
+
+        return {"message": "Item set deleted"}
+
+    finally:
+        db.close()
+
+
+
 
 # ─────────────────────────────────────────────
 # Assessments  (admin routes)
