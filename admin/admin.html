@@ -705,7 +705,9 @@ const API = window.location.hostname === 'localhost' || window.location.hostname
 
 // ── State ──
 let items = [];
+let itemSets = [];
 let assessments = [];
+// Builder stores mixed assessment entries: { kind: 'question', id } or { kind: 'item_set', id }
 let builder = [];
 let dragId = null;
 let optCount = 0;
@@ -894,9 +896,9 @@ function renderItems() {
         <div class="imeta">${item.difficulty} &middot; ID #${item.id}</div>
       </div>
       <button class="btn btn-danger btn-sm" onclick="deleteItem(${item.id},event)" title="Delete"><i class="fa fa-trash"></i></button>`;
-    d.addEventListener('dragstart', () => { dragId = item.id; d.classList.add('dragging'); });
+    d.addEventListener('dragstart', () => { dragId = { kind:'question', id:item.id }; d.classList.add('dragging'); });
     d.addEventListener('dragend',   () => d.classList.remove('dragging'));
-    d.addEventListener('dblclick',  () => addToBuilder(item.id));
+    d.addEventListener('dblclick',  () => addQuestionToBuilder(item.id));
     list.appendChild(d);
   });
 }
@@ -907,7 +909,7 @@ async function deleteItem(id, e) {
   try {
     await adminFetch(`/questions/${id}`, { method: 'DELETE' });
     items   = items.filter(i => i.id !== id);
-    builder = builder.filter(i => i !== id);
+    builder = builder.filter(i => !(i.kind === 'question' && i.id === id));
     renderItems(); renderBuilder(); loadStats();
     toast('Question deleted.');
   } catch { toast('Failed to delete.', 'danger'); }
@@ -918,7 +920,7 @@ function selNoneItems() { document.querySelectorAll('.icb').forEach(c => c.check
 function buildFromSel() {
   const sel = [...document.querySelectorAll('.icb:checked')].map(c => parseInt(c.id.replace('ic', '')));
   if (!sel.length) { toast('Select at least one question.', 'danger'); return; }
-  sel.forEach(id => addToBuilder(id));
+  sel.forEach(id => addQuestionToBuilder(id));
   toast(sel.length + ' question(s) added to builder.');
 }
 
@@ -926,7 +928,7 @@ function buildFromSel() {
 // BUILDER
 // ══════════════════════════════════════════
 function addToBuilder(id)      { if (builder.includes(id)) return; builder.push(id); renderBuilder(); }
-function removeFromBuilder(id) { builder = builder.filter(i => i !== id); renderBuilder(); }
+function removeFromBuilder(id) { builder = builder.filter(i => !(i.kind === 'question' && i.id === id)); renderBuilder(); }
 function clearBuilder()        { builder = []; renderBuilder(); }
 function renderBuilder() {
   document.getElementById('dz-hint').style.display = builder.length ? 'none' : '';
@@ -1144,7 +1146,7 @@ function renderAssessments() {
     tr.innerHTML = `
       <td><strong>${a.title}</strong></td>
       <td style="color:#888;font-size:12px">${a.description || '—'}</td>
-      <td style="text-align:center"><span class="bp bp-blue">${(a.question_ids || []).length}</span></td>
+      <td style="text-align:center"><span class="bp bp-blue">${(a.assessment_items || a.question_ids || []).length}</span></td>
       <td>${a.group || '<span style="color:#ccc">Unassigned</span>'}</td>
       <td><span class="bp ${sc}">${a.status}</span></td>
       <td><ul class="inline-links">
@@ -1160,7 +1162,7 @@ async function addAssmt() {
   if (!title) { toast('Title required.', 'danger'); return; }
   try {
     await adminFetch('/assessments', { method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ title, description: document.getElementById('na-d').value.trim(), group: document.getElementById('na-g').value.trim(), status: document.getElementById('na-s').value, question_ids: [] }) });
+      body: JSON.stringify({ title, description: document.getElementById('na-d').value.trim(), group: document.getElementById('na-g').value.trim(), status: document.getElementById('na-s').value, question_ids: [], assessment_items: [] }) });
     closeMo('mo-add-assess'); toast('Assessment created.'); loadAssessments(); loadStats();
   } catch { toast('Failed to create.', 'danger'); }
 }
@@ -1230,8 +1232,9 @@ async function loadAdminUsers() {
   try {
     const res = await adminFetch('/admin-users'); if (!res) return;
     const data = await res.json();
+    itemSets = data || [];
     tb.innerHTML = '';
-    if (!data.length) { tb.innerHTML = '<tr class="loading-row"><td colspan="5">No admin users found.</td></tr>'; return; }
+    if (!itemSets.length) { tb.innerHTML = '<tr class="loading-row"><td colspan="5">No admin users found.</td></tr>'; return; }
     data.forEach(user => {
       const status = user.is_active ? '<span class="bp bp-green">Active</span>' : '<span class="bp bp-gray">Inactive</span>';
       const canDea = user.is_active ? `<button class="btn btn-danger btn-sm" onclick="deactivateAdminUser(${user.id})"><i class="fa fa-ban"></i> Deactivate</button>` : '';
@@ -1278,9 +1281,10 @@ async function loadItemSets() {
   try {
     const res = await adminFetch('/item-sets');
     const data = await res.json();
+    itemSets = data || [];
     tb.innerHTML = '';
-    if (!data.length) { tb.innerHTML = '<tr class="loading-row"><td colspan="6">No item sets yet.</td></tr>'; return; }
-    data.forEach(set => {
+    if (!itemSets.length) { tb.innerHTML = '<tr class="loading-row"><td colspan="6">No item sets yet.</td></tr>'; return; }
+    itemSets.forEach(set => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong>${escapeHtml(set.title)}</strong></td>
@@ -1288,14 +1292,14 @@ async function loadItemSets() {
         <td>${escapeHtml(set.difficulty || '—')}</td>
         <td style="text-align:center"><span class="bp bp-blue">${(set.subquestions || []).length}</span></td>
         <td style="font-size:12px;color:#aaa">${set.created_at ? new Date(set.created_at).toLocaleDateString() : '—'}</td>
-        <td><ul class="inline-links"><li><a class="del" onclick="deleteItemSet(${set.id})">delete</a></li></ul></td>`;
+        <td><ul class="inline-links"><li><a onclick="addItemSetToBuilder(${set.id})">add to assessment</a></li><li><a class="del" onclick="deleteItemSet(${set.id})">delete</a></li></ul></td>`;
       tb.appendChild(tr);
     });
   } catch { tb.innerHTML = '<tr class="loading-row"><td colspan="6" style="color:#a94442">Backend not reachable.</td></tr>'; }
 }
 async function deleteItemSet(id) {
   if (!confirm('Delete this item set and all its sub-questions?')) return;
-  try { await adminFetch(`/item-sets/${id}`, { method: 'DELETE' }); toast('Item set deleted.'); loadItemSets(); }
+  try { await adminFetch(`/item-sets/${id}`, { method: 'DELETE' }); builder = builder.filter(x => !(normalizeBuilderEntry(x).kind === 'item_set' && normalizeBuilderEntry(x).id === id)); renderBuilder(); toast('Item set deleted.'); loadItemSets(); }
   catch { toast('Failed to delete.', 'danger'); }
 }
 
@@ -1417,6 +1421,19 @@ function collectSubQuestions() {
   });
   return results;
 }
+
+function resetItemSetForm() {
+  document.getElementById('is-title').value = '';
+  document.getElementById('is-stimulus').value = '';
+  document.getElementById('is-media-file').value = '';
+  document.getElementById('is-media-url').value = '';
+  itemSetMedia = [];
+  subQCount = 0;
+  subQOptCounts = {};
+  document.getElementById('is-subq-list').innerHTML = '';
+  renderItemSetMediaPreview();
+}
+
 async function saveItemSet() {
   const title = document.getElementById('is-title').value.trim();
   if (!title) { toast('Please enter an item set title.', 'danger'); return; }
@@ -1434,7 +1451,7 @@ async function saveItemSet() {
     const res = await adminFetch('/item-sets', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
     const data = await res.json();
     if (!res.ok) { toast(data.detail || 'Failed to save.', 'danger'); return; }
-    closeMo('mo-add-itemset'); toast('Item set saved! (ID ' + data.id + ')'); loadItemSets();
+    closeMo('mo-add-itemset'); toast('Item set saved! (ID ' + data.id + ')'); resetItemSetForm(); loadItemSets();
   } catch (err) { toast('Failed: ' + err.message, 'danger'); }
 }
 

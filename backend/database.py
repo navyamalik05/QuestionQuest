@@ -72,7 +72,7 @@ class ItemSubQuestion(Base):
     interaction_config = Column(Text, default="")
     order_index = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.utcnow)
-    
+
 class Assessment(Base):
     __tablename__ = "assessments"
     id           = Column(Integer, primary_key=True)
@@ -81,6 +81,7 @@ class Assessment(Base):
     question_ids = Column(Text)        # JSON list of Question IDs
     group_name   = Column(String, default="")
     status       = Column(String, default="Draft")   # "Draft" | "Active"
+    assessment_items = Column(Text, default="[]")
 
 class Submission(Base):
     __tablename__ = "submissions"

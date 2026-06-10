@@ -140,12 +140,17 @@ class QuestionIn(BaseModel):
     media: list = []
     interaction_config: str = ""
 
+class AssessmentItemIn(BaseModel):
+    kind: str
+    id: int
+
 class AssessmentIn(BaseModel):
-    title:        str
-    description:  str = ""
+    title: str
+    description: str = ""
     question_ids: List[int] = []
-    group:        str = ""
-    status:       str = "Draft"
+    assessment_items: List[AssessmentItemIn] = []
+    group: str = ""
+    status: str = "Draft"
 
 class AssessmentUpdate(BaseModel):
     title:        Optional[str]       = None
@@ -482,6 +487,7 @@ def create_assessment(a: AssessmentIn, current_admin: AdminUser = Depends(requir
             title=a.title.strip(),
             description=a.description.strip(),
             question_ids=json.dumps(a.question_ids),
+            assessment_items=json.dumps([x.dict() for x in a.assessment_items]),
             group_name=a.group.strip(),
             status=a.status or "Draft",
         )
