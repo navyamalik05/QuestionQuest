@@ -34,7 +34,7 @@ BOOTSTRAP_PASSWORD = os.getenv("ADMIN_BOOTSTRAP_PASSWORD", "Justice_2026!")
 import bcrypt as _bcrypt
 
 def hash_password(pw: str) -> str:
-    return _bcrypt.hashpw(pw.encode('utf-8'), _bcrypt.gensalt()).decode('utf-8')
+    return _bcrypt.hashpw(pw.encode('utf-8'), _bcrypt.gensalt(rounds=10)).decode('utf-8')
 
 def verify_password(pw: str, hashed: str) -> bool:
     try:
