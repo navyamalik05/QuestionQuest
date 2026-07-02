@@ -339,7 +339,6 @@ function renderQuestion(idx) {
   currentIdx = idx; const q = questions[idx]; if (!q) return;
   const area = document.getElementById('question-area');
   
-  // Parse dynamic media configurations (images or videos) saved inside correct context string block
   let mediaHtml = '';
   try {
     const config = JSON.parse(q.correct);
@@ -400,16 +399,24 @@ function renderQuestion(idx) {
           ${subInputHtml}
         </div>`;
     });
-  } else if (q.type === 'mcq') {
-    const opts = (q.options || []).map((opt, oi) => {
-      const letter = String.fromCharCode(65 + oi);
-      return `<div class="mcq-opt ${answers[q.id] === letter ? 'selected' : ''}" onclick="selectMCQ(${q.id}, '${letter}', this)"><div class="opt-letter">${letter}</div><span>${escapeHtml(opt)}</span></div>`;
-    }).join('');
-    answerHtml = `<div class="q-instruction">Choose the best response.</div><div class="mcq-options">${opts}</div>`;
-  } else if (q.type === 'true_false') {
-    answerHtml = `<div class="q-instruction">Select True or False.</div><div class="mcq-options"><div class="mcq-opt ${answers[q.id] === 'true' ? 'selected' : ''}" onclick="selectSimpleAnswer(${q.id}, 'true')"><div class="opt-letter">T</div><span>True</span></div><div class="mcq-opt ${answers[q.id] === 'false' ? 'selected' : ''}" onclick="selectSimpleAnswer(${q.id}, 'false')"><div class="opt-letter">F</div><span>False</span></div></div>`;
   } else {
-    answerHtml = `<div class="q-instruction">Provide written answer below:</div><div class="essay-wrap"><textarea placeholder="Type response here..." oninput="saveTextAnswer(${q.id}, this.value)">${escapeHtml(answers[q.id] || '')}</textarea></div>`;
+    // Treat as single Multiple Choice or standard fallbacks if options are flat strings
+    let flatOptions = [];
+    if (Array.isArray(q.options)) {
+      flatOptions = q.options.map(o => typeof o === 'object' ? (o.prompt || JSON.stringify(o)) : o);
+    }
+    
+    if (q.type === 'true_false') {
+      answerHtml = `<div class="q-instruction">Select True or False.</div><div class="mcq-options"><div class="mcq-opt ${answers[q.id] === 'true' ? 'selected' : ''}" onclick="selectSimpleAnswer(${q.id}, 'true')"><div class="opt-letter">T</div><span>True</span></div><div class="mcq-opt ${answers[q.id] === 'false' ? 'selected' : ''}" onclick="selectSimpleAnswer(${q.id}, 'false')"><div class="opt-letter">F</div><span>False</span></div></div>`;
+    } else if (flatOptions.length > 0) {
+      const opts = flatOptions.map((opt, oi) => {
+        const letter = String.fromCharCode(65 + oi);
+        return `<div class="mcq-opt ${answers[q.id] === letter ? 'selected' : ''}" onclick="selectMCQ(${q.id}, '${letter}', this)"><div class="opt-letter">${letter}</div><span>${escapeHtml(opt)}</span></div>`;
+      }).join('');
+      answerHtml = `<div class="q-instruction">Choose the best response.</div><div class="mcq-options">${opts}</div>`;
+    } else {
+      answerHtml = `<div class="q-instruction">Provide written answer below:</div><div class="essay-wrap"><textarea placeholder="Type response here..." oninput="saveTextAnswer(${q.id}, this.value)">${escapeHtml(answers[q.id] || '')}</textarea></div>`;
+    }
   }
 
   area.innerHTML = `<div class="q-left"><div class="passage"><p style="font-size:.78rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px">${escapeHtml(q.category || 'Question')}</p><p style="font-size:1.05rem;font-weight:600;color:var(--navy);line-height:1.6;font-family:'Source Serif 4',serif">${escapeHtml(q.text)}</p>${mediaHtml}</div></div><div class="q-right">${answerHtml}</div>`;
@@ -431,10 +438,18 @@ function saveCompositeSubAnswer(qId, partKey, value, el) {
   updateSidebar();
 }
 
+// Fixed target to prevent continuous resetting on user character inputs inside text boxes
 function saveCompositeTextSubAnswer(qId, partKey, value) {
   if (typeof answers[qId] !== 'object') answers[qId] = {};
   answers[qId][partKey] = value;
-  updateSidebar();
+  
+  const answered = questions.filter(q => {
+    if (q.type === 'composite_advanced') return Object.keys(answers[q.id] || {}).length > 0;
+    return answers[q.id] !== undefined && answers[q.id] !== '';
+  }).length;
+  document.getElementById('progress-bar').style.width = (questions.length ? (answered / questions.length * 100) : 0) + '%';
+  const li = document.getElementById('sitem-' + currentIdx);
+  if (li) li.classList.add('answered');
 }
 
 function selectMCQ(qId, letter, el) {
@@ -452,7 +467,6 @@ function confirmSubmit() { if (confirm('Are you sure you want to finalize and su
 
 async function submitExam() {
   stopTimer();
-  // Stringify sub-composite answers so it securely maps past standard string serialization structures
   const flattenedAnswers = Object.fromEntries(
     Object.entries(answers).map(([k, v]) => [k, typeof v === 'object' ? JSON.stringify(v) : v])
   );
