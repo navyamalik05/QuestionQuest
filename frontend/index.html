@@ -44,8 +44,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .btn-start{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;margin-top:6px;transition:background .2s,transform .15s}
 .btn-start:hover{background:#1558a0;transform:translateY(-1px)}
-.info-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
-.pill{display:inline-flex;align-items:center;gap:5px;background:var(--blue-lt);color:var(--blue);font-size:.75rem;font-weight:600;padding:4px 10px;border-radius:20px}
 
 /* ══════════════════════════════════════
    EXAM SCREEN
@@ -75,7 +73,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .sidebar{width:var(--sidebar);background:var(--white);border-right:1px solid var(--border);padding:16px 0;overflow-y:auto;flex-shrink:0}
 .sidebar-items{list-style:none}
 .sidebar-item{padding:10px 18px;font-size:.83rem;color:var(--muted);cursor:pointer;border-left:3px solid transparent;transition:all .15s;display:flex;align-items:center;gap:8px}
-.sidebar-item:hover{background:var(--blue-lt);color:var(--blue)}
+.sidebar-item:hover{background:var(--blue-lt);color:var(--blue);}
 .sidebar-item.active{background:var(--blue-lt);color:var(--blue);border-left-color:var(--blue);font-weight:600}
 .sidebar-item.answered{color:var(--teal)}
 .sidebar-item.answered::after{content:'✓';margin-left:auto;font-size:.75rem}
@@ -86,24 +84,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .q-left{padding:36px 32px;border-right:1px solid var(--border);overflow-y:auto}
 .q-right{padding:36px 32px;overflow-y:auto;background:#fff}
 
-/* Question box */
+/* Question blocks */
 .q-instruction{background:#f0f4f8;border-radius:8px;padding:16px 18px;font-size:.9rem;color:var(--text);line-height:1.6;margin-bottom:20px}
 .passage{font-size:.9rem;line-height:1.75;color:var(--text)}
-.passage p{margin-bottom:14px}
 
-/* MCQ options */
+/* MCQ Options */
 .mcq-options{display:flex;flex-direction:column;gap:10px;margin-top:4px}
 .mcq-opt{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .18s;font-size:.9rem;line-height:1.5}
 .mcq-opt:hover{border-color:var(--blue);background:var(--blue-lt)}
 .mcq-opt.selected{border-color:var(--blue);background:var(--blue-lt)}
-.opt-letter{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;transition:all .18s;color:var(--muted)}
+.opt-letter{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;color:var(--muted)}
 .mcq-opt.selected .opt-letter{background:var(--blue);border-color:var(--blue);color:#fff}
 
-/* Essay */
+/* Student Render Elements */
 .essay-wrap{display:flex;flex-direction:column;gap:8px}
-.essay-wrap textarea{width:100%;min-height:220px;padding:14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--text);resize:vertical;outline:none;line-height:1.65;transition:border-color .2s}
-.essay-wrap textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,107,181,.1)}
-.word-count{font-size:.75rem;color:var(--muted);text-align:right}
+.student-sub-part-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; background: #fafbfe; margin-bottom: 16px; }
+.student-sub-part-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: #475569; margin-bottom: 8px; }
 
 /* Navigation footer */
 .exam-footer{background:var(--white);border-top:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
@@ -111,8 +107,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .btn-nav:hover{background:var(--bg);border-color:#aaa}
 .btn-nav.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 .btn-nav.primary:hover{background:#1558a0}
-.btn-nav svg{width:16px;height:16px}
-.footer-note{font-size:.78rem;color:var(--muted)}
 
 /* RESULTS SCREEN */
 #screen-results{align-items:center;justify-content:center;background:linear-gradient(135deg,#0a2540 0%,#1a4a7a 100%);padding:40px 20px}
@@ -125,10 +119,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .score-label{font-size:.72rem;color:#7fb8c8;margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
 .results-body{padding:28px 36px}
 .result-row{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
-.result-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.75rem;font-weight:700;margin-top:1px}
 .result-icon.e{background:#e3f2fd;color:var(--blue)}
 .result-q{font-size:.85rem;color:var(--text);line-height:1.5;flex:1}
-.result-q .your{font-size:.78rem;color:var(--muted);margin-top:3px}
 .btn-again{display:block;width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;margin-top:20px;transition:background .2s}
 .btn-again:hover{background:#1558a0}
 
@@ -136,7 +128,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .error-box{background:#fde8e8;border:1px solid #ef9a9a;border-radius:8px;padding:16px;color:var(--wrong);font-size:.88rem;margin:20px}
-
 </style>
 </head>
 <body>
@@ -282,8 +273,6 @@ async function loadAvailableAssessments(level) {
   try {
     const res = await fetch(`${API}/assessments`);
     const allAssessments = await res.json();
-    
-    // Strict Grade Filter matching the assigned grade group and status from admin portal dashboard mappings
     const data = allAssessments.filter(a => a.group_name === level && a.status === 'Active');
 
     if (!data.length) {
@@ -349,26 +338,102 @@ function updateSidebar() {
 function renderQuestion(idx) {
   currentIdx = idx; const q = questions[idx]; if (!q) return;
   const area = document.getElementById('question-area');
+  
+  // Parse dynamic media configurations (images or videos) saved inside correct context string block
+  let mediaHtml = '';
+  try {
+    const config = JSON.parse(q.correct);
+    if (config.imageAsset) {
+      mediaHtml += `<img src="${config.imageAsset}" style="max-width:100%; max-height:220px; display:block; margin:12px 0; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,0.06);"/>`;
+    }
+    if (config.videoUrl) {
+      if (config.videoUrl.includes('youtube.com') || config.videoUrl.includes('youtu.be')) {
+        let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        let match = config.videoUrl.match(regExp);
+        if (match && match[2].length == 11) {
+          mediaHtml += `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${match[2]}" frameborder="0" allowfullscreen style="margin:12px 0; border-radius:6px;"></iframe>`;
+        }
+      } else {
+        mediaHtml += `<video src="${config.videoUrl}" controls style="max-width:100%; max-height:200px; display:block; margin:12px 0; border-radius:6px;"></video>`;
+      }
+    }
+  } catch(e) {}
+
   let answerHtml = '';
 
-  if (q.type === 'mcq' || q.type === 'composite_advanced') {
+  // ADVANCED TWO-COLUMN SPLIT COMPOSITE QUESTION RENDERING PIPELINE
+  if (q.type === 'composite_advanced' && Array.isArray(q.options)) {
+    if (!answers[q.id]) answers[q.id] = {};
+    
+    answerHtml = `<div class="q-instruction">Complete each part of the question carefully.</div>`;
+    
+    q.options.forEach((subPart, subIdx) => {
+      let subInputHtml = '';
+      const partKey = `part_${subIdx}`;
+      const savedValue = answers[q.id][partKey] || '';
+
+      if (subPart.type?.startsWith('mcq') || subPart.type === 'block_layout') {
+        const choices = Array.isArray(subPart.options) ? subPart.options : [];
+        subInputHtml = `<div class="mcq-options">` + choices.map((opt, oi) => {
+          const letter = String.fromCharCode(65 + oi);
+          const isSelected = savedValue === letter ? 'selected' : '';
+          return `
+            <div class="mcq-opt ${isSelected}" onclick="saveCompositeSubAnswer(${q.id}, '${partKey}', '${letter}', this)">
+              <div class="opt-letter">${letter}</div>
+              <span>${escapeHtml(opt)}</span>
+            </div>`;
+        }).join('') + `</div>`;
+      } else if (subPart.type === 'true_false') {
+        subInputHtml = `
+          <div class="mcq-options">
+            <div class="mcq-opt ${savedValue === 'true' ? 'selected' : ''}" onclick="saveCompositeSubAnswer(${q.id}, '${partKey}', 'true', this)"><div class="opt-letter">T</div><span>True</span></div>
+            <div class="mcq-opt ${savedValue === 'false' ? 'selected' : ''}" onclick="saveCompositeSubAnswer(${q.id}, '${partKey}', 'false', this)"><div class="opt-letter">F</div><span>False</span></div>
+          </div>`;
+      } else {
+        subInputHtml = `<input class="field-input" style="width:100%; padding:11px; border:1.5px solid var(--border); border-radius:6px;" value="${escapeHtml(savedValue)}" placeholder="Type answer response..." oninput="saveCompositeTextSubAnswer(${q.id}, '${partKey}', this.value)" />`;
+      }
+
+      answerHtml += `
+        <div class="student-sub-part-box">
+          <div class="student-sub-part-title">Part Component ${subIdx + 1}</div>
+          <p style="font-size:13px; color:var(--text); margin-bottom:10px; font-weight:500;">${escapeHtml(subPart.prompt)}</p>
+          ${subInputHtml}
+        </div>`;
+    });
+  } else if (q.type === 'mcq') {
     const opts = (q.options || []).map((opt, oi) => {
       const letter = String.fromCharCode(65 + oi);
       return `<div class="mcq-opt ${answers[q.id] === letter ? 'selected' : ''}" onclick="selectMCQ(${q.id}, '${letter}', this)"><div class="opt-letter">${letter}</div><span>${escapeHtml(opt)}</span></div>`;
-    }).join('') || `<p style="color:#888">Open Response Content Model Matrix</p>`;
-    answerHtml = `<div class="q-instruction">Choose or specify your best response.</div><div class="mcq-options">${opts}</div>`;
+    }).join('');
+    answerHtml = `<div class="q-instruction">Choose the best response.</div><div class="mcq-options">${opts}</div>`;
   } else if (q.type === 'true_false') {
     answerHtml = `<div class="q-instruction">Select True or False.</div><div class="mcq-options"><div class="mcq-opt ${answers[q.id] === 'true' ? 'selected' : ''}" onclick="selectSimpleAnswer(${q.id}, 'true')"><div class="opt-letter">T</div><span>True</span></div><div class="mcq-opt ${answers[q.id] === 'false' ? 'selected' : ''}" onclick="selectSimpleAnswer(${q.id}, 'false')"><div class="opt-letter">F</div><span>False</span></div></div>`;
   } else {
-    answerHtml = `<div class="q-instruction">Provide written answer string keys below:</div><div class="essay-wrap"><textarea placeholder="Type response here..." oninput="saveTextAnswer(${q.id}, this.value)">${escapeHtml(answers[q.id] || '')}</textarea></div>`;
+    answerHtml = `<div class="q-instruction">Provide written answer below:</div><div class="essay-wrap"><textarea placeholder="Type response here..." oninput="saveTextAnswer(${q.id}, this.value)">${escapeHtml(answers[q.id] || '')}</textarea></div>`;
   }
 
-  area.innerHTML = `<div class="q-left"><div class="passage"><p style="font-size:.78rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px">${escapeHtml(q.category || 'Question')}</p><p style="font-size:1rem;font-weight:600;color:var(--navy);line-height:1.6;font-family:'Source Serif 4',serif">${escapeHtml(q.text)}</p></div></div><div class="q-right">${answerHtml}</div>`;
+  area.innerHTML = `<div class="q-left"><div class="passage"><p style="font-size:.78rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px">${escapeHtml(q.category || 'Question')}</p><p style="font-size:1.05rem;font-weight:600;color:var(--navy);line-height:1.6;font-family:'Source Serif 4',serif">${escapeHtml(q.text)}</p>${mediaHtml}</div></div><div class="q-right">${answerHtml}</div>`;
   document.getElementById('btn-prev').style.visibility = idx > 0 ? 'visible' : 'hidden';
   const btnNext = document.getElementById('btn-next');
   if (idx === questions.length - 1) { btnNext.textContent = 'Submit Assessment'; btnNext.onclick = confirmSubmit; }
   else { btnNext.innerHTML = `Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M9 18l6-6-6-6"/></svg>`; btnNext.onclick = nextQuestion; }
-  document.getElementById('footer-note').textContent = answers[q.id] ? '✓ Answer saved' : 'Select or type an answer';
+  
+  const currentAnsExists = q.type === 'composite_advanced' ? (Object.keys(answers[q.id] || {}).length > 0) : !!answers[q.id];
+  document.getElementById('footer-note').textContent = currentAnsExists ? '✓ Answers saved' : 'Select or type an answer';
+  updateSidebar();
+}
+
+function saveCompositeSubAnswer(qId, partKey, value, el) {
+  if (typeof answers[qId] !== 'object') answers[qId] = {};
+  answers[qId][partKey] = value;
+  el.closest('.mcq-options').querySelectorAll('.mcq-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  updateSidebar();
+}
+
+function saveCompositeTextSubAnswer(qId, partKey, value) {
+  if (typeof answers[qId] !== 'object') answers[qId] = {};
+  answers[qId][partKey] = value;
   updateSidebar();
 }
 
@@ -383,14 +448,16 @@ function saveTextAnswer(qId, value) { answers[qId] = value; updateSidebar(); }
 function nextQuestion() { if (currentIdx < questions.length - 1) renderQuestion(currentIdx + 1); }
 function prevQuestion() { if (currentIdx > 0) renderQuestion(currentIdx - 1); }
 
-function confirmSubmit() {
-  if (confirm('Are you sure you want to finalize and submit your responses?')) submitExam();
-}
+function confirmSubmit() { if (confirm('Are you sure you want to finalize and submit your responses?')) submitExam(); }
 
 async function submitExam() {
   stopTimer();
+  // Stringify sub-composite answers so it securely maps past standard string serialization structures
+  const flattenedAnswers = Object.fromEntries(
+    Object.entries(answers).map(([k, v]) => [k, typeof v === 'object' ? JSON.stringify(v) : v])
+  );
   try {
-    const res = await fetch(`${API}/submit`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ candidate: candidate.name, email: candidate.email, assessment_id: selectedAssessmentId, answers: answers }) });
+    const res = await fetch(`${API}/submit`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ candidate: candidate.name, email: candidate.email, assessment_id: selectedAssessmentId, answers: flattenedAnswers }) });
     showResults(await res.json());
   } catch { alert('Submission transmission failed.'); }
 }
@@ -402,7 +469,7 @@ function showResults(result) {
   const breakdown = document.getElementById('results-breakdown');
   breakdown.innerHTML = '<div style="font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Question Breakdown</div>';
   questions.forEach((q, i) => {
-    breakdown.innerHTML += `<div class="result-row"><div class="result-icon e">${i + 1}</div><div class="result-q"><div>${escapeHtml(q.text.substring(0, 90))}...</div><span class="your">Your Response Metric Indexed</span></div></div>`;
+    breakdown.innerHTML += `<div class="result-row"><div class="result-icon e">${i + 1}</div><div class="result-q"><div>${escapeHtml(q.text.substring(0, 90))}...</div><span class="your">Response Stored and Submitted Successfully</span></div></div>`;
   });
 }
 
