@@ -48,8 +48,6 @@ body{font-family:'Open Sans',sans-serif;font-size:14px;color:#333;background:#f5
 .btn-default{background:#fff;border-color:#ccc;color:#333}.btn-default:hover{background:#e6e6e6}
 .btn-danger{background:#d9534f;border-color:#d43f3a;color:#fff}.btn-danger:hover{background:#c9302c}
 .btn-success{background:#5cb85c;border-color:#4cae4c;color:#fff}.btn-success:hover{background:#449d44}
-.btn-warning{background:#f0ad4e;border-color:#eea236;color:#fff}.btn-warning:hover{background:#ec971f}
-.btn-sm{padding:4px 9px;font-size:12px}
 .btn-group{display:flex;gap:6px;flex-wrap:wrap}
 .tbl-wrap{background:#fff;border:1px solid #ddd;border-radius:4px;overflow:hidden;margin-bottom:4px}
 table{width:100%;border-collapse:collapse}
@@ -71,7 +69,6 @@ tbody td{padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;vertical-a
 .iq{font-size:13px;color:#333;line-height:1.45}
 .imeta{font-size:11px;color:#aaa;margin-top:3px}
 .drop-zone{border:2px dashed #ccc;border-radius:4px;padding:12px;min-height:90px;background:#fafafa;transition:border-color .2s,background .2s}
-.drop-zone.over{border-color:#337ab7;background:#e8f2fb}
 .dz-hint{text-align:center;color:#bbb;font-size:13px;padding:18px 0}
 .built{display:flex;align-items:center;justify-content:space-between;padding:6px 9px;background:#d9edf7;border:1px solid #bce8f1;border-radius:3px;margin-bottom:5px;font-size:12px;color:#31708f}
 .btrm{background:none;border:none;color:#a94442;cursor:pointer;font-size:14px;font-weight:700;padding:0 2px}
@@ -93,10 +90,19 @@ tbody td{padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;vertical-a
 .media-uploader-box.dragover { border-color: #1a6bb5; background: #f0f6fc; }
 .media-preview-container img, .media-preview-container video { max-width: 100%; max-height: 140px; display: block; margin: 8px auto; border-radius: 4px; }
 .split-workspace-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.workspace-column { background: #fff; border: 1px solid #dcdcdc; border-radius: 6px; padding: 15px; min-height: 450px; }
-.type-selector-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-.type-select-btn { border: 1px solid #ddd; background: #fff; padding: 12px 8px; border-radius: 6px; text-align: center; cursor: pointer; font-size: 11px; font-weight: 600; transition: all .15s; color: #444; }
-.type-select-btn:hover { border-color: #1a6bb5; background: #f4f8fd; color: #1a6bb5; }
+.workspace-column { background: #fff; border: 1px solid #dcdcdc; border-radius: 6px; padding: 15px; min-height: 480px; display: flex; flex-direction: column; }
+
+/* Subtype Category Rail Layout */
+.creator-sidebar-container { display: grid; grid-template-columns: 200px 1fr; gap: 15px; margin-top: 10px; border-top: 1px solid #eee; padding-top: 12px; }
+.category-rail { display: flex; flex-direction: column; gap: 4px; border-right: 1px solid #eee; padding-right: 10px; }
+.rail-tab { padding: 9px 12px; font-size: 12px; font-weight: 600; color: #555; border-radius: 4px; cursor: pointer; transition: all .15s; }
+.rail-tab:hover, .rail-tab.active { background: #eef4fb; color: #1a6bb5; }
+.variant-display-panel { padding-left: 5px; }
+.variant-cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.variant-card { border: 1px solid #e2e8f0; border-radius: 6px; background: #fff; overflow: hidden; cursor: pointer; transition: all .2s; display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+.variant-card:hover { border-color: #1a6bb5; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(26,107,181,0.12); }
+.v-card-header { background: #2d3748; color: #fff; padding: 6px 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; }
+.v-card-body { padding: 10px; font-size: 11px; color: #718096; line-height: 1.4; background: #f7fafc; flex: 1; }
 
 /* Sub Question Blocks */
 .sub-question-block { border: 1px solid #ccd7e4; border-radius: 6px; padding: 14px; margin-bottom: 14px; background: #fcfdfe; position: relative; }
@@ -235,7 +241,7 @@ math-field { width: 100%; display: block; border: 1px solid #ccc; border-radius:
 </div>
 
 <div class="mo" id="mo-add-item">
-  <div class="mb" style="width:1160px; max-width:96vw;">
+  <div class="mb" style="width:1200px; max-width:97vw;">
     <div class="mh">
       <h4><i class="fa fa-plus"></i> Advanced Composite Split-Workspace Engine</h4>
       <button class="mc-btn" onclick="closeMo('mo-add-item')">&times;</button>
@@ -247,7 +253,7 @@ math-field { width: 100%; display: block; border: 1px solid #ccc; border-radius:
           <h3 style="font-size:13px; color:#1f4172; margin-bottom:10px; border-bottom:1.5px solid #1f4172; padding-bottom:4px;"><i class="fa fa-align-left"></i> Left Page: Context Stimulus</h3>
           
           <div class="form-group">
-            <label>Shared Context / Passage Background Text Text</label>
+            <label>Shared Context / Passage Background Text</label>
             <textarea class="form-control" id="ni-t" rows="4" placeholder="Enter universal instructional description text..."></textarea>
           </div>
 
@@ -272,33 +278,34 @@ math-field { width: 100%; display: block; border: 1px solid #ccc; border-radius:
             <div class="media-preview-container" id="video-preview-box"></div>
           </div>
 
-          <div class="form-row">
+          <div class="form-row" style="margin-top:auto">
             <div class="form-group"><label>Category</label><select class="form-control" id="ni-c"><option>Grade 5 Math</option><option>Grade 6 Math</option><option>Grade 7 Math</option><option>Grade 8 Math</option></select></div>
             <div class="form-group"><label>Complexity</label><select class="form-control" id="ni-d"><option>Basic</option><option>Intermediate</option><option>Advanced</option></select></div>
           </div>
         </div>
 
-        <div class="workspace-column" style="overflow-y:auto; max-height:580px;">
+        <div class="workspace-column" style="overflow-y:auto; max-height:590px;">
           <h3 style="font-size:13px; color:#1f4172; margin-bottom:10px; border-bottom:1.5px solid #1f4172; padding-bottom:4px;"><i class="fa fa-sitemap"></i> Right Page: Sub Question Components</h3>
           
           <div id="sub-questions-container"></div>
 
-          <div style="background:#f4f5f7; border:1px dashed #cbd5e1; padding:12px; border-radius:6px; margin-top:10px;">
-            <span style="font-weight:700; font-size:11px; display:block; text-transform:uppercase; color:#475569; margin-bottom:6px;"><i class="fa fa-plus-circle"></i> Append New Sub Question Component Type</span>
-            <div class="type-selector-card-grid">
-              <div class="type-select-btn" onclick="appendTargetedSubtype('mcq_standard')">Standard MCQ</div>
-              <div class="type-select-btn" onclick="appendTargetedSubtype('mcq_response')">Multi Response</div>
-              <div class="type-select-btn" onclick="appendTargetedSubtype('true_false')">True/False</div>
-              <div class="type-select-btn" onclick="appendTargetedSubtype('matrix_standard')">Choice Matrix</div>
-              <div class="type-select-btn" onclick="appendTargetedSubtype('cloze_drag')">Cloze Drag-Drop</div>
-              <div class="type-select-btn" onclick="appendTargetedSubtype('cloze_dropdown')">Cloze Dropdown</div>
-              <div class="type-select-btn" onclick="appendTargetedSubtype('cloze_text')">Cloze Text Field</div>
-              <div class="type-select-btn" onclick="appendTargetedSubtype('match_list')">Match List</div>
-              <div class="type-select-btn" onclick="appendTargetedSubtype('order_list')">Order List</div>
-              <div class="type-select-btn" onclick="appendTargetedSubtype('essay_rich')">Essay Text</div>
-              <div class="type-select-btn" onclick="appendTargetedSubtype('math_standard')">Math Core Engine</div>
-              <div class="type-select-btn" onclick="appendTargetedSubtype('graph_standard')">Coordinate Graph</div>
+          <div style="background:#fff; border:1px solid #cbd5e1; border-radius:6px; margin-top:10px; padding:12px;">
+            <span style="font-weight:700; font-size:12px; display:block; color:#1f4172; margin-bottom:10px;"><i class="fa fa-plus-circle"></i> Choose Question Type Template</span>
+            
+            <div class="creator-sidebar-container">
+              <div class="category-rail">
+                <div class="rail-tab active" onclick="switchSelectorRailTab('mcq', this)">Multiple Choice</div>
+                <div class="rail-tab" onclick="switchSelectorRailTab('cloze', this)">Fill in Blanks</div>
+                <div class="rail-tab" onclick="switchSelectorRailTab('classify', this)">Classify & Order</div>
+                <div class="rail-tab" onclick="switchSelectorRailTab('written', this)">Written & Audio</div>
+                <div class="rail-tab" onclick="switchSelectorRailTab('math', this)">Mathematics</div>
+                <div class="rail-tab" onclick="switchSelectorRailTab('graph', this)">Graphing & Chart</div>
+              </div>
+              
+              <div class="variant-display-panel" id="variant-display-panel">
+                 </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -344,6 +351,67 @@ math-field { width: 100%; display: block; border: 1px solid #ccc; border-radius:
 const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8000' : 'https://questionquest-prqz.onrender.com';
 let items = [], assessments = [], builder = [], subQuestionCount = 0;
 let base64ImageStr = "", localVideoDataUrl = "";
+
+// Comprehensive Definition Mapping of all requested Subtype components cards views
+const TYPE_VARIANTS_MAP = {
+  mcq: [
+    { type: 'mcq_standard', label: 'Multiple choice - standard', desc: 'A standard question asks students to select the one best answer from a list.' },
+    { type: 'mcq_response', label: 'Multiple choice - response', desc: 'Asks students to select all answer choices that are correct.' },
+    { type: 'true_false', label: 'True or false', desc: 'Asks students to determine whether a given statement is correct or incorrect.' },
+    { type: 'block_layout', label: 'Multiple choice - block layout', desc: 'Includes a shared passage followed by several questions based on that information.' }
+  ],
+  cloze: [
+    { type: 'cloze_drag', label: 'Cloze with drag & drop', desc: 'Fill in blanks by dragging the correct words or phrases into appropriate spaces.' },
+    { type: 'cloze_dropdown', label: 'Cloze with drop-down', desc: 'Complete missing blanks by selecting options from contextual drop-down selectors.' },
+    { type: 'cloze_text', label: 'Cloze with text field', desc: 'Type targeted plain-text entries into input fields embedded within sentences.' },
+    { type: 'label_drag', label: 'Label image with drag & drop', desc: 'Identify critical elements of an image asset by mapping floating drag labels.' },
+    { type: 'label_dropdown', label: 'Label image with drop-down', desc: 'Identify coordinate map locations by assigning local dropdown list triggers.' }
+  ],
+  classify: [
+    { type: 'classify_sort', label: 'Classification sorting', desc: 'Group items into correct sorting buckets based on shared baseline features.' },
+    { type: 'match_list', label: 'Match List pairing', desc: 'Connect matching row pairs securely across side-by-side array sets.' },
+    { type: 'order_list', label: 'Order List sequence', desc: 'Arrange scrambled list entries into correct linear sequence hierarchies.' }
+  ],
+  written: [
+    { type: 'essay_rich', label: 'Essay with Rich Text', desc: 'Extended submission field embedded with alignment, text weight, and styling bars.' },
+    { type: 'essay_plain', label: 'Essay with Plain Text', desc: 'Standard clean text container for basic structural keyboard content responses.' },
+    { type: 'short_text', label: 'Short Text validation', desc: 'Precise field optimized to check short words, names, and single string metrics keys.' },
+    { type: 'audio_recorder', label: 'Audio Recorder stream', desc: 'Enables candidates to directly sample speech inputs via mic hardware hooks.' }
+  ],
+  math: [
+    { type: 'math_standard', label: 'Math basic expression', desc: 'Evaluates algebraic structures via interactive MathLive virtual keypads.' },
+    { type: 'math_multistep', label: 'Multistep Math engine', desc: 'Authoring sequence for tracking linear equation stages validation steps.' },
+    { type: 'math_cloze', label: 'Cloze Math formulas', desc: 'Insert notation target strings directly inside template equation holes.' }
+  ],
+  graph: [
+    { type: 'graph_standard', label: 'Coordinate Graphing', desc: 'Plot functions, coordinate line coordinates, vectors, and rays across grids.' },
+    { type: 'chart_bar', label: 'Bar Chart builder', desc: 'Adjustable graphical bar charts for visual metrics tracking parameters entries.' },
+    { type: 'chart_line', label: 'Line Chart timeline', desc: 'Generates progressive coordinate point chart vectors mapping models data.' }
+  ]
+};
+
+function switchSelectorRailTab(catKey, el) {
+  document.querySelectorAll('.rail-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  
+  const panel = document.getElementById('variant-display-panel');
+  panel.innerHTML = '';
+  
+  const grid = document.createElement('div');
+  grid.className = 'variant-cards-grid';
+  
+  TYPE_VARIANTS_MAP[catKey].forEach(v => {
+    const card = document.createElement('div');
+    card.className = 'variant-card';
+    card.onclick = () => appendTargetedSubtype(v.type, v.label);
+    card.innerHTML = `
+      <div class="v-card-header">${v.label}</div>
+      <div class="v-card-body">${v.desc}</div>
+    `;
+    grid.appendChild(card);
+  });
+  panel.appendChild(grid);
+}
 
 function togglePasswordVisibility(id, el) {
   const f = document.getElementById(id);
@@ -392,7 +460,7 @@ async function loadItems() {
   } catch {}
 }
 
-async function deleteItem(id, e) { e.stopPropagation(); if(confirm('Delete?')) { await adminFetch(`/questions/${id}`, { method: 'DELETE' }); loadItems(); } }
+async function deleteItem(id, e) { e.stopPropagation(); if(confirm('Delete Question?')) { await adminFetch(`/questions/${id}`, { method: 'DELETE' }); loadItems(); } }
 
 function renderBuilder() {
   const container = document.getElementById('dz-items'); container.innerHTML = '';
@@ -420,7 +488,7 @@ async function loadAssessments() {
     });
   } catch {}
 }
-async function deleteAssmt(id) { if(confirm('Delete Assessment Mapping?')) { await adminFetch(`/assessments/${id}`, { method: 'DELETE' }); loadAssessments(); } }
+async function deleteAssmt(id) { if(confirm('Delete Assessment?')) { await adminFetch(`/assessments/${id}`, { method: 'DELETE' }); loadAssessments(); } }
 
 document.addEventListener('DOMContentLoaded', () => {
   const targetZone = document.getElementById('image-dropzone');
@@ -437,10 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (item.type.indexOf('image') !== -1) {
           const blob = item.getAsFile();
           const reader = new FileReader();
-          reader.onload = function(evt) {
-            base64ImageStr = evt.target.result;
-            document.getElementById('image-preview-box').innerHTML = `<img src="${base64ImageStr}"/>`;
-          };
+          reader.onload = function(evt) { base64ImageStr = evt.target.result; document.getElementById('image-preview-box').innerHTML = `<img src="${base64ImageStr}"/>`; };
           reader.readAsDataURL(blob);
         }
       }
@@ -477,7 +542,7 @@ function previewYouTubeEmbed(url) {
   }
 }
 
-function appendTargetedSubtype(type) {
+function appendTargetedSubtype(type, label) {
   subQuestionCount++;
   const id = subQuestionCount;
   const b = document.createElement('div');
@@ -485,21 +550,22 @@ function appendTargetedSubtype(type) {
   b.id = `sub-q-block-${id}`;
   b.innerHTML = `
     <button class="btn btn-danger btn-sm" style="position:absolute; right:10px; top:10px;" onclick="document.getElementById('sub-q-block-${id}').remove()">✕</button>
-    <h5>Part Node Component #${id} [Type: ${type}]</h5>
+    <h5>Part Component #${id} [${label}]</h5>
     <div class="form-group">
-      <label>Sub-Question Target Prompt</label>
-      <input class="form-control target-prompt" placeholder="Write question prompt..."/>
+      <label>Sub-Question Target Prompt / Instructions</label>
+      <input class="form-control target-prompt" placeholder="Write question prompt text here..."/>
       <input type="hidden" class="target-type" value="${type}" />
     </div>
     <div class="sub-type-container" id="advanced-subtype-workspace-${id}"></div>
   `;
   document.getElementById('sub-questions-container').appendChild(b);
   renderWorkspaceStructure(id, type);
+  b.scrollIntoView({ behavior: 'smooth' });
 }
 
 function renderWorkspaceStructure(id, type) {
   const ws = document.getElementById(`advanced-subtype-workspace-${id}`);
-  if(type.startsWith("mcq") || type === "block_question") {
+  if(type.startsWith("mcq") || type === "block_layout") {
     ws.innerHTML = `
       <input class="form-control ws-options" placeholder="Options separated by commas" style="margin-bottom:6px;"/>
       <input class="form-control ws-correct" placeholder="Correct Answer choice letter code"/>`;
@@ -515,7 +581,7 @@ function renderWorkspaceStructure(id, type) {
       <textarea class="form-control ws-cloze-template" placeholder="Template markup using [blank] tokens" style="margin-bottom:6px;"></textarea>
       <input class="form-control ws-correct" placeholder="Ordered answers (Comma-separated)"/>`;
   } else {
-    ws.innerHTML = `<input class="form-control ws-correct" placeholder="Target model key or programmatic string match text"/>`;
+    ws.innerHTML = `<input class="form-control ws-correct" placeholder="Target model key formula or programmatic string match text"/>`;
   }
 }
 
@@ -523,7 +589,7 @@ async function saveAdvancedCompositeItem() {
   const text = document.getElementById('ni-t').value.trim();
   const category = document.getElementById('ni-c').value;
   const difficulty = document.getElementById('ni-d').value;
-  if(!text) return alert('Main core question text required.');
+  if(!text) return alert('Main core question context required.');
 
   let subPartsArr = [];
   document.querySelectorAll('.sub-question-block').forEach(block => {
@@ -588,7 +654,7 @@ async function toggleAdminStatus(id, currentActiveStatus) {
   await adminFetch(`/admin-users/${id}/status`, { method: 'PUT', body: JSON.stringify({ is_active: !currentActiveStatus }) });
   loadAdminUsers();
 }
-async function deleteAdminUser(id) { if(confirm('Erase Account?')) { await adminFetch(`/admin-users/${id}`, { method: 'DELETE' }); loadAdminUsers(); } }
+async function deleteAdminUser(id) { if(confirm('Delete account?')) { await adminFetch(`/admin-users/${id}`, { method: 'DELETE' }); loadAdminUsers(); } }
 async function createAdminUser() {
   await adminFetch('/admin-users', { method: 'POST', body: JSON.stringify({ name: document.getElementById('new-admin-name').value, email: document.getElementById('new-admin-email').value, password: document.getElementById('new-admin-password').value }) });
   closeMo('mo-add-admin-user'); loadAdminUsers();
@@ -599,7 +665,7 @@ async function adminLogin() {
     const res = await fetch(`${API}/admin-login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: document.getElementById('admin-login-name').value, email: document.getElementById('admin-login-email').value, password: document.getElementById('admin-login-password').value }) });
     const data = await res.json(); if(!res.ok) return alert('Credentials error.');
     sessionStorage.setItem('qq_admin_token', data.token); showAdminApp();
-  } catch { alert('Network connection lost.'); }
+  } catch { alert('Network error.'); }
 }
 
 function showAdminApp() {
@@ -617,7 +683,17 @@ async function adminFetch(path, options = {}) {
 }
 
 function openMo(id) { document.getElementById(id).classList.add('open'); if(id==='mo-add-item') openMoCustomReset(); }
-function openMoCustomReset() { document.getElementById('ni-t').value = ''; document.getElementById('sub-questions-container').innerHTML = ''; subQuestionCount = 0; appendTargetedSubtype('mcq_standard'); base64ImageStr=""; localVideoDataUrl=""; document.getElementById('image-preview-box').innerHTML=''; document.getElementById('video-preview-box').innerHTML=''; document.getElementById('video-source-type').value='none'; }
+function openMoCustomReset() { 
+  document.getElementById('ni-t').value = ''; 
+  document.getElementById('sub-questions-container').innerHTML = ''; 
+  subQuestionCount = 0; 
+  base64ImageStr=""; 
+  localVideoDataUrl=""; 
+  document.getElementById('image-preview-box').innerHTML=''; 
+  document.getElementById('video-preview-box').innerHTML=''; 
+  document.getElementById('video-source-type').value='none';
+  switchSelectorRailTab('mcq', document.querySelector('.rail-tab'));
+}
 function closeMo(id) { document.getElementById(id).classList.remove('open'); }
 
 if(getAdminToken()) showAdminApp();
