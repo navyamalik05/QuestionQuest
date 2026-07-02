@@ -57,7 +57,6 @@ thead th{background:#f5f5f5;border-bottom:2px solid #ddd;padding:9px 12px;font-s
 tbody tr:nth-child(even){background:#f9f9f9}
 tbody tr:hover{background:#eef4ff}
 tbody td{padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;vertical-align:middle}
-tbody tr:last-child td{border-bottom:none}
 .inline-links{display:flex;gap:8px;list-style:none;padding:0;margin:0}
 .inline-links a{color:#337ab7;font-size:12px;text-decoration:none;cursor:pointer}.inline-links a:hover{text-decoration:underline}
 .inline-links a.del{color:#a94442}
@@ -65,7 +64,6 @@ tbody tr:last-child td{border-bottom:none}
 .bp-green{background:#dff0d8;color:#3c763d;border:1px solid #d6e9c6}
 .bp-blue{background:#d9edf7;color:#31708f;border:1px solid #bce8f1}
 .bp-gray{background:#eee;color:#555;border:1px solid #ddd}
-.bp-orange{background:#fcf8e3;color:#8a6d3b;border:1px solid #faebcc}
 .ib-layout{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
 .item-row{display:flex;gap:10px;padding:10px 12px;border:1px solid #e0e0e0;border-radius:3px;background:#fafafa;cursor:grab;transition:border-color .15s,box-shadow .15s;margin-bottom:7px;user-select:none}
 .item-row:hover{border-color:#66afe9;box-shadow:0 2px 6px rgba(0,0,0,.08)}
@@ -90,17 +88,24 @@ tbody tr:last-child td{border-bottom:none}
 .mbd{padding:17px;overflow-y:auto;flex:1}
 .mft{background:#f5f5f5;border-top:1px solid #ddd;padding:11px 17px;display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
 
-/* Media Zone */
-.media-uploader-box { border: 2px dashed #bbb; background: #fafafa; border-radius: 6px; padding: 15px; text-align: center; cursor: pointer; margin-bottom: 12px; transition: all .2s; position: relative; }
-.media-uploader-box:hover, .media-uploader-box.dragover { border-color: #1a6bb5; background: #f0f6fc; }
-.media-preview-container img, .media-preview-container video { max-width: 100%; max-height: 180px; display: block; margin: 10px auto; border-radius: 4px; border: 1px solid #ddd; }
+/* Media Zone & Workspace */
+.media-uploader-box { border: 2px dashed #bbb; background: #fafafa; border-radius: 6px; padding: 12px; text-align: center; cursor: pointer; margin-bottom: 12px; position: relative; }
+.media-uploader-box.dragover { border-color: #1a6bb5; background: #f0f6fc; }
+.media-preview-container img, .media-preview-container video { max-width: 100%; max-height: 140px; display: block; margin: 8px auto; border-radius: 4px; }
+.split-workspace-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.workspace-column { background: #fff; border: 1px solid #dcdcdc; border-radius: 6px; padding: 15px; min-height: 450px; }
+.type-selector-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+.type-select-btn { border: 1px solid #ddd; background: #fff; padding: 12px 8px; border-radius: 6px; text-align: center; cursor: pointer; font-size: 11px; font-weight: 600; transition: all .15s; color: #444; }
+.type-select-btn:hover { border-color: #1a6bb5; background: #f4f8fd; color: #1a6bb5; }
 
 /* Sub Question Blocks */
-.sub-question-block { border: 1px solid #ccd7e4; border-radius: 6px; padding: 16px; margin-bottom: 16px; background: #fcfdfe; position: relative; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
-.sub-question-block h5 { font-size: 13px; color: #1f4172; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px; }
-.sub-type-container { background: #f4f7fa; border-radius: 4px; padding: 12px; margin-top: 10px; border-left: 3px solid #1a6bb5; }
-
-math-field { width: 100%; display: block; border: 1px solid #ccc; border-radius: 4px; padding: 6px 10px; font-size: 16px; min-height: 44px; background: #fff; }
+.sub-question-block { border: 1px solid #ccd7e4; border-radius: 6px; padding: 14px; margin-bottom: 14px; background: #fcfdfe; position: relative; }
+.sub-question-block h5 { font-size: 12px; color: #1f4172; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+.sub-type-container { background: #f4f7fa; border-radius: 4px; padding: 10px; margin-top: 8px; border-left: 3px solid #1a6bb5; }
+.toast-el { position: fixed; bottom: 18px; right: 18px; padding: 10px 16px; border-radius: 4px; font-size: 13px; color: #fff; box-shadow: 0 3px 12px rgba(0,0,0,.2); z-index: 9999; display: none; align-items: center; gap: 8px; }
+.toast-el.show { display: flex; }
+.toast-el.success { background: #3c763d; }
+math-field { width: 100%; display: block; border: 1px solid #ccc; border-radius: 4px; padding: 6px 10px; font-size: 16px; background: #fff; }
 </style>
 </head>
 <body>
@@ -167,6 +172,8 @@ math-field { width: 100%; display: block; border: 1px solid #ccc; border-radius:
           <button class="btn btn-default" onclick="openMo('mo-add-item')"><i class="fa fa-plus"></i> Add Question</button>
           <button class="btn btn-default" onclick="showPage('itembank')"><i class="fa fa-database"></i> Item Bank</button>
           <button class="btn btn-default" onclick="openMo('mo-add-assess')"><i class="fa fa-file-text-o"></i> New Assessment</button>
+          <button class="btn btn-default" onclick="showPage('assessments')"><i class="fa fa-list-ul"></i> View Assessments</button>
+          <button class="btn btn-default" onclick="showPage('results')"><i class="fa fa-bar-chart"></i> View Results</button>
         </div>
       </div>
     </div>
@@ -174,7 +181,7 @@ math-field { width: 100%; display: block; border: 1px solid #ccc; border-radius:
 
   <div class="page-sec" id="page-itembank">
     <ul class="action-links">
-      <li><a onclick="openMo('mo-add-item')"><i class="fa fa-plus"></i> New Question</a></li>
+      <li><a onclick="openMo('mo-add-item')"><i class="fa fa-plus"></i> New Question Container</a></li>
     </ul>
     <div class="ib-layout">
       <div>
@@ -187,8 +194,8 @@ math-field { width: 100%; display: block; border: 1px solid #ccc; border-radius:
         <div class="panel">
           <div class="ph"><span class="ph-title"><i class="fa fa-pencil-square-o"></i> Test Builder</span></div>
           <div class="pb">
-            <div class="drop-zone" id="dz" ondragover="this.classList.add('over'); event.preventDefault();" ondragleave="this.classList.remove('over');" ondrop="this.classList.remove('over'); event.preventDefault();">
-              <div class="dz-hint" id="dz-hint">Double-click questions to instantly build fields</div>
+            <div class="drop-zone" id="dz" ondragover="event.preventDefault();" ondrop="event.preventDefault();">
+              <div class="dz-hint" id="dz-hint">Double-click list entries to align questions below</div>
               <div id="dz-items"></div>
             </div>
             <button class="btn btn-success" style="width:100%; margin-top:10px" onclick="openSaveAssmt()"><i class="fa fa-save"></i> Save Assessment</button>
@@ -228,88 +235,91 @@ math-field { width: 100%; display: block; border: 1px solid #ccc; border-radius:
 </div>
 
 <div class="mo" id="mo-add-item">
-  <div class="mb">
+  <div class="mb" style="width:1160px; max-width:96vw;">
     <div class="mh">
-      <h4><i class="fa fa-plus"></i> Create Question (With Advanced Subtypes)</h4>
+      <h4><i class="fa fa-plus"></i> Advanced Composite Split-Workspace Engine</h4>
       <button class="mc-btn" onclick="closeMo('mo-add-item')">&times;</button>
     </div>
-    <div class="mbd">
+    <div class="mbd" style="background:#fcfcfc;">
       
-      <div class="panel" style="border-color:#1f4172;">
-        <div class="ph" style="background:#eef3fa;"><span class="ph-title" style="color:#1f4172;"><i class="fa fa-file-text"></i> Parent Stimulus / Shared Context Background</span></div>
-        <div class="pb">
+      <div class="split-workspace-grid">
+        <div class="workspace-column">
+          <h3 style="font-size:13px; color:#1f4172; margin-bottom:10px; border-bottom:1.5px solid #1f4172; padding-bottom:4px;"><i class="fa fa-align-left"></i> Left Page: Context Stimulus</h3>
+          
           <div class="form-group">
-            <label>Context Content / Stimulus Text Passage</label>
-            <textarea class="form-control" id="ni-t" rows="3" placeholder="Enter global layout background context or instructions here..."></textarea>
+            <label>Shared Context / Passage Background Text Text</label>
+            <textarea class="form-control" id="ni-t" rows="4" placeholder="Enter universal instructional description text..."></textarea>
           </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label><i class="fa fa-image"></i> Stimulus Graphic/Image Asset</label>
-              <div class="media-uploader-box" id="image-dropzone" onclick="document.getElementById('image-file-input').click()">
-                <p id="img-upload-prompt">Drag & Drop Image file here, Paste via Clipboard, or click to upload</p>
-                <input type="file" id="image-file-input" style="display:none;" accept="image/*" onchange="previewUploadedImage(this)"/>
-                <div class="media-preview-container" id="image-preview-box"></div>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label><i class="fa fa-video-camera"></i> Stimulus Video Component</label>
-              <div class="media-uploader-box" style="padding:10px;">
-                <select class="form-control" id="video-source-type" onchange="toggleVideoSourceMode(this.value)" style="margin-bottom:8px;">
-                  <option value="none">No Video Component</option>
-                  <option value="local">Upload Local Video Asset File</option>
-                  <option value="youtube">Embed Remote YouTube URL Reference</option>
-                </select>
-                <div id="video-local-wrap" style="display:none;">
-                  <input type="file" id="video-file-input" accept="video/*" onchange="previewUploadedVideo(this)"/>
-                </div>
-                <div id="video-youtube-wrap" style="display:none;">
-                  <input class="form-control" id="video-youtube-url" placeholder="https://www.youtube.com/watch?v=..." oninput="previewYouTubeEmbed(this.value)"/>
-                </div>
-                <div class="media-preview-container" id="video-preview-box"></div>
-              </div>
+          <div class="form-group">
+            <label><i class="fa fa-image"></i> Image Asset Integration</label>
+            <div class="media-uploader-box" id="image-dropzone" onclick="document.getElementById('image-file-input').click()">
+              <p id="img-upload-prompt" style="font-size:11px; color:#666;">Drag-and-Drop file here, Paste Clipboard contents, or Click to browse</p>
+              <input type="file" id="image-file-input" style="display:none;" accept="image/*" onchange="previewUploadedImage(this)"/>
+              <div class="media-preview-container" id="image-preview-box"></div>
             </div>
           </div>
 
+          <div class="form-group">
+            <label><i class="fa fa-video-camera"></i> Video Integration Stream</label>
+            <select class="form-control" id="video-source-type" onchange="toggleVideoSourceMode(this.value)" style="margin-bottom:6px;">
+              <option value="none">No Media Stream</option>
+              <option value="local">Upload Local Video File</option>
+              <option value="youtube">Embed Remote YouTube Endpoint</option>
+            </select>
+            <div id="video-local-wrap" style="display:none;"><input type="file" id="video-file-input" accept="video/*" onchange="previewUploadedVideo(this)"/></div>
+            <div id="video-youtube-wrap" style="display:none;"><input class="form-control" id="video-youtube-url" placeholder="https://www.youtube.com/watch?v=..." oninput="previewYouTubeEmbed(this.value)"/></div>
+            <div class="media-preview-container" id="video-preview-box"></div>
+          </div>
+
           <div class="form-row">
-            <div class="form-group">
-              <label>Category Grouping</label>
-              <select class="form-control" id="ni-c">
-                <option>Grade 5 Math</option><option>Grade 6 Math</option><option>Grade 7 Math</option><option>Grade 8 Math</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Target Complexity Level</label>
-              <select class="form-control" id="ni-d"><option>Basic</option><option>Intermediate</option><option>Advanced</option></select>
+            <div class="form-group"><label>Category</label><select class="form-control" id="ni-c"><option>Grade 5 Math</option><option>Grade 6 Math</option><option>Grade 7 Math</option><option>Grade 8 Math</option></select></div>
+            <div class="form-group"><label>Complexity</label><select class="form-control" id="ni-d"><option>Basic</option><option>Intermediate</option><option>Advanced</option></select></div>
+          </div>
+        </div>
+
+        <div class="workspace-column" style="overflow-y:auto; max-height:580px;">
+          <h3 style="font-size:13px; color:#1f4172; margin-bottom:10px; border-bottom:1.5px solid #1f4172; padding-bottom:4px;"><i class="fa fa-sitemap"></i> Right Page: Sub Question Components</h3>
+          
+          <div id="sub-questions-container"></div>
+
+          <div style="background:#f4f5f7; border:1px dashed #cbd5e1; padding:12px; border-radius:6px; margin-top:10px;">
+            <span style="font-weight:700; font-size:11px; display:block; text-transform:uppercase; color:#475569; margin-bottom:6px;"><i class="fa fa-plus-circle"></i> Append New Sub Question Component Type</span>
+            <div class="type-selector-card-grid">
+              <div class="type-select-btn" onclick="appendTargetedSubtype('mcq_standard')">Standard MCQ</div>
+              <div class="type-select-btn" onclick="appendTargetedSubtype('mcq_response')">Multi Response</div>
+              <div class="type-select-btn" onclick="appendTargetedSubtype('true_false')">True/False</div>
+              <div class="type-select-btn" onclick="appendTargetedSubtype('matrix_standard')">Choice Matrix</div>
+              <div class="type-select-btn" onclick="appendTargetedSubtype('cloze_drag')">Cloze Drag-Drop</div>
+              <div class="type-select-btn" onclick="appendTargetedSubtype('cloze_dropdown')">Cloze Dropdown</div>
+              <div class="type-select-btn" onclick="appendTargetedSubtype('cloze_text')">Cloze Text Field</div>
+              <div class="type-select-btn" onclick="appendTargetedSubtype('match_list')">Match List</div>
+              <div class="type-select-btn" onclick="appendTargetedSubtype('order_list')">Order List</div>
+              <div class="type-select-btn" onclick="appendTargetedSubtype('essay_rich')">Essay Text</div>
+              <div class="type-select-btn" onclick="appendTargetedSubtype('math_standard')">Math Core Engine</div>
+              <div class="type-select-btn" onclick="appendTargetedSubtype('graph_standard')">Coordinate Graph</div>
             </div>
           </div>
         </div>
       </div>
 
-      <div style="display:flex; align-items:center; justify-content:space-between; margin:15px 0 10px 0;">
-        <span style="font-weight:700; font-size:15px; color:#1f4172;"><i class="fa fa-sitemap"></i> Sub Question Part Elements Matrix</span>
-        <button class="btn btn-info btn-sm" onclick="addAdvancedSubQuestion()"><i class="fa fa-plus"></i> Append Sub Question Configuration</button>
-      </div>
-
-      <div id="sub-questions-container"></div>
     </div>
     <div class="mft">
-      <button class="btn btn-default" onclick="closeMo('mo-add-item')">Cancel Workspace</button>
-      <button class="btn btn-primary" onclick="saveAdvancedCompositeItem()"><i class="fa fa-check"></i> Commit Full Item Structure</button>
+      <button class="btn btn-default" onclick="closeMo('mo-add-item')">Dismiss Workspace</button>
+      <button class="btn btn-primary" onclick="saveAdvancedCompositeItem()"><i class="fa fa-check"></i> Commit Full Layout Structure</button>
     </div>
   </div>
 </div>
 
 <div class="mo" id="mo-add-admin-user">
   <div class="mb">
-    <div class="mh"><h4><i class="fa fa-user-plus"></i> Create New Administrator</h4><button class="mc-btn" onclick="closeMo('mo-add-admin-user')">&times;</button></div>
+    <div class="mh"><h4><i class="fa fa-user-plus"></i> Create Admin User</h4><button class="mc-btn" onclick="closeMo('mo-add-admin-user')">&times;</button></div>
     <div class="mbd">
       <div class="form-group"><label>Name</label><input class="form-control" id="new-admin-name"/></div>
       <div class="form-group"><label>Email</label><input class="form-control" id="new-admin-email" type="email"/></div>
       <div class="form-group"><label>Password</label><input class="form-control" id="new-admin-password" type="password"/></div>
     </div>
-    <div class="mft"><button class="btn btn-primary" onclick="createAdminUser()">Commit</button></div>
+    <div class="mft"><button class="btn btn-primary" onclick="createAdminUser()">Create</button></div>
   </div>
 </div>
 
@@ -317,16 +327,18 @@ math-field { width: 100%; display: block; border: 1px solid #ccc; border-radius:
   <div class="mb">
     <div class="mh"><h4><i class="fa fa-save"></i> Build Assessment Mapping</h4><button class="mc-btn" onclick="closeMo('mo-save-assmt')">&times;</button></div>
     <div class="mbd">
-      <div class="form-group"><label>Assessment Title</label><input class="form-control" id="sa-t"/></div>
-      <div class="form-group"><label>Overview Description</label><textarea class="form-control" id="sa-d" rows="2"></textarea></div>
+      <div class="form-group"><label>Title</label><input class="form-control" id="sa-t"/></div>
+      <div class="form-group"><label>Description</label><textarea class="form-control" id="sa-d" rows="2"></textarea></div>
       <div class="form-row">
-        <div class="form-group"><label>Target Student Grade</label><select class="form-control" id="sa-g"><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option><option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option></select></div>
-        <div class="form-group"><label>Initial Release state</label><select class="form-control" id="sa-s"><option value="Draft">Draft</option><option value="Active">Active</option></select></div>
+        <div class="form-group"><label>Grade Group</label><select class="form-control" id="sa-g"><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option><option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option></select></div>
+        <div class="form-group"><label>Status</label><select class="form-control" id="sa-s"><option value="Draft">Draft</option><option value="Active">Active</option></select></div>
       </div>
     </div>
     <div class="mft"><button class="btn btn-success" onclick="saveAssmt()">Save Config</button></div>
   </div>
 </div>
+
+<div class="toast-el success" id="toast-el"><i class="fa fa-check-circle"></i><span id="toast-msg"></span></div>
 
 <script>
 const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8000' : 'https://questionquest-prqz.onrender.com';
@@ -352,7 +364,6 @@ function showPage(id) {
 function toggleDD(id, e) { e.preventDefault(); e.stopPropagation(); document.getElementById(id).classList.toggle('open'); }
 function closeDD() { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('open')); }
 document.addEventListener('click', closeDD);
-
 function logout() { sessionStorage.clear(); window.location.reload(); }
 
 async function loadStats() {
@@ -405,13 +416,12 @@ async function loadAssessments() {
     const r = await adminFetch('/assessments'); assessments = await r.json();
     const tb = document.getElementById('atbody'); tb.innerHTML = '';
     assessments.forEach(a => {
-      tb.innerHTML += `<tr><td>${a.title}</td><td>${a.description || ''}</td><td>${a.question_ids?.length || 0}</td><td>${a.group_name || 'All'}</td><td>${a.status}</td><td><button class="btn btn-danger btn-sm" onclick="deleteAssmt(${a.id})"><i class="fa fa-trash"></i></button></td></tr>`;
+      tb.innerHTML += `<tr><td><strong>${a.title}</strong></td><td>${a.description || ''}</td><td>${a.question_ids?.length || 0}</td><td>${a.group_name || 'All'}</td><td>${a.status}</td><td><button class="btn btn-danger btn-sm" onclick="deleteAssmt(${a.id})"><i class="fa fa-trash"></i></button></td></tr>`;
     });
   } catch {}
 }
-async function deleteAssmt(id) { if(confirm('Delete?')) { await adminFetch(`/assessments/${id}`, { method: 'DELETE' }); loadAssessments(); } }
+async function deleteAssmt(id) { if(confirm('Delete Assessment Mapping?')) { await adminFetch(`/assessments/${id}`, { method: 'DELETE' }); loadAssessments(); } }
 
-// Setup clipboard and local file monitoring triggers
 document.addEventListener('DOMContentLoaded', () => {
   const targetZone = document.getElementById('image-dropzone');
   if(targetZone) {
@@ -430,7 +440,6 @@ document.addEventListener('DOMContentLoaded', () => {
           reader.onload = function(evt) {
             base64ImageStr = evt.target.result;
             document.getElementById('image-preview-box').innerHTML = `<img src="${base64ImageStr}"/>`;
-            document.getElementById('img-upload-prompt').textContent = "Image successfully synchronized from clipboard layer.";
           };
           reader.readAsDataURL(blob);
         }
@@ -442,10 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function previewUploadedImage(input) {
   if (input.files && input.files[0]) {
     const reader = new FileReader();
-    reader.onload = function(e) {
-      base64ImageStr = e.target.result;
-      document.getElementById('image-preview-box').innerHTML = `<img src="${base64ImageStr}"/>`;
-    };
+    reader.onload = function(e) { base64ImageStr = e.target.result; document.getElementById('image-preview-box').innerHTML = `<img src="${base64ImageStr}"/>`; };
     reader.readAsDataURL(input.files[0]);
   }
 }
@@ -453,14 +459,12 @@ function previewUploadedImage(input) {
 function toggleVideoSourceMode(val) {
   document.getElementById('video-local-wrap').style.display = val === 'local' ? 'block' : 'none';
   document.getElementById('video-youtube-wrap').style.display = val === 'youtube' ? 'block' : 'none';
-  document.getElementById('video-preview-box').innerHTML = '';
-  localVideoDataUrl = "";
+  document.getElementById('video-preview-box').innerHTML = ''; localVideoDataUrl = "";
 }
 
 function previewUploadedVideo(input) {
   if (input.files && input.files[0]) {
-    const url = URL.createObjectURL(input.files[0]);
-    localVideoDataUrl = url; // In scalable setups, map out to standard S3 network targets
+    const url = URL.createObjectURL(input.files[0]); localVideoDataUrl = url;
     document.getElementById('video-preview-box').innerHTML = `<video src="${url}" controls></video>`;
   }
 }
@@ -469,11 +473,11 @@ function previewYouTubeEmbed(url) {
   let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   let match = url.match(regExp);
   if (match && match[2].length == 11) {
-    document.getElementById('video-preview-box').innerHTML = `<iframe width="100%" height="160" src="https://www.embed-youtube.com/embed/${match[2]}" frameborder="0" allowfullscreen></iframe>`;
+    document.getElementById('video-preview-box').innerHTML = `<iframe width="100%" height="140" src="https://www.youtube.com/embed/${match[2]}" frameborder="0" allowfullscreen></iframe>`;
   }
 }
 
-function addAdvancedSubQuestion() {
+function appendTargetedSubtype(type) {
   subQuestionCount++;
   const id = subQuestionCount;
   const b = document.createElement('div');
@@ -481,125 +485,37 @@ function addAdvancedSubQuestion() {
   b.id = `sub-q-block-${id}`;
   b.innerHTML = `
     <button class="btn btn-danger btn-sm" style="position:absolute; right:10px; top:10px;" onclick="document.getElementById('sub-q-block-${id}').remove()">✕</button>
-    <h5>Part Component #${id}</h5>
-    <div class="form-row">
-      <div class="form-group" style="grid-column: span 2;">
-        <label>Instruction/Part Input Target Prompt</label>
-        <input class="form-control target-prompt" placeholder="Provide target response instruction text..."/>
-      </div>
-    </div>
+    <h5>Part Node Component #${id} [Type: ${type}]</h5>
     <div class="form-group">
-      <label>Specialized Core Subtype Domain Selection</label>
-      <select class="form-control target-type" onchange="renderSpecificTypeSubworkspace(${id}, this.value)">
-        <optgroup label="Multiple Choice Variants">
-          <option value="mcq_standard">Multiple Question - Standard MCQ (Select One Best Option)</option>
-          <option value="mcq_response">Multiple Question - Multiple Response (Select All Choices that apply)</option>
-          <option value="true_false">Multiple Question - True / False Assessment Form</option>
-          <option value="block_question">Multiple Question - Block Question Layout</option>
-        </optgroup>
-        <optgroup label="Choice Matrix Structures">
-          <option value="matrix_standard">Choice Matrix - Standard (One Row Option selection inside table template Grid)</option>
-          <option value="matrix_inline">Choice Matrix - Inline Options Layout Variant</option>
-          <option value="matrix_labels">Choice Matrix - Category Matching Labels</option>
-        </optgroup>
-        <optgroup label="Fill-in-the-blank / Cloze Frameworks">
-          <option value="cloze_drag">Fill-in-the-blank (Cloze) — Drag-and-Drop text targets</option>
-          <option value="cloze_dropdown">Fill-in-the-blank (Cloze) — Selection dropdown boxes menu</option>
-          <option value="cloze_text">Fill-in-the-blank (Cloze) — Manual textual input blanks</option>
-          <option value="label_drag">Fill-in-the-blank (Cloze) — Image Region Label Drag-and-Drop</option>
-          <option value="label_dropdown">Fill-in-the-blank (Cloze) — Image Drop-Down selection tags</option>
-          <option value="label_text">Fill-in-the-blank (Cloze) — Image input value layout labels</option>
-        </optgroup>
-        <optgroup label="Classify, Match & Sequence">
-          <option value="classify_sort">Classification Sorting Matrix buckets</option>
-          <option value="match_list">Match List Matrix Matching elements pairs</option>
-          <option value="order_list">Order List Sequential array ranking</option>
-          <option value="sort_list">Sort list categories indexing elements</option>
-        </optgroup>
-        <optgroup label="Written & Recorded Portals">
-          <option value="essay_rich">Written & Recorded — Essay Response with fully featured Rich Text layout controls</option>
-          <option value="essay_plain">Written & Recorded — Essay Response with standard Plain Text canvas space</option>
-          <option value="short_text">Written & Recorded — Short Text precise target sentence validation field</option>
-          <option value="audio_recorder">Written & Recorded — Audio Recorder voice captures clip endpoint</option>
-          <option value="video_recorder">Written & Recorded — Video Recorder student verification stream clip</option>
-        </optgroup>
-        <optgroup label="Highlight & Interactive Markups">
-          <option value="drawing_canvas">Highlight and Drawing — Dynamic graphical drawing trace tool area</option>
-          <option value="shading_canvas">Highlight and Drawing — Image region block fill shading framework</option>
-          <option value="token_highlight">Highlight and Drawing — Selective programmatic string text highlight tokens</option>
-          <option value="hotspot_target">Highlight and Drawing — Image coordinate hotspot trigger targets</option>
-        </optgroup>
-        <optgroup label="Advanced Mathematics Engines">
-          <option value="math_standard">Math Core numeric syntax validation interface</option>
-          <option value="math_multistep">Multistep Math advanced sequence multi-equation blocks</option>
-          <option value="math_image_label">Label Image with Math target notations layout validation</option>
-          <option value="math_cloze">Cloze Math numerical structural blanks insertion field</option>
-          <option value="math_cloze_image">Cloze Math with Image resource reference validation context</option>
-          <option value="math_essay_rich">Math Essay with notation support rich textbox elements</option>
-          <option value="math_generator">Math Question Generator algebraic structural variable parameters formulas</option>
-        </optgroup>
-        <optgroup label="Interactive Coordinate Graphing">
-          <option value="graph_standard">Graphing — Standard Cartesian 4-Quadrant coordinates line plotter tool</option>
-          <option value="graph_first_quad">Graphing — Quadrant I isolated positive range layout plotter workspace</option>
-          <option value="numberline_drag">Graphing — Number Line structural value label Drag-and-Drop element markers</option>
-          <option value="numberline_plot">Graphing — Number Line Plot discrete interval points validation</option>
-        </optgroup>
-        <optgroup label="Data Charting Templates">
-          <option value="chart_bar">Charting — Bar Chart metrics configuration workspace</option>
-          <option value="chart_line">Charting — Line Chart graphical data matrix template</option>
-          <option value="chart_histogram">Charting — Histogram distributed statistics intervals organizer</option>
-          <option value="chart_dotplot">Charting — Dot Plot frequency tracking data sheet</option>
-          <option value="chart_lineplot">Charting — Line Plot marker distribution verification engine</option>
-        </optgroup>
-      </select>
+      <label>Sub-Question Target Prompt</label>
+      <input class="form-control target-prompt" placeholder="Write question prompt..."/>
+      <input type="hidden" class="target-type" value="${type}" />
     </div>
     <div class="sub-type-container" id="advanced-subtype-workspace-${id}"></div>
   `;
   document.getElementById('sub-questions-container').appendChild(b);
-  renderSpecificTypeSubworkspace(id, "mcq_standard");
+  renderWorkspaceStructure(id, type);
 }
 
-function renderSpecificTypeSubworkspace(id, type) {
+function renderWorkspaceStructure(id, type) {
   const ws = document.getElementById(`advanced-subtype-workspace-${id}`);
   if(type.startsWith("mcq") || type === "block_question") {
     ws.innerHTML = `
-      <label style="font-size:11px; font-weight:700;">PROPOSED OPTION ELEMENTS (Comma-separated Array lists)</label>
-      <input class="form-control ws-options" placeholder="e.g. choice A, choice B, choice C, choice D" style="margin-bottom:6px;"/>
-      <label style="font-size:11px; font-weight:700;">VALID EXPLICIT CORRECT KEY TARGET INDEXES</label>
-      <input class="form-control ws-correct" placeholder="e.g. choice B (Or list comma items for multiresponse matches)"/>
-    `;
+      <input class="form-control ws-options" placeholder="Options separated by commas" style="margin-bottom:6px;"/>
+      <input class="form-control ws-correct" placeholder="Correct Answer choice letter code"/>`;
   } else if (type === "true_false") {
-    ws.innerHTML = `
-      <label style="font-size:11px; font-weight:700;">CORRECT TARGET RESPONSE VALUE</label>
-      <select class="form-control ws-correct"><option value="true">True statement evaluation</option><option value="false">False statement evaluation</option></select>
-    `;
+    ws.innerHTML = `<select class="form-control ws-correct"><option value="true">True</option><option value="false">False</option></select>`;
   } else if (type.startsWith("matrix")) {
     ws.innerHTML = `
-      <label style="font-size:11px; font-weight:700;">MATRIX ROW LABELS (Semicolon-separated)</label>
-      <input class="form-control ws-matrix-rows" placeholder="Row Statement 1; Row Statement 2" style="margin-bottom:6px;"/>
-      <label style="font-size:11px; font-weight:700;">MATRIX COLUMN RESPONSE HEADER OPTIONS (Comma-separated)</label>
-      <input class="form-control ws-options" placeholder="Agree, Disagree, Neutral" style="margin-bottom:6px;"/>
-      <label style="font-size:11px; font-weight:700;">CORRECT OPTIONS MAPPING INDEX ARRAYS KEYS</label>
-      <input class="form-control ws-correct" placeholder="Match index mapping values array"/>
-    `;
-  } else if (type.startsWith("cloze") || type.startsWith("label_") || type.startsWith("math_cloze")) {
+      <input class="form-control ws-matrix-rows" placeholder="Row Statements (Semicolon-separated)" style="margin-bottom:6px;"/>
+      <input class="form-control ws-options" placeholder="Column Choices (Comma-separated)" style="margin-bottom:6px;"/>
+      <input class="form-control ws-correct" placeholder="Correct Array Matrix configuration map"/>`;
+  } else if (type.includes("cloze") || type.includes("label")) {
     ws.innerHTML = `
-      <label style="font-size:11px; font-weight:700;">CLOZE RAW TEMPLATE CODE SPECIFICATION (Use '[blank]' tokens for inputs location)</label>
-      <textarea class="form-control ws-cloze-template" rows="2" style="margin-bottom:6px;" placeholder="The capital of France is [blank]. Solution equation yields x = [blank]."></textarea>
-      <label style="font-size:11px; font-weight:700;">CORRECT RESPONSES ORDERED MATRIX (Comma-separated entries corresponding to blanks sequence)</label>
-      <input class="form-control ws-correct" placeholder="Paris, 12"/>
-    `;
-  } else if (type.startsWith("math") || type.startsWith("graph") || type.startsWith("chart")) {
-    ws.innerHTML = `
-      <label style="font-size:11px; font-weight:700;">CORE FORMULA OR COORDINATE VALIDATION MATRIX EXPRESSION CODE</label>
-      <input class="form-control ws-correct" placeholder="Target system validation expression constraint coordinates array parameters token"/>
-      <div style="margin-top:5px; font-size:11px; color:#555;"><i class="fa fa-info-circle"></i> Equation structures sync down directly via standard LaTeX / JSON evaluation metrics interfaces.</div>
-    `;
+      <textarea class="form-control ws-cloze-template" placeholder="Template markup using [blank] tokens" style="margin-bottom:6px;"></textarea>
+      <input class="form-control ws-correct" placeholder="Ordered answers (Comma-separated)"/>`;
   } else {
-    ws.innerHTML = `
-      <label style="font-size:11px; font-weight:700;">VALID EXACT SCRIPT / GRADER PRESET MODEL TEMPLATE REFERENCE KEY</label>
-      <textarea class="form-control ws-correct" rows="2" placeholder="Provide system rubric key configurations models data or short text solution exact values..."></textarea>
-    `;
+    ws.innerHTML = `<input class="form-control ws-correct" placeholder="Target model key or programmatic string match text"/>`;
   }
 }
 
@@ -607,39 +523,30 @@ async function saveAdvancedCompositeItem() {
   const text = document.getElementById('ni-t').value.trim();
   const category = document.getElementById('ni-c').value;
   const difficulty = document.getElementById('ni-d').value;
-  if(!text) return alert('Main core text prompt context is missing.');
+  if(!text) return alert('Main core question text required.');
 
   let subPartsArr = [];
   document.querySelectorAll('.sub-question-block').forEach(block => {
     const prompt = block.querySelector('.target-prompt').value.trim();
     const type = block.querySelector('.target-type').value;
-    
     let subDataObj = { prompt, type };
+    
     const optEl = block.querySelector('.ws-options');
     if(optEl) subDataObj.options = optEl.value.split(',').map(o => o.trim());
-    
     const rowEl = block.querySelector('.ws-matrix-rows');
     if(rowEl) subDataObj.matrixRows = rowEl.value.split(';').map(r => r.trim());
-
     const tmplEl = block.querySelector('.ws-cloze-template');
     if(tmplEl) subDataObj.clozeTemplate = tmplEl.value;
-
     const corrEl = block.querySelector('.ws-correct');
     if(corrEl) subDataObj.correctValue = corrEl.value;
 
     subPartsArr.push(subDataObj);
   });
 
-  const payload = {
-    text: text,
-    type: "composite_advanced",
-    options: subPartsArr,
-    correct: JSON.stringify({ imageAsset: base64ImageStr, videoUrl: localVideoDataUrl || document.getElementById('video-youtube-url').value }),
-    category: category,
-    difficulty: difficulty
-  };
-
-  await adminFetch('/questions', { method: 'POST', body: JSON.stringify(payload) });
+  await adminFetch('/questions', {
+    method: 'POST',
+    body: JSON.stringify({ text, type: "composite_advanced", options: subPartsArr, correct: JSON.stringify({ imageAsset: base64ImageStr, videoUrl: localVideoDataUrl || document.getElementById('video-youtube-url').value }), category, difficulty })
+  });
   closeMo('mo-add-item'); showPage('itembank');
 }
 
@@ -662,12 +569,9 @@ async function loadAdminUsers() {
       const statusColor = u.is_active !== false ? 'bp-green' : 'bp-gray';
       const toggleText = u.is_active !== false ? 'Draft' : 'Activate';
       const toggleIcon = u.is_active !== false ? 'fa-file-text-o' : 'fa-check-circle-o';
-
       tb.innerHTML += `
         <tr>
-          <td><strong>${u.name}</strong></td>
-          <td>${u.email}</td>
-          <td><span class="bp ${statusColor}">${statusLabel}</span></td>
+          <td><strong>${u.name}</strong></td><td>${u.email}</td><td><span class="bp ${statusColor}">${statusLabel}</span></td>
           <td style="font-size:12px;color:#888">${u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}</td>
           <td>
             <ul class="inline-links">
@@ -684,9 +588,7 @@ async function toggleAdminStatus(id, currentActiveStatus) {
   await adminFetch(`/admin-users/${id}/status`, { method: 'PUT', body: JSON.stringify({ is_active: !currentActiveStatus }) });
   loadAdminUsers();
 }
-
-async function deleteAdminUser(id) { if(confirm('Completely erase this account?')) { await adminFetch(`/admin-users/${id}`, { method: 'DELETE' }); loadAdminUsers(); } }
-
+async function deleteAdminUser(id) { if(confirm('Erase Account?')) { await adminFetch(`/admin-users/${id}`, { method: 'DELETE' }); loadAdminUsers(); } }
 async function createAdminUser() {
   await adminFetch('/admin-users', { method: 'POST', body: JSON.stringify({ name: document.getElementById('new-admin-name').value, email: document.getElementById('new-admin-email').value, password: document.getElementById('new-admin-password').value }) });
   closeMo('mo-add-admin-user'); loadAdminUsers();
@@ -695,8 +597,7 @@ async function createAdminUser() {
 async function adminLogin() {
   try {
     const res = await fetch(`${API}/admin-login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: document.getElementById('admin-login-name').value, email: document.getElementById('admin-login-email').value, password: document.getElementById('admin-login-password').value }) });
-    const data = await res.json();
-    if(!res.ok) return alert('Credentials failure.');
+    const data = await res.json(); if(!res.ok) return alert('Credentials error.');
     sessionStorage.setItem('qq_admin_token', data.token); showAdminApp();
   } catch { alert('Network connection lost.'); }
 }
@@ -704,8 +605,7 @@ async function adminLogin() {
 function showAdminApp() {
   document.getElementById('admin-login-screen').style.display = 'none';
   document.getElementById('admin-navbar').style.display = 'block';
-  document.getElementById('admin-app').style.display = 'block';
-  loadStats();
+  document.getElementById('admin-app').style.display = 'block'; loadStats();
 }
 
 function getAdminToken() { return sessionStorage.getItem('qq_admin_token'); }
@@ -717,7 +617,7 @@ async function adminFetch(path, options = {}) {
 }
 
 function openMo(id) { document.getElementById(id).classList.add('open'); if(id==='mo-add-item') openMoCustomReset(); }
-function openMoCustomReset() { document.getElementById('ni-t').value = ''; document.getElementById('sub-questions-container').innerHTML = ''; subQuestionCount = 0; addAdvancedSubQuestion(); base64ImageStr=""; localVideoDataUrl=""; document.getElementById('image-preview-box').innerHTML=''; document.getElementById('video-preview-box').innerHTML=''; document.getElementById('video-source-type').value='none'; }
+function openMoCustomReset() { document.getElementById('ni-t').value = ''; document.getElementById('sub-questions-container').innerHTML = ''; subQuestionCount = 0; appendTargetedSubtype('mcq_standard'); base64ImageStr=""; localVideoDataUrl=""; document.getElementById('image-preview-box').innerHTML=''; document.getElementById('video-preview-box').innerHTML=''; document.getElementById('video-source-type').value='none'; }
 function closeMo(id) { document.getElementById(id).classList.remove('open'); }
 
 if(getAdminToken()) showAdminApp();
