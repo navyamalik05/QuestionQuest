@@ -27,9 +27,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .screen{display:none;min-height:100vh}
 .screen.active{display:flex;flex-direction:column}
 
-/* ══════════════════════════════════════
-   REGISTRATION SCREEN
-══════════════════════════════════════ */
+/* REGISTRATION SCREEN */
 #screen-register{align-items:center;justify-content:center;background:linear-gradient(135deg,#0a2540 0%,#1a4a7a 60%,#1a6bb5 100%)}
 .reg-card{background:#fff;border-radius:16px;padding:48px 44px;width:480px;max-width:94vw;box-shadow:0 24px 64px rgba(0,0,0,.25)}
 .reg-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px}
@@ -45,12 +43,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .btn-start{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;margin-top:6px;transition:background .2s,transform .15s}
 .btn-start:hover{background:#1558a0;transform:translateY(-1px)}
 
-/* ══════════════════════════════════════
-   EXAM SCREEN
-══════════════════════════════════════ */
+/* EXAM SCREEN */
 #screen-exam{flex-direction:column;background:var(--bg)}
-
-/* Top bar */
 .topbar{background:var(--white);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;padding:0 20px;gap:16px;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .topbar-logo{font-family:'Source Serif 4',serif;color:var(--navy);font-size:1rem;font-weight:600;display:flex;align-items:center;gap:8px}
 .topbar-logo .dot{width:8px;height:8px;background:var(--blue);border-radius:50%}
@@ -62,14 +56,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .btn-pause{width:32px;height:32px;border:1.5px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .btn-pause svg{width:14px;height:14px;fill:var(--muted)}
 
-/* Progress bar */
 .progress-wrap{height:4px;background:var(--border);position:sticky;top:52px;z-index:99}
 .progress-bar{height:100%;background:var(--blue);transition:width .4s ease}
 
-/* Exam body */
 .exam-body{display:flex;flex:1;min-height:calc(100vh - 56px)}
-
-/* Sidebar */
 .sidebar{width:var(--sidebar);background:var(--white);border-right:1px solid var(--border);padding:16px 0;overflow-y:auto;flex-shrink:0}
 .sidebar-items{list-style:none}
 .sidebar-item{padding:10px 18px;font-size:.83rem;color:var(--muted);cursor:pointer;border-left:3px solid transparent;transition:all .15s;display:flex;align-items:center;gap:8px}
@@ -78,17 +68,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .sidebar-item.answered{color:var(--teal)}
 .sidebar-item.answered::after{content:'✓';margin-left:auto;font-size:.75rem}
 
-/* Main content */
 .exam-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .question-area{flex:1;display:grid;grid-template-columns:1fr 1fr;overflow:auto}
 .q-left{padding:36px 32px;border-right:1px solid var(--border);overflow-y:auto}
 .q-right{padding:36px 32px;overflow-y:auto;background:#fff}
 
-/* Question blocks */
 .q-instruction{background:#f0f4f8;border-radius:8px;padding:16px 18px;font-size:.9rem;color:var(--text);line-height:1.6;margin-bottom:20px}
 .passage{font-size:.9rem;line-height:1.75;color:var(--text)}
 
-/* MCQ Options */
 .mcq-options{display:flex;flex-direction:column;gap:10px;margin-top:4px}
 .mcq-opt{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .18s;font-size:.9rem;line-height:1.5}
 .mcq-opt:hover{border-color:var(--blue);background:var(--blue-lt)}
@@ -96,19 +83,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .opt-letter{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;color:var(--muted)}
 .mcq-opt.selected .opt-letter{background:var(--blue);border-color:var(--blue);color:#fff}
 
-/* Student Render Elements */
 .essay-wrap{display:flex;flex-direction:column;gap:8px}
 .student-sub-part-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; background: #fafbfe; margin-bottom: 16px; }
 .student-sub-part-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: #475569; margin-bottom: 8px; }
 
-/* Navigation footer */
 .exam-footer{background:var(--white);border-top:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
 .btn-nav{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:8px;border:1.5px solid var(--border);font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .15s;background:#fff;color:var(--text)}
 .btn-nav:hover{background:var(--bg);border-color:#aaa}
 .btn-nav.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 .btn-nav.primary:hover{background:#1558a0}
 
-/* RESULTS SCREEN */
 #screen-results{align-items:center;justify-content:center;background:linear-gradient(135deg,#0a2540 0%,#1a4a7a 100%);padding:40px 20px}
 .results-card{background:#fff;border-radius:16px;width:640px;max-width:96vw;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.3)}
 .results-head{background:var(--navy);padding:32px 36px;text-align:center}
@@ -271,12 +255,12 @@ async function loadAvailableAssessments(level) {
   box.innerHTML = `<div style="color:var(--muted); font-size:.9rem; padding:12px 0"><i class="fa fa-spinner fa-spin"></i> Loading assessments...</div>`;
 
   try {
-    const res = await fetch(`${API}/assessments`);
-    const allAssessments = await res.json();
-    const data = allAssessments.filter(a => a.group_name === level && a.status === 'Active');
+    // Calling the dedicated public filter endpoint on your main.py file
+    const res = await fetch(`${API}/assessments/by-group/${encodeURIComponent(level)}`);
+    const data = await res.json();
 
     if (!data.length) {
-      box.innerHTML = `<div class="error-box">No active assessments were found for <strong>${level}</strong>.</div>`;
+      box.innerHTML = `<div class="error-box">No active assessments found matching grade group: <strong>${level}</strong>.</div>`;
       return;
     }
 
@@ -330,7 +314,10 @@ function updateSidebar() {
     if (i === currentIdx) li.classList.add('active');
     if (answers[q.id] !== undefined && answers[q.id] !== '') li.classList.add('answered');
   });
-  const answered = questions.filter(q => answers[q.id] !== undefined && answers[q.id] !== '').length;
+  const answered = questions.filter(q => {
+    if (q.type === 'composite_advanced') return answers[q.id] && Object.keys(answers[q.id]).length > 0;
+    return answers[q.id] !== undefined && answers[q.id] !== '';
+  }).length;
   document.getElementById('progress-bar').style.width = (questions.length ? (answered / questions.length * 100) : 0) + '%';
   document.getElementById('q-counter').textContent = (currentIdx + 1) + ' of ' + questions.length;
 }
@@ -360,7 +347,7 @@ function renderQuestion(idx) {
 
   let answerHtml = '';
 
-  // ADVANCED TWO-COLUMN SPLIT COMPOSITE QUESTION RENDERING PIPELINE
+  // ADVANCED SPLIT TWO-COLUMN ADVANCED COMPOSITE RENDERING PIPELINE
   if (q.type === 'composite_advanced' && Array.isArray(q.options)) {
     if (!answers[q.id]) answers[q.id] = {};
     
@@ -389,7 +376,7 @@ function renderQuestion(idx) {
             <div class="mcq-opt ${savedValue === 'false' ? 'selected' : ''}" onclick="saveCompositeSubAnswer(${q.id}, '${partKey}', 'false', this)"><div class="opt-letter">F</div><span>False</span></div>
           </div>`;
       } else {
-        subInputHtml = `<input class="field-input" style="width:100%; padding:11px; border:1.5px solid var(--border); border-radius:6px;" value="${escapeHtml(savedValue)}" placeholder="Type answer response..." oninput="saveCompositeTextSubAnswer(${q.id}, '${partKey}', this.value)" />`;
+        subInputHtml = `<input class="field-input" style="width:100%; padding:11px; border:1.5px solid var(--border); border-radius:6px; outline:none;" value="${escapeHtml(savedValue)}" placeholder="Type answer response..." oninput="saveCompositeTextSubAnswer(${q.id}, '${partKey}', this.value)" />`;
       }
 
       answerHtml += `
@@ -400,7 +387,6 @@ function renderQuestion(idx) {
         </div>`;
     });
   } else {
-    // Treat as single Multiple Choice or standard fallbacks if options are flat strings
     let flatOptions = [];
     if (Array.isArray(q.options)) {
       flatOptions = q.options.map(o => typeof o === 'object' ? (o.prompt || JSON.stringify(o)) : o);
@@ -438,13 +424,12 @@ function saveCompositeSubAnswer(qId, partKey, value, el) {
   updateSidebar();
 }
 
-// Fixed target to prevent continuous resetting on user character inputs inside text boxes
 function saveCompositeTextSubAnswer(qId, partKey, value) {
   if (typeof answers[qId] !== 'object') answers[qId] = {};
   answers[qId][partKey] = value;
   
   const answered = questions.filter(q => {
-    if (q.type === 'composite_advanced') return Object.keys(answers[q.id] || {}).length > 0;
+    if (q.type === 'composite_advanced') return answers[q.id] && Object.keys(answers[q.id]).length > 0;
     return answers[q.id] !== undefined && answers[q.id] !== '';
   }).length;
   document.getElementById('progress-bar').style.width = (questions.length ? (answered / questions.length * 100) : 0) + '%';
@@ -468,10 +453,14 @@ function confirmSubmit() { if (confirm('Are you sure you want to finalize and su
 async function submitExam() {
   stopTimer();
   const flattenedAnswers = Object.fromEntries(
-    Object.entries(answers).map(([k, v]) => [k, typeof v === 'object' ? JSON.stringify(v) : v])
+    Object.entries(answers).map(([k, v]) => [k, typeof v === 'object' ? JSON.stringify(v) : String(v)])
   );
   try {
-    const res = await fetch(`${API}/submit`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ candidate: candidate.name, email: candidate.email, assessment_id: selectedAssessmentId, answers: flattenedAnswers }) });
+    const res = await fetch(`${API}/submit`, { 
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json' }, 
+      body: JSON.stringify({ candidate: candidate.name, email: candidate.email, assessment_id: selectedAssessmentId, answers: flattenedAnswers }) 
+    });
     showResults(await res.json());
   } catch { alert('Submission transmission failed.'); }
 }
@@ -479,7 +468,7 @@ async function submitExam() {
 function showResults(result) {
   showScreen('results');
   document.getElementById('results-candidate').textContent = candidate.name + ' · ' + candidate.level;
-  document.getElementById('results-score').textContent = `${result.score ?? 0} / ${result.total_possible ?? questions.length}`;
+  document.getElementById('results-score').textContent = `${result.score ?? result.mcq_score ?? 0} / ${result.total_possible ?? result.mcq_total ?? questions.length}`;
   const breakdown = document.getElementById('results-breakdown');
   breakdown.innerHTML = '<div style="font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Question Breakdown</div>';
   questions.forEach((q, i) => {
