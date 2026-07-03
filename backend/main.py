@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from jose import jwt, JWTError
+from sqlalchemy import or_
 
 load_dotenv()
 
@@ -551,17 +552,24 @@ def delete_assessment(aid: int, current_admin: AdminUser = Depends(require_admin
 def get_assessments_for_group(group_name: str):
     db = SessionLocal()
     try:
+        clean = group_name.strip()
         rows = db.query(Assessment).filter(
-            Assessment.group_name == group_name.strip(),
-            Assessment.status     == "Active",
+            Assessment.status == "Active"
+        ).filter(
+            or_(
+                Assessment.group_name == clean,   # exact match e.g. "Grade 5"
+                Assessment.group_name == "All",   # "All" shows to every student
+                Assessment.group_name == "",      # blank group also shows to everyone
+                Assessment.group_name == None     # null group also shows to everyone
+            )
         ).all()
         return [
             {
-                "id":          a.id,
-                "title":       a.title,
+                "id": a.id,
+                "title": a.title,
                 "description": a.description or "",
-                "group":       a.group_name or "",
-                "status":      a.status or "Active",
+                "group": a.group_name or "",
+                "status": a.status or "Active",
             }
             for a in rows
         ]
