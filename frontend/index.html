@@ -63,7 +63,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .sidebar{width:var(--sidebar);background:var(--white);border-right:1px solid var(--border);padding:16px 0;overflow-y:auto;flex-shrink:0}
 .sidebar-items{list-style:none}
 .sidebar-item{padding:10px 18px;font-size:.83rem;color:var(--muted);cursor:pointer;border-left:3px solid transparent;transition:all .15s;display:flex;align-items:center;gap:8px}
-.sidebar-item:hover{background:var(--blue-lt);color:var(--blue);}
+.sidebar-item:hover{background:var(--blue-lt);color:var(--blue)}
 .sidebar-item.active{background:var(--blue-lt);color:var(--blue);border-left-color:var(--blue);font-weight:600}
 .sidebar-item.answered{color:var(--teal)}
 .sidebar-item.answered::after{content:'✓';margin-left:auto;font-size:.75rem}
@@ -139,13 +139,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <input type="email" id="reg-email" placeholder="sarah@example.com"/>
     </div>
     <div class="field">
-      <label>Grade</label>
+      <label>Grade / Subject Track</label>
       <select id="reg-level">
-        <option value="">Select your grade...</option>
-        <option value="Grade 5">Grade 5</option>
-        <option value="Grade 6">Grade 6</option>
-        <option value="Grade 7">Grade 7</option>
-        <option value="Grade 8">Grade 8</option>
+        <option value="">Select your class group...</option>
+        <option value="Grade 5 Math">Grade 5 Math</option>
+        <option value="Grade 6 Math">Grade 6 Math</option>
+        <option value="Grade 7 Math">Grade 7 Math</option>
+        <option value="Grade 8 Math">Grade 8 Math</option>
       </select>
     </div>
     <button class="btn-start" onclick="startExam()">Login →</button>
@@ -241,7 +241,7 @@ async function startExam() {
 
   if (!first || !last) return alert('Please enter your first and last name.');
   if (!email || !email.includes('@')) return alert('Please enter a valid email.');
-  if (!level) return alert('Please select your grade.');
+  if (!level) return alert('Please select your grade track.');
 
   candidate = { name: first + ' ' + last, email, level };
   showScreen('assessment-list');
@@ -255,12 +255,11 @@ async function loadAvailableAssessments(level) {
   box.innerHTML = `<div style="color:var(--muted); font-size:.9rem; padding:12px 0"><i class="fa fa-spinner fa-spin"></i> Loading assessments...</div>`;
 
   try {
-    // Calling the dedicated public filter endpoint on your main.py file
     const res = await fetch(`${API}/assessments/by-group/${encodeURIComponent(level)}`);
     const data = await res.json();
 
     if (!data.length) {
-      box.innerHTML = `<div class="error-box">No active assessments found matching grade group: <strong>${level}</strong>.</div>`;
+      box.innerHTML = `<div class="error-box">No active assessments found matching: <strong>${level}</strong>.</div>`;
       return;
     }
 
@@ -272,7 +271,7 @@ async function loadAvailableAssessments(level) {
       </div>
     `).join('');
   } catch (err) {
-    box.innerHTML = `<div class="error-box">Could not verify network metrics: ${escapeHtml(err.message)}</div>`;
+    box.innerHTML = `<div class="error-box">Network metrics verification error: ${escapeHtml(err.message)}</div>`;
   }
 }
 
@@ -340,17 +339,15 @@ function renderQuestion(idx) {
           mediaHtml += `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${match[2]}" frameborder="0" allowfullscreen style="margin:12px 0; border-radius:6px;"></iframe>`;
         }
       } else {
-        mediaHtml += `<video src="${config.videoUrl}" controls style="max-width:100%; max-height:200px; display:block; margin:12px 0; border-radius:6px;"></video>`;
+        mediaHtml += `<video src="${config.videoUrl}" controls style="max-width:100%; max-height:200px; display:block; margin:12px 0; border-radius:6px Papaya;"></video>`;
       }
     }
   } catch(e) {}
 
   let answerHtml = '';
 
-  // ADVANCED SPLIT TWO-COLUMN ADVANCED COMPOSITE RENDERING PIPELINE
   if (q.type === 'composite_advanced' && Array.isArray(q.options)) {
     if (!answers[q.id]) answers[q.id] = {};
-    
     answerHtml = `<div class="q-instruction">Complete each part of the question carefully.</div>`;
     
     q.options.forEach((subPart, subIdx) => {
